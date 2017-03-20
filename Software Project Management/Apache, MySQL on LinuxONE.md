@@ -122,13 +122,13 @@
 
 	gmake test
 
-安装编译后的MySQL程序：
+安装编译后的`MySQL`程序：
 
 	gmake install
 
 >**提示：**此处时间较长，需要耐心等待
 
-正常情况下，利用软件包安装的MySQL不需要自己进行配置，但是这里的情况比较复杂，二进制文件自行编译安装之后，需要我们自己进行一系列初始化配置。
+正常情况下，利用软件包安装的`MySQL`不需要自己进行配置，但是这里的情况比较复杂，二进制文件自行编译安装之后，需要我们自己进行一系列初始化配置。
 
 首先找到`MySQL`的安装目录，默认是`/usr/local/mysql`：
 
@@ -192,6 +192,11 @@
 	SET PASSWORD = PASSWORD('myPassword');
 
 之后就可以正常地使用数据库了。
+
+(可选)删除无用的安装文件(实测空间占用约7.7GB)：
+
+	cd ~
+	rm -rf ./*
 
 ## Reference
 https://github.com/linux-on-ibm-z/docs/wiki/Building-Apache-HTTP-Server  
