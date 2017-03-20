@@ -275,6 +275,6 @@ def make_app():
 if __name__ == '__main__':
     app = make_app()
     app.listen(8888)
-    # init_database()
+    init_database()
     print "star serving..."
     tornado.ioloop.IOLoop.current().start()
