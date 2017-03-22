@@ -355,9 +355,11 @@ void DrawCompute() {
 		str.append(vects[result_p].vect1.toString());
 		str.append(") ¡¤ (");
 		str.append(vects[result_p].vect2.toString());
-		str.append(") = (");
-		str.append(vects[result_p].vect3.toString());
-		str.append(")");
+		str.append(") = ");
+		ostringstream buffer;
+		buffer << setiosflags(ios::fixed);
+		buffer << setprecision(2) << vects[result_p].result;
+		str.append(string(buffer.str()));
 
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glRasterPos3f(-60, -30, 0);
