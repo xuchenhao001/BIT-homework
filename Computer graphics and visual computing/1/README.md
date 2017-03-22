@@ -21,4 +21,4 @@
 
 ## 程序逻辑调用层次
 
-![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/1/4.jpg)
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/1/4.png)
