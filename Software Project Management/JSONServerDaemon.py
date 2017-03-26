@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import daemon
-from SimpleJSONServer import main
+from JSONServer import main
 
 with daemon.DaemonContext():
     main()

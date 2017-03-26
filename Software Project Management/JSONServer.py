@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 
 import sys
+import os
+import copy
 import json
 import tornado.ioloop
 import tornado.web
@@ -40,8 +42,7 @@ def init_database():
                         event_id CHAR(20) PRIMARY KEY,
                         topic CHAR(40),
                         date CHAR(20),
-                        description CHAR(100),
-                        url CHAR(30),
+                        description TEXT,
                         FOREIGN KEY(id) REFERENCES memberships(id))
                         character set = utf8;"""
         cursor.execute(sql)
@@ -71,7 +72,7 @@ def add_membership_database(membership_id, membership_password):
         # 发生错误时回滚
         db.rollback()
         print e
-        print "Insert membership failed!"
+        return "Membership '%s' registered failed: %s" % (membership_id, e)
     finally:
         if db is not None:
             db.close()
@@ -80,7 +81,7 @@ def add_membership_database(membership_id, membership_password):
 
 
 # 向数据库中添加事件记录
-def add_event_database(membership_id, event_id, event_topic, event_date, event_description):
+def add_event_database(membership_id, detail):
     db = None
 
     try:
@@ -89,22 +90,23 @@ def add_event_database(membership_id, event_id, event_topic, event_date, event_d
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
         # 插入数据库
-        sql = "INSERT INTO events (id, event_id, topic, date, description)\
+        for event in detail:
+            sql = "INSERT INTO events (id, event_id, topic, date, description)\
                     VALUES('%s', '%s', '%s', '%s', '%s')" \
-                    % (membership_id, event_id, event_topic, event_date, event_description)
-        cursor.execute(sql)
-        # 提交到数据库执行
-        db.commit()
+              % (membership_id, event['event_id'], event['topic'], event['date'], event['description'])
+            cursor.execute(sql)
+            # 提交到数据库执行
+            db.commit()
     except Exception, e:
         # 发生错误时回滚
         db.rollback()
         print e
-        print "Insert event failed!"
+        return "Events added failed: %s" % e
     finally:
         if db is not None:
             db.close()
 
-    return "Event '%s' added successfully!" % event_topic
+    return "Events added successfully!"
 
 
 # 从数据库中检查用户id
@@ -123,7 +125,7 @@ def check_id_database(membership_id):
         results = cursor.fetchall()
     except Exception, e:
         print e
-        print "Check membership id failed!"
+        return "Check membership id failed: %s" % e
     finally:
         if db is not None:
             db.close()
@@ -133,7 +135,8 @@ def check_id_database(membership_id):
 
 # 从数据库中查找id对应的事件
 def search_event_database(membership_id):
-    db, results = None, None
+    db, records = None, None
+    results, result = [], {}
 
     try:
         # 打开数据库连接
@@ -144,18 +147,25 @@ def search_event_database(membership_id):
         sql = "SELECT * FROM events WHERE id = '%s'" % membership_id
         cursor.execute(sql)
         # 获取所有记录列表
-        results = cursor.fetchall()
+        records = cursor.fetchall()
+        for membership_id, event_id, topic, date, description, pic_url in records:
+            result['id'] = membership_id
+            result['event_id'] = event_id
+            result['topic'] = topic
+            result['date'] = date
+            result['description'] = description
+            results.append(copy.copy(result))
+        return results
+
     except Exception, e:
         print e
-        print "Insert event failed!"
+        return "Insert events failed: %s" % e
     finally:
         if db is not None:
             db.close()
 
-    return results
 
-
-# 从数据库中删除id对应用户,或event_id对应事件记录
+# 从数据库中删除id对应用户,或id用户的所有事件记录
 def delete_database(flag_id, flag):
     db = None
 
@@ -165,7 +175,7 @@ def delete_database(flag_id, flag):
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
 
-        # 从数据库中删除对应项目
+        # 从数据库中删除对应用户或用户所有事件
         if flag == "membership":
             sql = "DELETE FROM events WHERE id = '%s'" % flag_id
             cursor.execute(sql)
@@ -174,16 +184,16 @@ def delete_database(flag_id, flag):
             cursor.execute(sql)
             db.commit()
             return "Membership '%s' deleted successfully!" % flag_id
-        elif flag == "event":
-            sql = "DELETE FROM events WHERE event_id = '%s'" % flag_id
+        elif flag == "events":
+            sql = "DELETE FROM events WHERE id = '%s'" % flag_id
             cursor.execute(sql)
             db.commit()
-            return "Event '%s' deleted successfully!" % flag_id
+            return "Events deleted successfully!"
     except Exception, e:
         # 发生错误时回滚
         db.rollback()
         print e
-        print "Delete membership/event failed!"
+        return "Delete membership/events failed: %s" % e
     finally:
         if db is not None:
             db.close()
@@ -202,7 +212,7 @@ def update_membership_database(membership_id, membership_password):
         # 发生错误时回滚
         db.rollback()
         print e
-        print "Update membership failed!"
+        return "Update membership failed: %s" % e
     finally:
         if db is not None:
             db.close()
@@ -211,27 +221,14 @@ def update_membership_database(membership_id, membership_password):
 
 
 # 更新用户事件
-def update_event_database(event_id, event_topic, event_date, event_description):
-    db = None
-    try:
-        db = database_connect()
-        cursor = db.cursor()
-        sql = "UPDATE events SET topic = '%s', date = '%s', description = '%s' \
-         WHERE event_id = '%s'" % (event_topic, event_date, event_description, event_id)
-        cursor.execute(sql)
-        db.commit()
-    except Exception, e:
-        # 发生错误时回滚
-        db.rollback()
-        print e
-        print "Update event failed!"
-    finally:
-        if db is not None:
-            db.close()
+def update_events_database(membership_id, detail):
 
-    return "Event '%s' updated successfully!" % event_topic
+    detail1 = delete_database(membership_id, "events")
+    detail2 = add_event_database(membership_id, detail)
+    return "%s, %s" % (detail1, detail2)
 
 
+# JSON REST服务处理
 class MainHandler(tornado.web.RequestHandler):
     def data_received(self, chunk):
         pass
@@ -249,8 +246,8 @@ class MainHandler(tornado.web.RequestHandler):
         # 判断操作类型
         if data["type"] == "registration":
             detail = add_membership_database(data["id"], data["password"])
-        elif data["type"] == "add_event":
-            detail = add_event_database(data["id"], data["event_id"], data["topic"], data["date"], data["description"])
+        elif data["type"] == "add_events":
+            detail = add_event_database(data["id"], data["detail"])
         elif data["type"] == "check_id":
             detail = check_id_database(data["id"])
         elif data["type"] == "search_event":
@@ -259,8 +256,8 @@ class MainHandler(tornado.web.RequestHandler):
             detail = delete_database(data["id"], data["flag"])
         elif data["type"] == "update_membership":
             detail = update_membership_database(data["id"], data["password"])
-        elif data["type"] == "update_event":
-            detail = update_event_database(data["event_id"], data["topic"], data["date"], data["description"])
+        elif data["type"] == "update_events":
+            detail = update_events_database(data["id"], data["detail"])
 
         self.set_header("Content-Type", "application/json")
         data = {"status": "yes", "detail": detail}
@@ -268,16 +265,47 @@ class MainHandler(tornado.web.RequestHandler):
         self.write(in_json)
 
 
+# 文件上传下载处理
+class FtpHandler(tornado.web.RequestHandler):
+    def data_received(self, chunk):
+        pass
+
+    # 上传
+    def post(self, arg):
+        if self.request.files:
+            upload_path = os.path.join(os.path.dirname(__file__), 'files')  # 文件暂存路径
+            filename = self.request.files['file'][0]['filename']
+            file_content = self.request.files['file'][0]['body']
+            file_path = os.path.join(upload_path, filename)
+            with open(file_path, 'wb') as upload:
+                upload.write(file_content)
+            self.redirect("/")
+
+    # 下载
+    def get(self, arg):
+        filename = arg[1:]
+        print filename
+        try:
+            file_content = open(os.getcwd() + '/files/' + filename, 'rb')
+        except IOError:
+            self.set_status(404)
+            return
+        self.set_header('Content-Type', 'application/octet-stream')
+        self.add_header('Content-Disposition', 'attachment; filename=' + filename)
+        self.finish(file_content.read())
+
+
 def make_app():
-    return tornado.web.Application([(r"/", MainHandler), ])
+    return tornado.web.Application([(r"/", MainHandler), (r"/files(/.+)?", FtpHandler), ])
 
 
 def main():
     app = make_app()
     app.listen(8888)
     init_database()
-    print "star serving..."
+    print "start serving..."
     tornado.ioloop.IOLoop.current().start()
+
 
 if __name__ == '__main__':
     main()
