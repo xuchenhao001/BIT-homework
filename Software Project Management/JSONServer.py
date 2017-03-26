@@ -39,7 +39,7 @@ def init_database():
         # 创建数据表memberships
         sql = """CREATE TABLE events (
                         id CHAR(20) NOT NULL,
-                        event_id CHAR(20) PRIMARY KEY,
+                        event_id INT PRIMARY KEY,
                         topic CHAR(40),
                         date CHAR(20),
                         description TEXT,
@@ -92,7 +92,7 @@ def add_event_database(membership_id, detail):
         # 插入数据库
         for event in detail:
             sql = "INSERT INTO events (id, event_id, topic, date, description)\
-                    VALUES('%s', '%s', '%s', '%s', '%s')" \
+                    VALUES('%s', %d, '%s', '%s', '%s')" \
               % (membership_id, event['event_id'], event['topic'], event['date'], event['description'])
             cursor.execute(sql)
             # 提交到数据库执行
@@ -110,7 +110,7 @@ def add_event_database(membership_id, detail):
 
 
 # 从数据库中检查用户id
-def check_id_database(membership_id):
+def check_id_database(membership_id, membership_password):
     db, results = None, None
 
     try:
@@ -119,7 +119,8 @@ def check_id_database(membership_id):
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
         # 插入数据库
-        sql = "SELECT * FROM memberships WHERE id = '%s'" % membership_id
+        sql = "SELECT * FROM memberships WHERE id = '%s' AND password = '%s'"\
+              % (membership_id, membership_password)
         cursor.execute(sql)
         # 获取所有记录列表
         results = cursor.fetchall()
@@ -133,8 +134,8 @@ def check_id_database(membership_id):
     return len(results)
 
 
-# 从数据库中查找id对应的事件
-def search_event_database(membership_id):
+# 从数据库中查找用户id对应的事件
+def search_events_database(membership_id):
     db, records = None, None
     results, result = [], {}
 
@@ -148,7 +149,7 @@ def search_event_database(membership_id):
         cursor.execute(sql)
         # 获取所有记录列表
         records = cursor.fetchall()
-        for membership_id, event_id, topic, date, description, pic_url in records:
+        for membership_id, event_id, topic, date, description in records:
             result['id'] = membership_id
             result['event_id'] = event_id
             result['topic'] = topic
@@ -249,9 +250,9 @@ class MainHandler(tornado.web.RequestHandler):
         elif data["type"] == "add_events":
             detail = add_event_database(data["id"], data["detail"])
         elif data["type"] == "check_id":
-            detail = check_id_database(data["id"])
-        elif data["type"] == "search_event":
-            detail = search_event_database(data["id"])
+            detail = check_id_database(data["id"], data["password"])
+        elif data["type"] == "search_events":
+            detail = search_events_database(data["id"])
         elif data["type"] == "delete":
             detail = delete_database(data["id"], data["flag"])
         elif data["type"] == "update_membership":
