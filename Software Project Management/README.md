@@ -27,208 +27,208 @@
 ### 注册用户
 
 	{	
-		"type":"registration",
-		"id":"your_id",
-		"password":"your_password"
+	  "type":"registration",
+	  "id":"your_id",
+	  "password":"your_password"
 	}
 
 注册成功：
 
 	{
-		"status": "yes",
-		"detail": "Membership 'your_id' registered successfully!"
+	  "status": "yes",
+	  "detail": "Membership 'your_id' registered successfully!"
 	}
 
 注册失败：
 
 	{
-		"status": "yes",
-		"detail": "Membership 'your_id' registered failed: 1062 (23000): Duplicate entry 'your_id' for key 'PRIMARY'"
+	  "status": "yes",
+	  "detail": "Membership 'your_id' registered failed: 1062 (23000): Duplicate entry 'your_id' for key 'PRIMARY'"
 	}
 
 ### 添加用户的所有事件
 
 	{
-    	"type":"add_events",
-    	"id":"your_id",
-    	"detail": [
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 1
-    	},
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 2
-    	},
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 3
-    	}
-	  ]
+      "type":"add_events",
+      "id":"your_id",
+      "detail": [
+      {
+        "topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 1
+      },
+      {
+    	"topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 2
+      },
+      {
+    	"topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 3
+      }
+	 ]
 	}
 
 添加成功：
 
 	{
-		"status": "yes",
-		"detail": "Events added successfully!"
+	  "status": "yes",
+	  "detail": "Events added successfully!"
 	}
 
 添加失败：
 
 	{
-		"status": "yes",
-		"detail": "Events added failed: 1062 (23000): Duplicate entry 'event_id1' for key 'PRIMARY'"
+	  "status": "yes",
+	  "detail": "Events added failed: 1062 (23000): Duplicate entry 'event_id1' for key 'PRIMARY'"
 	}
 
 ### 验证用户`id`和密码
 
 	{
-		"type":"check_id",
-		"id":"your_id",
-    	"password":"your_password"
+	  "type":"check_id",
+	  "id":"your_id",
+      "password":"your_password"
 	}
 
 验证成功：
 
 	{
-		"status": "yes",
-		"detail": 1
+	  "status": "yes",
+	  "detail": 1
 	}
 
 验证失败：
 
 	{
-		"status": "yes",
-		"detail": 0
+	  "status": "yes",
+	  "detail": 0
 	}
 
 ### 查询用户所有事件
 
 	{
-		"type":"search_events",
-		"id":"your_id"
+	  "type":"search_events",
+	  "id":"your_id"
 	}
 
 查询成功：
 
 	{
-		"status": "yes",
-		"detail": [
-    	{
-      		"event_id": 1,
-      		"topic": "your_topic",
-      		"date": "event_date",
-      		"id": "your_id",
-      		"description": "event_description"
-    	},
-    	{
-      		"event_id": 2,
-      		"topic": "your_topic",
-      		"date": "event_date",
-      		"id": "your_id",
-      		"description": "event_description"
-    	},
-    	{
-      		"event_id": 3,
-      		"topic": "your_topic",
-      		"date": "event_date",
-      		"id": "your_id",
-      		"description": "event_description"
-    	}
-	  ]
+	  "status": "yes",
+	  "detail": [
+      {
+      	"event_id": 1,
+      	"topic": "your_topic",
+      	"date": "event_date",
+      	"id": "your_id",
+      	"description": "event_description"
+      },
+      {
+      	"event_id": 2,
+      	"topic": "your_topic",
+      	"date": "event_date",
+      	"id": "your_id",
+      	"description": "event_description"
+      },
+      {
+      	"event_id": 3,
+      	"topic": "your_topic",
+      	"date": "event_date",
+      	"id": "your_id",
+      	"description": "event_description"
+      }
+	 ]
 	}
 
 查询失败：
 
 	{
-		"status": "yes",
-		"detail": []
+	  "status": "yes",
+	  "detail": []
 	}
 
 ### 根据用户`id`删除用户
 
 	{
-		"type":"delete",
-		"flag":"membership",
-		"id":"your_id"
+	  "type":"delete",
+	  "flag":"membership",
+	  "id":"your_id"
 	}
 
 删除成功：
 
 	{
-		"status": "yes",
-		"detail": "Membership 'your_id' deleted successfully!"
+	  "status": "yes",
+	  "detail": "Membership 'your_id' deleted successfully!"
 	}
 
 ### 根据用户`id`删除所有事件
 
 	{
-		"type":"delete",
-		"flag":"events",
-		"id":"your_id"
+	  "type":"delete",
+	  "flag":"events",
+	  "id":"your_id"
 	}
 
 删除成功：
 
 	{
-		"status": "yes",
-		"detail": "Events deleted successfully!"
+	  "status": "yes",
+	  "detail": "Events deleted successfully!"
 	}
 
 ### 根据用户`id`更新密码
 
 	{
-		"type":"update_membership",
-		"id":"your_id",
-		"password":"new_password"
+	  "type":"update_membership",
+	  "id":"your_id",
+	  "password":"new_password"
 	}
 
 更新成功：
 
 	{
-		"status": "yes",
-		"detail": "Membership 'your_id' updated successfully!"
+	  "status": "yes",
+	  "detail": "Membership 'your_id' updated successfully!"
 	}
 
 ### 根据用户`id`更新事件
 
 	{
-		"type":"update_events",
-		"id":"your_id",
-		"detail": [
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 7
-    	},
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 8
-    	},
-    	{
-    		"topic": "your_topic",
-    		"date": "event_date",
-    		"description": "event_description",
-    		"event_id": 9
-    	}
-	  ]
+	  "type":"update_events",
+	  "id":"your_id",
+	  "detail": [
+      {
+    	"topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 7
+      },
+      {
+    	"topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 8
+      },
+      {
+    	"topic": "your_topic",
+    	"date": "event_date",
+    	"description": "event_description",
+    	"event_id": 9
+      }
+	 ]
 	}
 
 更新成功：
 
 	{
-		"status": "yes",
-		"detail": "Events deleted successfully!, Events added successfully!"
+	  "status": "yes",
+	  "detail": "Events deleted successfully!, Events added successfully!"
 	}
 
 ## 文件上传下载
