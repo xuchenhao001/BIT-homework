@@ -13,12 +13,13 @@
 
 **[events]**
 
-	id CHAR(20) 	NOT NULL
-	event_id    	INT PRIMARY KEY
+	id          	CHAR(20) NOT NULL
+	event_id    	INT
 	topic       	CHAR(40)
 	date        	CHAR(20)
 	description 	TEXT
 	FOREIGN KEY(id) REFERENCES memberships(id)
+	PRIMARY KEY(id, event_id)
 
 ## `REST API`设计
 

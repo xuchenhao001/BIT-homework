@@ -39,11 +39,12 @@ def init_database():
         # 创建数据表memberships
         sql = """CREATE TABLE events (
                         id CHAR(20) NOT NULL,
-                        event_id INT PRIMARY KEY,
+                        event_id INT,
                         topic CHAR(40),
                         date CHAR(20),
                         description TEXT,
-                        FOREIGN KEY(id) REFERENCES memberships(id))
+                        FOREIGN KEY(id) REFERENCES memberships(id),
+                        PRIMARY KEY(id, event_id))
                         character set = utf8;"""
         cursor.execute(sql)
     except Exception, e:
@@ -177,18 +178,15 @@ def delete_database(flag_id, flag):
         cursor = db.cursor()
 
         # 从数据库中删除对应用户或用户所有事件
+        sql = "DELETE FROM events WHERE id = '%s'" % flag_id
+        cursor.execute(sql)
+        db.commit()
         if flag == "membership":
-            sql = "DELETE FROM events WHERE id = '%s'" % flag_id
-            cursor.execute(sql)
-            db.commit()
             sql = "DELETE FROM memberships WHERE id = '%s'" % flag_id
             cursor.execute(sql)
             db.commit()
             return "Membership '%s' deleted successfully!" % flag_id
         elif flag == "events":
-            sql = "DELETE FROM events WHERE id = '%s'" % flag_id
-            cursor.execute(sql)
-            db.commit()
             return "Events deleted successfully!"
     except Exception, e:
         # 发生错误时回滚
