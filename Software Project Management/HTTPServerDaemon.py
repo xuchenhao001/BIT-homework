@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import daemon
-from JSONServer import main
+from HTTPServer import main
 
 with daemon.DaemonContext():
     main()
