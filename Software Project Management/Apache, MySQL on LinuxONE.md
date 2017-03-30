@@ -79,13 +79,21 @@
 	bin/apachectl configtest
 	bin/apachectl -k start
 
+在开放端口`22`的规则下面我们仿写一条开放端口80如下：
+
+	-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+
 此时Apache HTTP Server守护进程已经开启，但是外网仍无法访问。
 
-经过许久的摸索，发现是LinuxONE防火墙搞的鬼，我们需要关闭防火墙（重启失效）：
+经过许久的摸索，发现是LinuxONE防火墙搞的鬼，我们需要更改防火墙的端口开放规则：
 
-	service iptables stop
+	vi /etc/sysconfig/iptables
 
-之后可以在本地浏览器中打开LinuxONE实例的地址，我们可以看到一个大大的
+重启防火墙服务：
+
+	service iptables restart
+
+之后可以在本地浏览器中打开LinuxONE上虚拟主机的地址，我们可以看到一个大大的
 
 	It works!
 

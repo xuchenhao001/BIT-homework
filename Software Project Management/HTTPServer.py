@@ -33,7 +33,7 @@ def init_database():
         # 创建数据表memberships
         sql = """CREATE TABLE memberships (
                         id CHAR(20) PRIMARY KEY,
-                        password CHAR(20))
+                        password CHAR(50))
                         character set = utf8;"""
         cursor.execute(sql)
         # 创建数据表memberships
