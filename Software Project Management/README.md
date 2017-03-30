@@ -9,7 +9,7 @@
 **[memberships]**
 
 	id          	CHAR(20) PRIMARY KEY
-	password    	CHAR(20)
+	password    	CHAR(50)
 
 **[events]**
 
