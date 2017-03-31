@@ -285,7 +285,7 @@ class FtpHandler(tornado.web.RequestHandler):
         filename = arg[1:]
         print filename
         try:
-            file_content = open(os.getcwd() + '/files/' + filename, 'rb')
+            file_content = open(os.path.dirname(__file__) + '/files/' + filename, 'rb')
         except IOError:
             self.set_status(404)
             return
