@@ -14,6 +14,7 @@
 #include <queue>
 #include "math.h"
 #include "MyMatrixVector.h"
+#include "图形学3_1120142053_徐晨浩.h"
 
 using namespace std;
 
@@ -106,7 +107,7 @@ CVector3 mpos(0, 500, 1000), rpos(-25, 0, 0), spos(1, 1, 1);
 //可爱的小尾巴
 cycleQueue<CVector3> tail(121);
 
-float mspeed = 0.1, rspeed = 1;
+float mspeed = 5, rspeed = 1;
 
 //使用自己编写的矩阵类,调用默认的构造函数，构造单位矩阵
 CMatrix g_IEyeMat, g_EyeMat;
@@ -132,19 +133,25 @@ void initStar() {
 void myKeyboardFunc(unsigned char key, int x, int y) {
 	bool bChange = false;
 
+	if (tail.isFull()) {
+		tail.pop();
+	}
+	tail.push(mpos);
+	printf("%f\t%f\t%f\t", mpos.x, mpos.y, mpos.z);
+
 	switch (key)
 	{
 	case 'w':
 		//my+=mspeed;
 		if (mode == 0) {
-			/*glPushMatrix();
+			glPushMatrix();
 			glLoadIdentity();
 			glTranslatef(0, -mspeed, 0);
 			glMultMatrixf(g_EyeMat);
 			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();*/
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(0, -mspeed, 0))*g_EyeMat;
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(0, -mspeed, 0))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[4], g_IEyeMat[5], g_IEyeMat[6]);
@@ -154,14 +161,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	case 's':
 		//my-=mspeed;	
 		if (mode == 0) {
-			/*glPushMatrix();
+			glPushMatrix();
 			glLoadIdentity();
 			glTranslatef(0, mspeed, 0);
 			glMultMatrixf(g_EyeMat);
 			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();*/
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(0, mspeed, 0))*g_EyeMat;
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(0, mspeed, 0))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[4], g_IEyeMat[5], g_IEyeMat[6]);
@@ -171,14 +178,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	case 'a':
 		//mx-=mspeed;
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glTranslatef(mspeed, 0, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(mspeed, 0, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glTranslatef(mspeed, 0, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(mspeed, 0, 0))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[0], g_IEyeMat[1], g_IEyeMat[2]);
@@ -188,14 +195,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	case 'd':
 		//mx+=mspeed;
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glTranslatef(-mspeed, 0, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(-mspeed, 0, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glTranslatef(-mspeed, 0, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(-mspeed, 0, 0))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[0], g_IEyeMat[1], g_IEyeMat[2]);
@@ -204,14 +211,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'q':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glTranslatef(0, 0, mspeed);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(0, 0, mspeed))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glTranslatef(0, 0, mspeed);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(0, 0, mspeed))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[8], g_IEyeMat[9], g_IEyeMat[10]);
@@ -221,14 +228,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'e':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glTranslatef(0, 0, -mspeed);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetTrans(CVector3(0, 0, -mspeed))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glTranslatef(0, 0, -mspeed);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetTrans(CVector3(0, 0, -mspeed))*g_EyeMat;
 		}
 		else {
 			CVector3 EyeDir(g_IEyeMat[8], g_IEyeMat[9], g_IEyeMat[10]);
@@ -238,14 +245,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'i':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(-rspeed, 1, 0, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(-rspeed, CVector3(1, 0, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(-rspeed, 1, 0, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(-rspeed, CVector3(1, 0, 0))*g_EyeMat;
 		}
 		else {
 			rpos.x += rspeed;
@@ -254,14 +261,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'k':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(rspeed, 1, 0, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(rspeed, CVector3(1, 0, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(rspeed, 1, 0, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(rspeed, CVector3(1, 0, 0))*g_EyeMat;
 		}
 		else {
 			rpos.x -= rspeed;
@@ -270,14 +277,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'j':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(-rspeed, 0, 1, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 1, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(-rspeed, 0, 1, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 1, 0))*g_EyeMat;
 		}
 		else {
 			rpos.y += rspeed;
@@ -286,14 +293,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'l':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(rspeed, 0, 1, 0);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(rspeed, CVector3(0, 1, 0))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(rspeed, 0, 1, 0);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(rspeed, CVector3(0, 1, 0))*g_EyeMat;
 		}
 		else {
 			rpos.y -= rspeed;
@@ -302,14 +309,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'u':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(rspeed, 0, 0, 1);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(rspeed, CVector3(0, 0, 1))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(rspeed, 0, 0, 1);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(rspeed, CVector3(0, 0, 1))*g_EyeMat;
 		}
 		else {
 			rpos.z += rspeed;
@@ -318,14 +325,14 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case 'o':
 		if (mode == 0) {
-			//glPushMatrix();
-			//glLoadIdentity();
-			//glRotatef(-rspeed, 0, 0, 1);
-			//glMultMatrixf(g_EyeMat);
-			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			//glPopMatrix();
-			CMatrix g;
-			g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 0, 1))*g_EyeMat;
+			glPushMatrix();
+			glLoadIdentity();
+			glRotatef(-rspeed, 0, 0, 1);
+			glMultMatrixf(g_EyeMat);
+			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			glPopMatrix();
+			//CMatrix g;
+			//g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 0, 1))*g_EyeMat;
 		}
 		else {
 			rpos.z -= rspeed;
@@ -440,6 +447,7 @@ void myDisplay(void) {
 	glColor3f(1.0, 1.0, 1.0);
 	SetView();
 	drawStar();	
+	drawTail();
 	
 	//绘制坐标轴
 	glDisable(GL_LIGHTING);
