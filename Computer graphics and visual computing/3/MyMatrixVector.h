@@ -18,7 +18,7 @@ public:
 
 	friend CVector3 operator+(const CVector3 &a, const CVector3 &b);		//重载向量'+'
 	friend CVector3 operator-(const CVector3 &a, const CVector3 &b);		//重载向量'-'
-	friend CVector3 operator*(const CVector3 &a, double &b);				//重载向量数乘操作
+	friend CVector3 operator*(const CVector3 &a, float &b);					//重载向量数乘操作
 	friend bool operator == (const CVector3 &a, const CVector3 &b);			//重载'=='比较操作
 	friend bool operator != (const CVector3 &a, const CVector3 &b);			//重载'!='比较操作
 

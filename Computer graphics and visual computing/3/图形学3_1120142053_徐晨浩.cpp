@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <queue>
 #include "math.h"
 #include "MyMatrixVector.h"
 
@@ -23,16 +24,94 @@ using namespace std;
 int width = 1280, height = 720;//星星绘制窗口默认大小为1280x720，运行后可任意更改
 const int STAR_NUM = 10000;//星星总数量，默认为10000个
 
+//============
+//循环队列定义
+//============
+template <class T>
+class cycleQueue
+{
+private:
+	unsigned int m_size;
+	int m_front;
+	int m_now;//定义遍历变量
+	int m_rear;
+	int now_size;
+	T*  m_data;
+public:
+	cycleQueue(unsigned size):m_size(size),m_front(0),m_rear(0){
+		m_data = new T[size];
+	}
+
+	~cycleQueue(){
+		delete[] m_data;
+	}
+
+	void reset() {
+		m_now = m_front;
+	}
+
+	T now() throw(bad_exception) {
+		if (this->isEmpty()) {
+			throw bad_exception();
+		}
+		return m_data[m_now];
+	}
+
+	T next() throw(bad_exception) {
+		if (m_now == m_rear) {
+			throw bad_exception();
+		}
+		return m_data[++m_now];
+	}
+
+	int size() {
+		return now_size;
+	}
+
+	bool isEmpty(){
+		return m_front == m_rear;
+	}
+
+	bool isFull(){
+		return m_front == (m_rear + 1) % m_size;
+	}
+
+	void push(T ele)throw(bad_exception){
+		if (isFull()){
+			throw bad_exception();
+		}
+		now_size++;
+		m_data[m_rear] = ele;
+		m_rear = (m_rear + 1) % m_size;
+	}
+
+	T pop() throw(bad_exception){
+		if (isEmpty()){
+			throw bad_exception();
+		}
+		now_size--;
+		T tmp = m_data[m_front];
+		m_front = (m_front + 1) % m_size;
+		return tmp;
+	}
+};
+
 //==========================
 //全局变量定义部分(不可更改)
 //==========================
 
-//视点位置和方向
-float mx = 0, my = 500, mz = 1000, rx = -25, ry = 0, rz = 0;//平移和旋转
-float sx = 1, sy = 1, sz = 1;//缩放
-float mspeed = 5, rspeed = 1;
-float g_IEyeMat[16] = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 }, g_EyeMat[16] = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-int mode = 1;
+//平移，旋转，缩放
+CVector3 mpos(0, 500, 1000), rpos(-25, 0, 0), spos(1, 1, 1);
+
+//可爱的小尾巴
+cycleQueue<CVector3> tail(121);
+
+float mspeed = 0.1, rspeed = 1;
+
+//使用自己编写的矩阵类,调用默认的构造函数，构造单位矩阵
+CMatrix g_IEyeMat, g_EyeMat;
+//视点变换方式
+int mode = 0;
 
 CVector3 stars[STAR_NUM];
 
@@ -50,225 +129,210 @@ void initStar() {
 }
 
 //键盘控制函数
-void myKeyboardFunc(unsigned char key, int x, int y)
-{
+void myKeyboardFunc(unsigned char key, int x, int y) {
 	bool bChange = false;
+
 	switch (key)
 	{
 	case 'w':
 		//my+=mspeed;
-		if (mode == 0)
-		{
-			glPushMatrix();
+		if (mode == 0) {
+			/*glPushMatrix();
 			glLoadIdentity();
 			glTranslatef(0, -mspeed, 0);
 			glMultMatrixf(g_EyeMat);
 			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+			glPopMatrix();*/
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(0, -mspeed, 0))*g_EyeMat;
 		}
-		else
-		{
-			mx += g_IEyeMat[4] * mspeed;
-			my += g_IEyeMat[5] * mspeed;
-			mz += g_IEyeMat[6] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[4], g_IEyeMat[5], g_IEyeMat[6]);
+			mpos = mpos + EyeDir*mspeed;
 		}
 		break;
 	case 's':
 		//my-=mspeed;	
-		if (mode == 0)
-		{
-			glPushMatrix();
+		if (mode == 0) {
+			/*glPushMatrix();
 			glLoadIdentity();
 			glTranslatef(0, mspeed, 0);
 			glMultMatrixf(g_EyeMat);
 			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+			glPopMatrix();*/
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(0, mspeed, 0))*g_EyeMat;
 		}
-		else
-		{
-			mx -= g_IEyeMat[4] * mspeed;
-			my -= g_IEyeMat[5] * mspeed;
-			mz -= g_IEyeMat[6] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[4], g_IEyeMat[5], g_IEyeMat[6]);
+			mpos = mpos - EyeDir*mspeed;
 		}
-
 		break;
 	case 'a':
 		//mx-=mspeed;
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glTranslatef(mspeed, 0, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glTranslatef(mspeed, 0, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(mspeed, 0, 0))*g_EyeMat;
 		}
-		else
-		{
-			mx -= g_IEyeMat[0] * mspeed;
-			my -= g_IEyeMat[1] * mspeed;
-			mz -= g_IEyeMat[2] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[0], g_IEyeMat[1], g_IEyeMat[2]);
+			mpos = mpos - EyeDir*mspeed;
 		}
-
 		break;
 	case 'd':
 		//mx+=mspeed;
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glTranslatef(-mspeed, 0, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glTranslatef(-mspeed, 0, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(-mspeed, 0, 0))*g_EyeMat;
 		}
-		else
-		{
-			mx += g_IEyeMat[0] * mspeed;
-			my += g_IEyeMat[1] * mspeed;
-			mz += g_IEyeMat[2] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[0], g_IEyeMat[1], g_IEyeMat[2]);
+			mpos = mpos + EyeDir*mspeed;
 		}
-
 		break;
 	case 'q':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glTranslatef(0, 0, mspeed);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glTranslatef(0, 0, mspeed);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(0, 0, mspeed))*g_EyeMat;
 		}
-		else
-		{
-			mx -= g_IEyeMat[8] * mspeed;
-			my -= g_IEyeMat[9] * mspeed;
-			mz -= g_IEyeMat[10] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[8], g_IEyeMat[9], g_IEyeMat[10]);
+			mpos = mpos + EyeDir*mspeed;
 		}
 		//mz-=mspeed;
-
 		break;
 	case 'e':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glTranslatef(0, 0, -mspeed);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glTranslatef(0, 0, -mspeed);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetTrans(CVector3(0, 0, -mspeed))*g_EyeMat;
 		}
-		else
-		{
-			mx += g_IEyeMat[8] * mspeed;
-			my += g_IEyeMat[9] * mspeed;
-			mz += g_IEyeMat[10] * mspeed;
+		else {
+			CVector3 EyeDir(g_IEyeMat[8], g_IEyeMat[9], g_IEyeMat[10]);
+			mpos = mpos - EyeDir*mspeed;
 		}
 		//mz+=mspeed;
-
 		break;
 	case 'i':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(-rspeed, 1, 0, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(-rspeed, 1, 0, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(-rspeed, CVector3(1, 0, 0))*g_EyeMat;
 		}
-		else
-		{
-			rx += rspeed;
+		else {
+			rpos.x += rspeed;
 			bChange = true;
 		}
 		break;
 	case 'k':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(rspeed, 1, 0, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(rspeed, 1, 0, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(rspeed, CVector3(1, 0, 0))*g_EyeMat;
 		}
-		else
-		{
-			rx -= rspeed;
+		else {
+			rpos.x -= rspeed;
 			bChange = true;
 		}
-
 		break;
 	case 'j':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(-rspeed, 0, 1, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(-rspeed, 0, 1, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 1, 0))*g_EyeMat;
 		}
-		else
-		{
-			ry += rspeed;
+		else {
+			rpos.y += rspeed;
 			bChange = true;
 		}
-
 		break;
 	case 'l':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(rspeed, 0, 1, 0);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(rspeed, 0, 1, 0);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(rspeed, CVector3(0, 1, 0))*g_EyeMat;
 		}
-		else
-		{
-			ry -= rspeed;
+		else {
+			rpos.y -= rspeed;
 			bChange = true;
 		}
-
 		break;
 	case 'u':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(rspeed, 0, 0, 1);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(rspeed, 0, 0, 1);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(rspeed, CVector3(0, 0, 1))*g_EyeMat;
 		}
-		else
-		{
-			rz += rspeed;
+		else {
+			rpos.z += rspeed;
 			bChange = true;
 		}
-
 		break;
 	case 'o':
-		if (mode == 0)
-		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(-rspeed, 0, 0, 1);
-			glMultMatrixf(g_EyeMat);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+		if (mode == 0) {
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glRotatef(-rspeed, 0, 0, 1);
+			//glMultMatrixf(g_EyeMat);
+			//glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
+			//glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(-rspeed, CVector3(0, 0, 1))*g_EyeMat;
 		}
-		else
-		{
-			rz -= rspeed;
+		else {
+			rpos.z -= rspeed;
 			bChange = true;
 		}
-
 		break;
+
 	case '=':
 		mspeed *= 1.1;
 		printf("mspeed:%.1f\n", mspeed);
@@ -281,50 +345,70 @@ void myKeyboardFunc(unsigned char key, int x, int y)
 		mode = 1 - mode;
 		if (mode == 0)
 		{
-			glPushMatrix();
-			glLoadIdentity();
-			glRotatef(-rz, 0, 0, 1);
-			glRotatef(-rx, 1, 0, 0);
-			glRotatef(-ry, 0, 1, 0);
-			glTranslatef(-mx, -my, -mz);
-			glGetFloatv(GL_MODELVIEW_MATRIX, g_EyeMat);
-			glPopMatrix();
+			CMatrix g;
+			g_EyeMat = g.SetRotate(-rpos.z, CVector3(0, 0, 1))*g.SetRotate(-rpos.x, CVector3(1, 0, 0))*g.SetRotate(-rpos.y, CVector3(0, 1, 0))*g.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
 		}
 		printf("mode:%d\n", mode);
 		break;
 	}
 	if (bChange)//计算视点矩阵的逆矩阵
 	{
-		glPushMatrix();
-		glLoadIdentity();
-		glRotatef(ry, 0, 1, 0);
-		glRotatef(rx, 1, 0, 0);
-		glRotatef(rz, 0, 0, 1);
-		glGetFloatv(GL_MODELVIEW_MATRIX, g_IEyeMat);
-		glPopMatrix();
+		//glPushMatrix();
+		//glLoadIdentity();
+		//glRotatef(rpos.y, 0, 1, 0);
+		//glRotatef(rpos.x, 1, 0, 0);
+		//glRotatef(rpos.z, 0, 0, 1);
+		//glGetFloatv(GL_MODELVIEW_MATRIX, g_IEyeMat);
+		//glPopMatrix();
+		CMatrix g;
+		g_IEyeMat = g.SetRotate(rpos.y, CVector3(0, 1, 0))*g.SetRotate(rpos.x, CVector3(1, 0, 0))*g.SetRotate(rpos.z, CVector3(0, 0, 1));
+	}
+	if (mode == 0)
+	{
+		g_IEyeMat = g_EyeMat.GetInverse();
 	}
 }
 
+//设置环境
+void SetRC() {
+
+	//星星是圆的
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glShadeModel(GL_FLAT);
+	glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glPolygonMode(GL_BACK, GL_LINE);
+
+	glewInit();
+	float Quadratic[] = { 0,0.12,0 };
+	//glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, Quadratic);
+	glPointParameterf(GL_POINT_SIZE_MIN, 1);//设置最小点
+	glPointParameterf(GL_POINT_SIZE_MAX, 100);//设置最大点
+}
+
 //设置视点
-void SetView()
-{
+void SetView() {
 	if (mode == 0)
 	{
 		glLoadMatrixf(g_EyeMat);
 	}
 	else
 	{
-		glRotatef(-rz, 0, 0, 1);
-		glRotatef(-rx, 1, 0, 0);
-		glRotatef(-ry, 0, 1, 0);
-		glTranslatef(-mx, -my, -mz);
+		glRotatef(-rpos.z, 0, 0, 1);
+		glRotatef(-rpos.x, 1, 0, 0);
+		glRotatef(-rpos.y, 0, 1, 0);
+		glTranslatef(-mpos.x, -mpos.y, -mpos.z);
 	}
 }
 
 //一闪一闪画星星
 void drawStar() {
 	//glTranslatef(0, 0, -1000);
-	
+
 	glPointSize(2);
 	glBegin(GL_POINTS);
 	for (int i = 0; i < STAR_NUM; i++) {
@@ -333,34 +417,43 @@ void drawStar() {
 	glEnd();
 }
 
-//绘制图形
-void RenderWorld()
-{
-	//绘制坐标轴
-	//glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-	glColor3f(1, 0, 0);
-	glVertex3f(0, 0, 0);
-	glVertex3f(1000, 0, 0);
-	glColor3f(0, 1, 0);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 1000, 0);
-	glColor3f(0, 0, 1);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, 1000);
-	glEnd();
-	glColor3f(1, 1, 1);
-	//画星星
-	drawStar();
+//画尾巴
+void drawTail() {
+	glPushMatrix();
+	for (int i = 0; i < tail.size() - 1; i++) {
+		glLineWidth(1);
+		tail.reset();
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINES);
+		glVertex3f(tail.now().x, tail.now().y, tail.now().z);
+		tail.next();
+		glVertex3f(tail.now().x, tail.now().y, tail.now().z);
+		glEnd();
+	}
+	glPopMatrix();
 }
 
 //图形总绘制
-void myDisplay(void)
-{
+void myDisplay(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
 	SetView();
-	RenderWorld();
+	drawStar();	
+	
+	//绘制坐标轴
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(1000, 0, 0);
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 1000, 0);
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, 1000);
+	glEnd();
 	glPopMatrix();
 	glutSwapBuffers();
 }
@@ -377,27 +470,6 @@ void myReshape(int w, int h)
 	gluPerspective(60, GLfloat(w) / h, 1, 1000000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
-
-//设置环境
-void SetRC()
-{
-	//星星是圆的
-	glEnable(GL_POINT_SMOOTH);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glShadeModel(GL_FLAT);
-	glFrontFace(GL_CW);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_BACK, GL_LINE);
-
-	glewInit();
-	float Quadratic[] = { 0,0,0.00001 };
-	//glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, Quadratic);
-	glPointParameterf(GL_POINT_SIZE_MIN, 1);//设置最小点
-	glPointParameterf(GL_POINT_SIZE_MAX, 100);//设置最大点
 }
 
 //时间控制
@@ -533,4 +605,3 @@ int main(int argc, char *argv[])
 	glutMainLoop();
 	return 0;
 }
-

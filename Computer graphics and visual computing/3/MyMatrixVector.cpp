@@ -60,7 +60,7 @@ float CVector3::len() {
 	return sqrt(this->x*this->x + this->y*this->y + this->z*this->z);
 }
 
-	//向量投影操作
+//向量投影操作
 CVector3 CVector3::project(CVector3 &n) {
 	float length = n.len();
 	if (length < deviation) {
@@ -102,7 +102,7 @@ CVector3 operator-(const CVector3 &a, const CVector3 &b) {
 }
 
 //重载向量数乘操作'*'
-CVector3 operator*(const CVector3 &a, float b) {
+CVector3 operator*(const CVector3 &a, float &b) {
 	return CVector3(a.x*b, a.y*b, a.z*b);
 }
 
@@ -126,11 +126,9 @@ bool operator!=(const CVector3 &a, const CVector3 &b) {
 //矩阵类定义部分
 //==============
 
-//构造函数
+//构造函数(默认构造单位矩阵)
 CMatrix::CMatrix() {
-	for (int i = 0; i < 16; i++) {
-		(*this)[i] = 0;
-	}
+	(*this).Identity();
 }
 
 //矩阵清零
@@ -236,6 +234,8 @@ void CMatrix::Transpose() {
 
 //设置为旋转矩阵
 CMatrix& CMatrix::SetRotate(float seta, CVector3 axis) {
+	seta = seta / 180 * 3.1415926;
+
 	float x = axis.x;
 	float y = axis.y;
 	float z = axis.z;
@@ -265,6 +265,7 @@ CMatrix& CMatrix::SetRotate(float seta, CVector3 axis) {
 
 //设置为平移矩阵
 CMatrix& CMatrix::SetTrans(CVector3 trans) {
+	(*this)[0] = (*this)[5] = (*this)[10] = (*this)[15] = 1;
 	(*this)[12] = trans.x;
 	(*this)[13] = trans.y;
 	(*this)[14] = trans.z;
