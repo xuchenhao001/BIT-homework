@@ -67,7 +67,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 			tail.pop();
 		}
 		tail.push(mpos);
-		printf("%f\t%f\t%f\t%d\n", mpos.x, mpos.y, mpos.z, tail.size());
+		//printf("%f\t%f\t%f\t%d\n", mpos.x, mpos.y, mpos.z, tail.size());
 	}
 
 	switch (key)
@@ -215,8 +215,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 		break;
 	case ' ':
 		mode = 1 - mode;
-		if (mode == 0)
-		{
+		if (mode == 0){
 			CMatrix g1, g2, g3, g4;
 			g_EyeMat = g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
 		}
@@ -227,6 +226,20 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	{
 		CMatrix g1, g2, g3;
 		g_IEyeMat = g1.SetRotate(rpos.y, CVector3(0, 1, 0))*g2.SetRotate(rpos.x, CVector3(1, 0, 0))*g3.SetRotate(rpos.z, CVector3(0, 0, 1));
+	}
+}
+
+//F2¼ü¿ØÖÆ
+void mySpecialKeyboardFunc(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_F2:
+		mode = 1 - mode;
+		if (mode == 0) {
+			CMatrix g1, g2, g3, g4;
+			g_EyeMat = g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
+		}
+		printf("mode:%d\n", mode);
+		break;
 	}
 }
 
@@ -473,6 +486,7 @@ int main(int argc, char *argv[])
 	glutTimerFunc(1, myTimerFunc, 0);
 	glutReshapeFunc(&myReshape);
 	glutKeyboardFunc(&myKeyboardFunc);
+	glutSpecialFunc(&mySpecialKeyboardFunc);
 	SetRC();
 	glutMainLoop();
 	return 0;
