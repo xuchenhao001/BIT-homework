@@ -190,6 +190,7 @@ CMatrix CMatrix::operator*(float d) {
 //¾ØÕóÏà³Ë
 CMatrix CMatrix::operator*(CMatrix &p) {
 	CMatrix result;
+	result.m00 = result.m11 = result.m22 = result.m33 = 0;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			for (int k = 0; k < 4; k++) {

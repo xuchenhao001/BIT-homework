@@ -126,5 +126,86 @@ public:
 
 };
 
+//============
+//循环队列定义
+//============
+template <class T>
+class cycleQueue
+{
+private:
+	unsigned int m_size;
+	int m_front;
+	int m_now;//定义遍历变量
+	int m_rear;
+	int now_size;
+	T*  m_data;
+public:
+	//构造函数
+	cycleQueue(unsigned size) :m_size(size), m_front(0), m_rear(0) {
+		m_data = new T[size];
+	}
 
+	//析构函数
+	~cycleQueue() {
+		delete[] m_data;
+	}
+
+	//初始化迭代器
+	void reset() {
+		m_now = m_front;
+	}
+
+	//当前迭代的元素
+	T now() throw(bad_exception) {
+		if (this->isEmpty()) {
+			throw bad_exception();
+		}
+		return m_data[m_now];
+	}
+
+	//继续迭代下一个元素
+	T next() throw(bad_exception) {
+		if (m_now == m_rear) {
+			throw bad_exception();
+		}
+		m_now = (m_now + 1) % m_size;
+		return m_data[m_now];
+	}
+
+	//当前队列中元素数量
+	int size() {
+		return now_size;
+	}
+
+	//循环队列是否空
+	bool isEmpty() {
+		return m_front == m_rear;
+	}
+
+	//循环队列是否满
+	bool isFull() {
+		return m_front == (m_rear + 1) % m_size;
+	}
+
+	//队尾加入元素
+	void push(T ele)throw(bad_exception) {
+		if (isFull()) {
+			throw bad_exception();
+		}
+		now_size++;
+		m_data[m_rear] = ele;
+		m_rear = (m_rear + 1) % m_size;
+	}
+
+	//队头取出并删除元素
+	T pop() throw(bad_exception) {
+		if (isEmpty()) {
+			throw bad_exception();
+		}
+		now_size--;
+		T tmp = m_data[m_front];
+		m_front = (m_front + 1) % m_size;
+		return tmp;
+	}
+};
 #endif
