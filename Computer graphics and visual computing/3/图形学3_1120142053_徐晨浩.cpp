@@ -62,7 +62,8 @@ public:
 		if (m_now == m_rear) {
 			throw bad_exception();
 		}
-		return m_data[++m_now];
+		m_now = (m_now + 1) % m_size;
+		return m_data[m_now];
 	}
 
 	int size() {
