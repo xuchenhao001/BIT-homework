@@ -540,7 +540,7 @@ void CQuaternion::SetAngle(float angle, CVector3 axis) {
 
 //ÖØÔØ¸³Öµ
 CQuaternion& CQuaternion::operator=(const CQuaternion &p) {
-	this->Set(p.x, p.y, p.z, p.w);
+	return CQuaternion(p.x, p.y, p.z, p.w);
 }
 
 //ÖØÔØ¡®+¡¯
