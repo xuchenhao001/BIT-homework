@@ -21,12 +21,6 @@ class CVector3 {
 public:
 	float x, y, z;
 
-	friend CVector3 operator+(const CVector3 &a, const CVector3 &b);		//重载向量'+'
-	friend CVector3 operator-(const CVector3 &a, const CVector3 &b);		//重载向量'-'
-	friend CVector3 operator*(const CVector3 &a, float &b);					//重载向量数乘操作
-	friend bool operator == (const CVector3 &a, const CVector3 &b);			//重载'=='比较操作
-	friend bool operator != (const CVector3 &a, const CVector3 &b);			//重载'!='比较操作
-
 	//构造函数
 	CVector3();
 
@@ -49,6 +43,21 @@ public:
 
 	//向量投影操作
 	CVector3 project(CVector3 &n);
+
+	//重载向量'+'
+	CVector3 operator+(const CVector3 &b);
+
+	//重载向量'-'
+	CVector3 operator-(const CVector3 &b);
+
+	//重载向量数乘操作
+	CVector3 operator*(float b);
+
+	//重载'=='比较操作
+	bool operator == (const CVector3 &b);
+
+	//重载'!='比较操作
+	bool operator != (const CVector3 &b);
 
 	//重载赋值操作
 	CVector3 operator=(const CVector3 &p);
@@ -204,7 +213,7 @@ public:
 	//重载数乘
 	CQuaternion operator*(float data);
 
-	//四元数乘法
+	//四元数乘法(新定义乘法)
 	CQuaternion operator*(const CQuaternion &p);
 
 	//点乘
@@ -212,6 +221,9 @@ public:
 
 	//求模
 	float len();
+
+	//共轭
+	CQuaternion conjugate();
 
 	//求标准化
 	bool Normalize();
@@ -224,6 +236,9 @@ public:
 
 	//求差 当前为a,求c=a-b
 	CQuaternion Div(const CQuaternion &b);
+
+	//求幂
+	CQuaternion exp(const float t);
 
 	//求旋转轴和角度
 	void GetAngle(float &angle, CVector3 &axis);
