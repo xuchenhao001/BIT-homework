@@ -9,6 +9,14 @@
 
 using namespace std;
 
+float toRad(float x) {
+	return x / 180 * 3.1415926;
+}
+
+float toAngle(float x) {
+	return x / 3.1415926 * 180;
+}
+
 //==============
 //向量类定义部分
 //==============
@@ -129,17 +137,17 @@ CEuler CVector3::ToEuler()
 	CVector3 a(x, y, z), b(x, 0, z), z(0, 0, -1);
 	float h = acosf(b.dotMul(z) / (b.len()*z.len()));
 	if (x > 0) {
-		h = -fabs(h);
+		h = toAngle(-fabs(h));
 	}
 	else {
-		h = fabs(h);
+		h = toAngle(fabs(h));
 	}
 	float p = acosf(a.dotMul(b) / (a.len()*b.len()));
 	if (y > 0) {
-		p = -fabs(p);
+		p = toAngle(fabs(p));
 	}
 	else {
-		p = fabs(p);
+		p = toAngle(-fabs(p));
 	}
 	return CEuler(h, p, 0);
 }
@@ -257,7 +265,7 @@ void CMatrix::Transpose() {
 
 //设置为旋转矩阵
 CMatrix& CMatrix::SetRotate(float seta, CVector3 axis) {
-	seta = seta / 180 * 3.1415926;
+	seta = toRad(seta);
 
 	float x = axis.x;
 	float y = axis.y;
@@ -416,13 +424,6 @@ CMatrix::operator float *() {
 //欧拉角类定义部分
 //================
 
-//赋值函数
-void CEuler::Set(float h, float p, float b) {
-	this->h = h;
-	this->p = p;
-	this->b = b;
-}
-
 //构造函数
 CEuler::CEuler() {
 	this->h = this->p = this->b = 0;
@@ -430,6 +431,13 @@ CEuler::CEuler() {
 
 //含参量的构造函数
 CEuler::CEuler(float h, float p, float b) {
+	this->h = h;
+	this->p = p;
+	this->b = b;
+}
+
+//赋值函数
+void CEuler::Set(float h, float p, float b) {
 	this->h = h;
 	this->p = p;
 	this->b = b;
@@ -452,49 +460,61 @@ CVector3 CEuler::ToVector3(CVector3 *updir) {
 
 //欧拉角转换为矩阵
 CMatrix CEuler::ToMatrix() {
+	float hRad = toRad(h);
+	float pRad = toRad(p);
+	float bRad = toRad(b);
 	CMatrix m;
-	m.m00 = cosf(h)*cosf(b) + sinf(h)*sinf(p)*sinf(b);
-	m.m01 = -cosf(h)*sinf(b) + sinf(h)*sinf(p)*cosf(b);
-	m.m02 = sinf(h)*cosf(p);
-	m.m10 = sinf(b)*cosf(p);
-	m.m11 = cosf(b)*cosf(p);
-	m.m12 = -sinf(p);
-	m.m20 = -sinf(h)*cosf(b) + cosf(h)*sinf(p)*sinf(b);
-	m.m21 = sinf(b)*sinf(h) + cosf(h)*sinf(p)*cosf(b);
-	m.m22 = cosf(h)*cosf(p);
+	m.m00 = cosf(hRad)*cosf(bRad) + sinf(hRad)*sinf(pRad)*sinf(bRad);
+	m.m01 = -cosf(hRad)*sinf(bRad) + sinf(hRad)*sinf(pRad)*cosf(bRad);
+	m.m02 = sinf(hRad)*cosf(pRad);
+	m.m10 = sinf(bRad)*cosf(pRad);
+	m.m11 = cosf(bRad)*cosf(pRad);
+	m.m12 = -sinf(pRad);
+	m.m20 = -sinf(hRad)*cosf(bRad) + cosf(hRad)*sinf(pRad)*sinf(bRad);
+	m.m21 = sinf(bRad)*sinf(hRad) + cosf(hRad)*sinf(pRad)*cosf(bRad);
+	m.m22 = cosf(hRad)*cosf(pRad);
 	m.m33 = 1;
 	return m;
 }
 
 //欧拉角转换为四元数
 CQuaternion CEuler::ToQuaternion() {
+	float hRad = toRad(h);
+	float pRad = toRad(p);
+	float bRad = toRad(b);
 	CQuaternion quater;
-	quater.w = cos(h/2)*cos(p/2)*cos(b/2) + sin(h/2)*sin(p/2)*sin(b/2);
-	quater.x = cos(h/2)*sin(p/2)*cos(b/2) + sin(h/2)*cos(p/2)*sin(b/2);
-	quater.y = sin(h/2)*cos(p/2)*cos(b/2) - cos(h/2)*sin(p/2)*sin(b/2);
-	quater.z = cos(h/2)*cos(p/2)*sin(b/2) - sin(h/2)*sin(p/2)*cos(b/2);
+	quater.w = cos(hRad/2)*cos(pRad/2)*cos(bRad/2) + sin(hRad/2)*sin(pRad/2)*sin(bRad/2);
+	quater.x = cos(hRad/2)*sin(pRad/2)*cos(bRad/2) + sin(hRad/2)*cos(pRad/2)*sin(bRad/2);
+	quater.y = sin(hRad/2)*cos(pRad/2)*cos(bRad/2) - cos(hRad/2)*sin(pRad/2)*sin(bRad/2);
+	quater.z = cos(hRad/2)*cos(pRad/2)*sin(bRad/2) - sin(hRad/2)*sin(pRad/2)*cos(bRad/2);
 	return quater;
 }
 
 //欧拉角规范化
 void CEuler::Normal() {
-	if (fabs(p - 1.57) < deviation) {
+	if (fabs(p - 90) < deviation) {
 		h -= b;
 		b = 0;
 	}
-	else if (fabs(p + 1.57) < deviation) {
+	else if (fabs(p + 90) < deviation) {
 		h += b;
 		b = 0;
 	}
 	//角度范围的限制
-	if (h > 3.14)  (*this).h -= 6.28;
-	if (h <-3.14) (*this).h += 6.28;
-	if (b > 3.14)  (*this).b -= 6.28;
-	if (b <-3.14) (*this).b += 6.28;
-	CMatrix mat;
-	if (p > 1.57 || p <-1.57) {
-		mat = (*this).ToMatrix();
-		(*this) = mat.ToEuler();
+	if (h > 180) {
+		(*this).h -= 360;
+	}
+	if (h < -180) {
+		(*this).h += 360;
+	}
+	if (b > 180) {
+		(*this).b -= 360;
+	}
+	if (b < -180) {
+		(*this).b += 360;
+	}
+	if (p > 90 || p <-90) {
+		(*this) = (*this).ToMatrix().ToEuler();
 	}
 }
 
@@ -581,7 +601,7 @@ CQuaternion CQuaternion::conjugate() {
 //求标准化
 bool CQuaternion::Normalize() {
 	float n = this->len();
-	if (n == 0 || fabs(n - 1.0) > deviation) {
+	if (fabs(n) < deviation || fabs(n - 1.0) > deviation) {
 		printf("四元数模为0无法单位化！");
 		return 0;
 	}
