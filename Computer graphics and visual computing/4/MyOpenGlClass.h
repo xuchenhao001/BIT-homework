@@ -339,4 +339,102 @@ public:
 	}
 };
 
+//================
+//循环栈（自创）定义
+//改写自http://www.cnblogs.com/diegodu/p/4619104.html
+//================
+
+template <class T>
+class cycleStack
+{
+private:
+	unsigned int m_size;
+	int m_front;
+	int m_end;
+	int m_now;//定义当前指针
+	int now_size;
+	T*  m_data;
+public:
+	//构造函数
+	cycleStack(unsigned size) :m_size(size), m_front(0), m_end(0) {
+		m_data = new T[size];
+	}
+
+	//析构函数
+	~cycleStack() {
+		delete[] m_data;
+	}
+
+	//循环栈是否空
+	bool isEmpty() {
+		return m_front == m_end;
+	}
+
+	//循环栈是否满
+	bool isFull() {
+		return m_front == (m_end + 1) % m_size;
+	}
+
+	//栈尾加入元素
+	void push(T ele) {
+		//如果栈满，则排除掉第一个元素，继续存储当前元素
+		if (isFull()) {
+			m_front = (m_front + 1) % m_size;
+		}
+		else {
+			now_size++;
+		}
+		m_end = (m_end + 1) % m_size;
+		m_data[m_end] = ele;
+	}
+	//*********************
+	//栈尾取出并删除元素
+	T pop() {
+		if (isEmpty()) {
+			printf("No Previous record!\n");
+			return m_data[m_end];
+		}
+		now_size--;
+		T tmp = m_data[m_end];
+		m_end = (m_size + m_end - 1) % m_size;
+		return tmp;
+	}
+
+	//初始化指针位置
+	void reset() {
+		m_now = m_end;
+	}
+
+	//获取上一个的元素
+	T getPre() {
+		if ((m_size + m_now - 1) % m_size == m_front) {
+			printf("No privious element!\n");
+			return m_data[m_now];
+		}
+		T tmp = m_data[m_now];
+		m_now = (m_size + m_now - 1) % m_size;
+		return tmp;
+	}
+
+	//获取下一个元素
+	T getNext() {
+		if (m_now == m_end) {
+			printf("No next element!\n");
+			return m_data[m_now];
+		}
+		m_now = (m_now + 1) % m_size;
+		return m_data[m_now];
+	}
+
+	//从当前位置开始更新栈
+	void update() {
+		m_end = m_now;
+	}
+
+	//当前队列中元素数量
+	int size() {
+		return now_size;
+	}
+};
+
 #endif

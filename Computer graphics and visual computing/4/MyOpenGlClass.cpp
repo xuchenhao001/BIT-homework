@@ -670,3 +670,5 @@ CMatrix CQuaternion::ToMatrix() {
 	matrix.m33 = 1;
 	return matrix;
 }
+
+
