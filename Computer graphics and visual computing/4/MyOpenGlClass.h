@@ -387,7 +387,7 @@ public:
 		m_end = (m_end + 1) % m_size;
 		m_data[m_end] = ele;
 	}
-	//*********************
+
 	//栈尾取出并删除元素
 	T pop() {
 		if (isEmpty()) {

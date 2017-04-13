@@ -248,7 +248,9 @@ void mySpecialKeyboardFunc(int key, int x, int y) {
 			view.push(g_EyeMat.ToQuaternion());
 		}
 		else {
-			view.push(g_IEyeMat.ToQuaternion());
+			CMatrix g, g1, g2, g3, g4;
+			g = g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
+			view.push(g.ToQuaternion());
 		}
 		printf("View has been saved\n");
 		break;
@@ -258,7 +260,8 @@ void mySpecialKeyboardFunc(int key, int x, int y) {
 			g_EyeMat = view.pop().ToMatrix();
 		}
 		else {
-			g_IEyeMat = view.pop().ToMatrix();
+			CMatrix matrix = view.pop().ToMatrix();
+			mpos.Set(matrix.m03, matrix.m13, matrix.m23);
 		}
 		printf("View has been restored\n");
 	case GLUT_KEY_F5:;
@@ -290,12 +293,10 @@ void SetRC() {
 
 //…Ë÷√ ”µ„
 void SetView() {
-	if (mode == 0)
-	{
+	if (mode == 0){
 		glLoadMatrixf(g_EyeMat);
 	}
-	else
-	{
+	else{
 		CMatrix g1, g2, g3, g4;
 		(g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z))).run();
 	}
