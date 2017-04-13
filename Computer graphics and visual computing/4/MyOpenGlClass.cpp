@@ -374,10 +374,10 @@ CMatrix CMatrix::GetInverse() {
 //矩阵转换为欧拉角
 CEuler CMatrix::ToEuler() {
 	if (this->m12 == 1 || this->m12 == -1) {
-		return CEuler(atan2f(this->m20, this->m00), this->m12*1.57, 0);
+		return CEuler(toAngle(atan2f(this->m20, this->m00)), toAngle(this->m12*1.57), 0);
 	}
 	else {
-		return CEuler(atan2f(this->m00, this->m22), asinf(-this->m12), atan2f(this->m10, this->m11));
+		return CEuler(toAngle(atan2f(this->m02, this->m22)), toAngle(asinf(-this->m12)), toAngle(atan2f(this->m10, this->m11)));
 	}
 }
 
@@ -479,10 +479,10 @@ CMatrix CEuler::ToMatrix() {
 
 //欧拉角转换为四元数
 CQuaternion CEuler::ToQuaternion() {
+	CQuaternion quater;
 	float hRad = toRad(h);
 	float pRad = toRad(p);
 	float bRad = toRad(b);
-	CQuaternion quater;
 	quater.w = cos(hRad/2)*cos(pRad/2)*cos(bRad/2) + sin(hRad/2)*sin(pRad/2)*sin(bRad/2);
 	quater.x = cos(hRad/2)*sin(pRad/2)*cos(bRad/2) + sin(hRad/2)*cos(pRad/2)*sin(bRad/2);
 	quater.y = sin(hRad/2)*cos(pRad/2)*cos(bRad/2) - cos(hRad/2)*sin(pRad/2)*sin(bRad/2);
@@ -492,30 +492,7 @@ CQuaternion CEuler::ToQuaternion() {
 
 //欧拉角规范化
 void CEuler::Normal() {
-	if (fabs(p - 90) < deviation) {
-		h -= b;
-		b = 0;
-	}
-	else if (fabs(p + 90) < deviation) {
-		h += b;
-		b = 0;
-	}
-	//角度范围的限制
-	if (h > 180) {
-		(*this).h -= 360;
-	}
-	if (h < -180) {
-		(*this).h += 360;
-	}
-	if (b > 180) {
-		(*this).b -= 360;
-	}
-	if (b < -180) {
-		(*this).b += 360;
-	}
-	if (p > 90 || p <-90) {
-		(*this) = (*this).ToMatrix().ToEuler();
-	}
+	(*this) = (*this).ToMatrix().ToEuler();
 }
 
 //================
@@ -560,7 +537,11 @@ void CQuaternion::SetAngle(float angle, CVector3 axis) {
 
 //重载赋值
 CQuaternion& CQuaternion::operator=(const CQuaternion &p) {
-	return CQuaternion(p.x, p.y, p.z, p.w);
+	this->x = p.x;
+	this->y = p.y;
+	this->z = p.z;
+	this->w = p.w;
+	return (*this);
 }
 
 //重载‘+’
@@ -601,8 +582,8 @@ CQuaternion CQuaternion::conjugate() {
 //求标准化
 bool CQuaternion::Normalize() {
 	float n = this->len();
-	if (fabs(n) < deviation || fabs(n - 1.0) > deviation) {
-		printf("四元数模为0无法单位化！");
+	if (fabs(n) < deviation) {
+		printf("此四元数无法单位化！");
 		return 0;
 	}
 	*this = (*this) * (1/n);
@@ -661,15 +642,15 @@ void CQuaternion::Slerp(const CQuaternion &Vend, int n, float *t, CQuaternion *R
 //四元数转换为欧拉角
 CEuler CQuaternion::ToEuler() {
 	CEuler euler;
-	euler.p = asin(2 * w*x - 2 * y*z);
+	euler.p = toAngle(asin(2 * w*x - 2 * y*z));
 	if (fabs(cos(euler.p)) < deviation) {
-		euler.h = atan2(2 * w*y - 2 * z*x, 1 - 2 * y*y - 2 * z*z);
+		euler.h = toAngle(atan2(2 * w*y - 2 * z*x, 1 - 2 * y*y - 2 * z*z));
 		euler.b = 0;
 	}
 	else
 	{
-		euler.h = atan2(2 * z*x + 2 * w*y, 1 - 2 * x*x - 2 * y*y);
-		euler.b = atan2(2 * w*z + 2 * y*x, 1 - 2 * x*x - 2 * z*z);
+		euler.h = toAngle(atan2(2 * z*x + 2 * w*y, 1 - 2 * x*x - 2 * y*y));
+		euler.b = toAngle(atan2(2 * w*z + 2 * y*x, 1 - 2 * x*x - 2 * z*z));
 	}
 	return euler;
 }
