@@ -236,6 +236,7 @@ void CMatrix::Transpose() {
 //ÉèÖÃÎªĞı×ª¾ØÕó
 CMatrix& CMatrix::SetRotate(float seta, CVector3 axis) {
 	seta = seta / 180 * 3.1415926;
+	axis.Normalize();
 
 	float x = axis.x;
 	float y = axis.y;
