@@ -385,6 +385,7 @@ public:
 			now_size++;
 		}
 		m_end = (m_end + 1) % m_size;
+		m_now = m_end;
 		m_data[m_end] = ele;
 	}
 
@@ -400,7 +401,7 @@ public:
 		return tmp;
 	}
 
-	//初始化指针位置
+	//初始化指针到栈顶
 	void reset() {
 		m_now = m_end;
 	}

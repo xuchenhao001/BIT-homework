@@ -30,8 +30,14 @@ CVector3 mpos(0, 500, 1000), rpos(-25, 0, 0), spos(1, 1, 1);
 //可爱的小尾巴
 cycleQueue<CVector3> tail(TAIL_LEN);
 
+struct rec {
+	int modeType;			//记录视点类型
+	CMatrix matrix;			//记录当前矩阵
+	CVector3 mpos, rpos;	//记录当前欧拉坐标
+};
+
 //视点记录循环堆栈
-cycleStack<CQuaternion> view(VIEW_REC);
+cycleStack<rec> view(VIEW_REC);
 
 //计算输出out.txt结果最大长度
 const int MAX_RESAULT_LEN = 200;
@@ -228,9 +234,23 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	}
 }
 
+void changeView(struct rec record) {
+	mpos = record.mpos;
+	if (record.modeType == 0) {
+		g_EyeMat = record.matrix;
+		mode = 0;
+	}
+	else {
+		rpos = record.rpos;
+		CMatrix g1, g2, g3;
+		g_IEyeMat = g1.SetRotate(rpos.y, CVector3(0, 1, 0))*g2.SetRotate(rpos.x, CVector3(1, 0, 0))*g3.SetRotate(rpos.z, CVector3(0, 0, 1));
+		mode = 1;
+	}
+}
+
 //F2键控制
 void mySpecialKeyboardFunc(int key, int x, int y) {
-	CQuaternion qq;
+	struct rec record;
 	switch (key) {
 	//切换视点模式
 	case GLUT_KEY_F2:
@@ -244,31 +264,30 @@ void mySpecialKeyboardFunc(int key, int x, int y) {
 	//保存当前视点
 	case GLUT_KEY_F3:
 		if (mode == 0) {
-			qq = g_EyeMat.ToQuaternion();
-			view.push(qq);
+			record.modeType = 0;
+			record.matrix = g_EyeMat;
+			record.mpos = mpos;
 		}
 		else {
-			CMatrix g, g1, g2, g3, g4;
-			g = g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
-			qq = g.ToQuaternion();
-			view.push(qq);
+			record.modeType = 1;
+			record.mpos = mpos;
+			record.rpos = rpos;
 		}
-		printf("View has been saved\t%.2f\t%.2f\t%.2f\t%.2f\n",qq.x,qq.y,qq.z,qq.w);
+		view.update();
+		view.push(record);
+		printf("View has been saved\n");
 		break;
 	//恢复上一个视点
 	case GLUT_KEY_F4:
-		if (mode == 0){
-			qq = view.pop();
-			g_EyeMat = qq.ToMatrix();
-		}
-		else {
-			qq = view.pop();
-			CMatrix matrix = qq.ToMatrix();
-			mpos.Set(matrix.m03, matrix.m13, matrix.m23);
-		}
-		printf("View has been restored\t%.2f\t%.2f\t%.2f\t%.2f\n", qq.x, qq.y, qq.z, qq.w);
-	case GLUT_KEY_F5:;
-
+		record = view.getPre();
+		changeView(record);
+		printf("View restored successfully. Mode is %d now.\n", mode);
+		break;
+	case GLUT_KEY_F5:
+		record = view.getNext();
+		changeView(record);
+		printf("View restored successfully. Mode is %d now.\n", mode);
+		break;
 	}
 }
 
