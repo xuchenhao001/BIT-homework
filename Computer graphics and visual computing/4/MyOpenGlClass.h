@@ -225,7 +225,7 @@ public:
 	//共轭
 	CQuaternion conjugate();
 
-	//求标准化
+	//四元数单位化
 	bool Normalize();
 
 	//求逆四元数,会改变自身

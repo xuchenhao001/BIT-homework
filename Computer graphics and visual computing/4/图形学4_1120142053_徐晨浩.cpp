@@ -11,20 +11,18 @@
 
 using namespace std;
 
-
-
 //====================================
 //全局变量定义部分(可依据情况适当修改)
 //====================================
 int width = 1280, height = 720;	//星星绘制窗口默认大小为1280x720，运行后可任意更改
 const int STAR_NUM = 10000;		//星星总数量，默认为10000个
-const int TAIL_LEN = 121;		//小尾巴长度
-const int VIEW_REC = 3;			//视点记录最大数量
+const int TAIL_LEN = 121;		//小尾巴长度+1，默认为120米
+const int VIEW_REC = 11;		//视点记录最大数量+1，默认为10个
 float mspeed = 5, rspeed = 1;	//移动速度和旋转速度
 
-//==========================
+//=========================
 //全局变量定义部分(不可更改)
-//==========================
+//=========================
 
 //平移，旋转，缩放
 CVector3 mpos(0, 500, 1000), rpos(-25, 0, 0), spos(1, 1, 1);
@@ -232,6 +230,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 
 //F2键控制
 void mySpecialKeyboardFunc(int key, int x, int y) {
+	CQuaternion qq;
 	switch (key) {
 	//切换视点模式
 	case GLUT_KEY_F2:
@@ -245,25 +244,29 @@ void mySpecialKeyboardFunc(int key, int x, int y) {
 	//保存当前视点
 	case GLUT_KEY_F3:
 		if (mode == 0) {
-			view.push(g_EyeMat.ToQuaternion());
+			qq = g_EyeMat.ToQuaternion();
+			view.push(qq);
 		}
 		else {
 			CMatrix g, g1, g2, g3, g4;
 			g = g1.SetRotate(-rpos.z, CVector3(0, 0, 1))*g2.SetRotate(-rpos.x, CVector3(1, 0, 0))*g3.SetRotate(-rpos.y, CVector3(0, 1, 0))*g4.SetTrans(CVector3(-mpos.x, -mpos.y, -mpos.z));
-			view.push(g.ToQuaternion());
+			qq = g.ToQuaternion();
+			view.push(qq);
 		}
-		printf("View has been saved\n");
+		printf("View has been saved\t%.2f\t%.2f\t%.2f\t%.2f\n",qq.x,qq.y,qq.z,qq.w);
 		break;
+	//恢复上一个视点
 	case GLUT_KEY_F4:
-		if (mode == 0)
-		{
-			g_EyeMat = view.pop().ToMatrix();
+		if (mode == 0){
+			qq = view.pop();
+			g_EyeMat = qq.ToMatrix();
 		}
 		else {
-			CMatrix matrix = view.pop().ToMatrix();
+			qq = view.pop();
+			CMatrix matrix = qq.ToMatrix();
 			mpos.Set(matrix.m03, matrix.m13, matrix.m23);
 		}
-		printf("View has been restored\n");
+		printf("View has been restored\t%.2f\t%.2f\t%.2f\t%.2f\n", qq.x, qq.y, qq.z, qq.w);
 	case GLUT_KEY_F5:;
 
 	}
@@ -419,24 +422,24 @@ void writeTxt(string *operate, int lineNum) {
 	out.close();
 }
 
-//从字符串中读取矩阵
+//从字符串中按列读取矩阵
 void readMatrix(string value, CMatrix & matrix) {
 	sscanf_s(value.c_str(), "%f,%f,%f,%f,%f,%f,%f,%f,"
 			"%f,%f,%f,%f,%f,%f,%f,%f",
-		&matrix.m00, &matrix.m01, &matrix.m02, &matrix.m03,
-		&matrix.m10, &matrix.m11, &matrix.m12, &matrix.m13,
-		&matrix.m20, &matrix.m21, &matrix.m22, &matrix.m23,
-		&matrix.m30, &matrix.m31, &matrix.m32, &matrix.m33);
+		&matrix.m00, &matrix.m10, &matrix.m20, &matrix.m30,
+		&matrix.m01, &matrix.m11, &matrix.m21, &matrix.m31,
+		&matrix.m02, &matrix.m12, &matrix.m22, &matrix.m32,
+		&matrix.m03, &matrix.m13, &matrix.m23, &matrix.m33);
 }
 
-//向result字符串中写入矩阵
+//向result字符串中按列写入矩阵
 void writeMatrix(char* result, CMatrix & matrix) {
 	snprintf(result, MAX_RESAULT_LEN, "\t%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,"
 			"%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f",
-		matrix.m00, matrix.m01, matrix.m02, matrix.m03,
-		matrix.m10, matrix.m11, matrix.m12, matrix.m13,
-		matrix.m20, matrix.m21, matrix.m22, matrix.m23,
-		matrix.m30, matrix.m31, matrix.m32, matrix.m33);
+		matrix.m00, matrix.m10, matrix.m20, matrix.m30,
+		matrix.m01, matrix.m11, matrix.m21, matrix.m31,
+		matrix.m02, matrix.m12, matrix.m22, matrix.m32,
+		matrix.m03, matrix.m13, matrix.m23, matrix.m33);
 }
 
 //计算矩阵、向量、欧拉角
@@ -493,7 +496,7 @@ string compute(string command, string value) {
 		euler.Normal();
 		snprintf(result, MAX_RESAULT_LEN, "\t%.2f,%.2f,%.2f", euler.h, euler.p, euler.b);
 	}
-	else if (command == "四元数标准化") {
+	else if (command == "四元数单位化") {
 		sscanf_s(value.c_str(), "%f,%f,%f,%f", &quater.x, &quater.y, &quater.z, &quater.w);
 		quater.Normalize();
 		snprintf(result, MAX_RESAULT_LEN, "\t%.2f,%.2f,%.2f,%.2f", quater.x, quater.y, quater.z, quater.w);
@@ -557,7 +560,7 @@ void schedule() {
 int main(int argc, char *argv[])
 {
 	//调度计算test.txt中的数据
-	//schedule();
+	schedule();
 	//初始化星星
 	initStar();
 

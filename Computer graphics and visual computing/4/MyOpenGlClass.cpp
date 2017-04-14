@@ -266,6 +266,7 @@ void CMatrix::Transpose() {
 //设置为旋转矩阵
 CMatrix& CMatrix::SetRotate(float seta, CVector3 axis) {
 	seta = toRad(seta);
+	axis.Normalize();
 
 	float x = axis.x;
 	float y = axis.y;
@@ -525,7 +526,7 @@ CQuaternion::operator float*() {
 	return &x;
 }
 
-//四元数设置
+//根据旋转轴和旋转角度设置四元数
 void CQuaternion::SetAngle(float angle, CVector3 axis) {
 	angle *= 0.5f;
 	axis.Normalize();
@@ -546,7 +547,12 @@ CQuaternion& CQuaternion::operator=(const CQuaternion &p) {
 
 //重载‘+’
 CQuaternion CQuaternion::operator+(const CQuaternion &p) {
-	return CQuaternion(x + p.x, y + p.y, z + p.z, w + p.w);
+	if (w*p.w >= 0) {
+		return CQuaternion(x + p.x, y + p.y, z + p.z, w + p.w);
+	}
+	else {
+		return CQuaternion(x - p.x, y - p.y, z - p.z, w - p.w);
+	}
 }
 
 //重载数乘
@@ -579,7 +585,7 @@ CQuaternion CQuaternion::conjugate() {
 	return CQuaternion(-x, -y, -z, w);
 }
 
-//求标准化
+//四元数单位化
 bool CQuaternion::Normalize() {
 	float n = this->len();
 	if (fabs(n) < deviation) {
@@ -607,7 +613,7 @@ CQuaternion CQuaternion::GetInverse() {
 
 //求差 当前为a,求c=a-b
 CQuaternion CQuaternion::Div(const CQuaternion &b) {
-	return this->Inverse()*b;
+	return this->GetInverse()*b;
 }
 
 //求幂
@@ -615,6 +621,7 @@ CQuaternion CQuaternion::exp(const float t) {
 	float angle;
 	CVector3 vect;
 	this->GetAngle(angle, vect);
+	angle = toRad(angle);
 	vect = vect*(sinf(t*angle / 2));
 	return CQuaternion(vect.x, vect.y, vect.z, cosf(t*angle / 2));
 }
@@ -622,14 +629,28 @@ CQuaternion CQuaternion::exp(const float t) {
 //求旋转轴和角度
 void CQuaternion::GetAngle(float &angle, CVector3 &axis) {
 	this->Normalize();
-	float n = this->len();
-	axis = CVector3(this->x / n, this->y / n, this->z / n);
-	angle = acosf(this->w)*2.0;
-}
+	angle = acosf(w);
+	axis = CVector3(this->x / sinf(angle), this->y / sinf(angle), this->z / sinf(angle));
+	angle = toAngle(angle*2.0);
+} 
 
 //插值。从当前四元数插值到Vend四元数,t是参数[0,1]
 CQuaternion CQuaternion::Slerp(const CQuaternion &Vend, float t) {
-	return (*this)*((this->Inverse()*Vend).exp(t));
+	this->Normalize();
+	CQuaternion cqstart = (*this) , cqEnd = Vend;
+	cqEnd.Normalize();
+	float omiga;
+	CVector3 axis;
+	(*this).Div(cqEnd).GetAngle(omiga, axis);
+	omiga = toRad(omiga);
+	if (omiga == 0) {
+		return Vend;
+	}
+	float k0 = sinf((1 - t)*omiga) / sinf(omiga);
+	float k1 = sinf(t*omiga) / sinf(omiga);
+	CQuaternion result = (*this)*k0 + cqEnd*k1;
+	result.Normalize();
+	return result;
 }
 
 //插值。一次插值出n个数据。插值参数保存在数组t中，结果返回到数组Result中
