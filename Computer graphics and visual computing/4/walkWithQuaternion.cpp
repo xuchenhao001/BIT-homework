@@ -18,6 +18,7 @@ int width = 1280, height = 720;	//星星绘制窗口默认大小为1280x720，运行后可任意更
 const int STAR_NUM = 10000;		//星星总数量，默认为10000个
 const int TAIL_LEN = 121;		//小尾巴长度+1，默认为120米
 const int VIEW_REC = 11;		//视点记录最大数量+1，默认为10个
+const int SMOOTH = 100;			//视点过渡平滑程度，数值越大越平滑，默认为100
 float mspeed = 5, rspeed = 1;	//移动速度和旋转速度
 
 //=========================
@@ -38,6 +39,11 @@ struct rec {
 
 //视点记录循环堆栈
 cycleStack<rec> view(VIEW_REC);
+
+//平滑视点过渡全局变量
+int onMyWay = SMOOTH;
+struct rec startPoint;
+struct rec targetPoint;
 
 //计算输出out.txt结果最大长度
 const int MAX_RESAULT_LEN = 200;
@@ -72,7 +78,6 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 			tail.pop();
 		}
 		tail.push(mpos);
-		//printf("%f\t%f\t%f\t%d\n", mpos.x, mpos.y, mpos.z, tail.size());
 	}
 
 	switch (key)
@@ -128,7 +133,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	case 'q':
 		if (mode == 0) {
 			CMatrix g, g1;
-			g_EyeMat = g.SetTrans(CVector3(0, 0, mspeed))*g_EyeMat;
+			g_EyeMat = g.SetTrans(CVector3(0, 0, -mspeed))*g_EyeMat;
 			g1 = g_EyeMat.GetInverse();
 			mpos.Set(g1.m03, g1.m13, g1.m23);
 		}
@@ -140,7 +145,7 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	case 'e':
 		if (mode == 0) {
 			CMatrix g, g1;
-			g_EyeMat = g.SetTrans(CVector3(0, 0, -mspeed))*g_EyeMat;
+			g_EyeMat = g.SetTrans(CVector3(0, 0, mspeed))*g_EyeMat;
 			g1 = g_EyeMat.GetInverse();
 			mpos.Set(g1.m03, g1.m13, g1.m23);
 		}
@@ -234,24 +239,53 @@ void myKeyboardFunc(unsigned char key, int x, int y) {
 	}
 }
 
-void changeView(struct rec record) {
-	mpos = record.mpos;
-	if (record.modeType == 0) {
-		g_EyeMat = record.matrix;
+//变更视点、位置函数
+void changeView() {
+	float t = float(onMyWay) / SMOOTH;
+	mpos = (targetPoint.mpos - startPoint.mpos)*t + startPoint.mpos;
+	if (targetPoint.modeType == 0) {
+		CQuaternion startQuater = startPoint.matrix.ToQuaternion();
+		CQuaternion targetQuater = targetPoint.matrix.ToQuaternion();
+		CMatrix g3 = startQuater.Slerp(targetQuater, t).ToMatrix();
+		g3[12] = mpos.x;
+		g3[13] = mpos.y;
+		g3[14] = mpos.z;
+		g_EyeMat = g3.GetInverse();
 		mode = 0;
 	}
 	else {
-		rpos = record.rpos;
+		CQuaternion startQuater = CEuler(startPoint.rpos.y, startPoint.rpos.x, startPoint.rpos.z).ToQuaternion();
+		CQuaternion targetQuater = CEuler(targetPoint.rpos.y, targetPoint.rpos.x, targetPoint.rpos.z).ToQuaternion();
+		CEuler euler = startQuater.Slerp(targetQuater, t).ToEuler();
+		rpos = CVector3(euler.p, euler.h, euler.b);
 		CMatrix g1, g2, g3;
 		g_IEyeMat = g1.SetRotate(rpos.y, CVector3(0, 1, 0))*g2.SetRotate(rpos.x, CVector3(1, 0, 0))*g3.SetRotate(rpos.z, CVector3(0, 0, 1));
 		mode = 1;
 	}
 }
 
-//F2键控制
+//设置视点恢复函数
+void setRestoreView(struct rec moveTo) {
+	if (moveTo.modeType == 0) {
+		//求逆再存入栈中
+		startPoint.matrix = g_EyeMat.GetInverse();
+		CMatrix g1 = g_EyeMat.GetInverse();
+		startPoint.mpos.Set(g1.m03, g1.m13, g1.m23);
+	}
+	else {
+		startPoint.rpos = rpos;
+		startPoint.mpos = mpos;
+	}
+	onMyWay = 0;
+	printf("View restored successfully. Mode is %d now.\n", mode);
+}
+
+//特殊键控制
 void mySpecialKeyboardFunc(int key, int x, int y) {
 	struct rec record;
+
 	switch (key) {
+
 	//切换视点模式
 	case GLUT_KEY_F2:
 		mode = 1 - mode;
@@ -261,32 +295,34 @@ void mySpecialKeyboardFunc(int key, int x, int y) {
 		}
 		printf("mode:%d\n", mode);
 		break;
+
 	//保存当前视点
 	case GLUT_KEY_F3:
 		if (mode == 0) {
 			record.modeType = 0;
-			record.matrix = g_EyeMat;
-			record.mpos = mpos;
+			record.matrix = g_EyeMat.GetInverse();
+			record.mpos.Set(record.matrix.m03, record.matrix.m13, record.matrix.m23);
 		}
 		else {
 			record.modeType = 1;
-			record.mpos = mpos;
 			record.rpos = rpos;
+			record.mpos = mpos;
 		}
 		view.update();
 		view.push(record);
 		printf("View has been saved\n");
 		break;
+
 	//恢复上一个视点
 	case GLUT_KEY_F4:
-		record = view.getPre();
-		changeView(record);
-		printf("View restored successfully. Mode is %d now.\n", mode);
+		targetPoint = view.getPre();
+		setRestoreView(targetPoint);
 		break;
+
+	//恢复下一个视点
 	case GLUT_KEY_F5:
-		record = view.getNext();
-		changeView(record);
-		printf("View restored successfully. Mode is %d now.\n", mode);
+		targetPoint = view.getNext();
+		setRestoreView(targetPoint);
 		break;
 	}
 }
@@ -315,6 +351,10 @@ void SetRC() {
 
 //设置视点
 void SetView() {
+	if (onMyWay < SMOOTH) {
+		onMyWay++;
+		changeView();
+	}
 	if (mode == 0){
 		glLoadMatrixf(g_EyeMat);
 	}

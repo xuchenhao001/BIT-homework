@@ -408,9 +408,9 @@ public:
 
 	//获取上一个的元素
 	T getPre() {
-		if ((m_size + m_now - 1) % m_size == m_front) {
+		if (m_now == m_front) {
 			printf("No privious element!\n");
-			return m_data[m_now];
+			return m_data[m_now + 1];
 		}
 		T tmp = m_data[m_now];
 		m_now = (m_size + m_now - 1) % m_size;
