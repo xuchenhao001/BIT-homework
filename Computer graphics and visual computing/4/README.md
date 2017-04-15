@@ -30,13 +30,16 @@
 
 ## 运行截图
 * 漫游效果
+
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/4/1.jpg)
 
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/4/2.jpg)
 
 * 测试文本
+
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/4/3.jpg)
 
 * 测试输出结果
+
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Computer%20graphics%20and%20visual%20computing/4/4.jpg)
 
