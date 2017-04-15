@@ -268,7 +268,7 @@ void changeView() {
 	}
 }
 
-//设置视点恢复函数
+//设置视点恢复参数函数
 void setRestoreView(struct rec moveTo) {
 	if (moveTo.modeType == 0) {
 		//求逆再存入栈中
@@ -605,10 +605,6 @@ string compute(string command, string value) {
 	return value.append(result);
 }
 
-//==========
-//主控制函数
-//==========
-
 //调度输入输出和计算过程
 void schedule() {
 	string operate[MAX_RESAULT_LEN];
@@ -619,6 +615,10 @@ void schedule() {
 	}
 	writeTxt(operate, lineNum);
 }
+
+//==========
+//主控制函数
+//==========
 
 int main(int argc, char *argv[])
 {
