@@ -31,6 +31,7 @@ CVector3 mpos(0, 500, 1000), rpos(-25, 0, 0), spos(1, 1, 1);
 //可爱的小尾巴
 cycleQueue<CVector3> tail(TAIL_LEN);
 
+//历史记录结构体
 struct rec {
 	int modeType;			//记录视点类型
 	CMatrix matrix;			//记录当前矩阵
@@ -251,12 +252,15 @@ void changeView() {
 		g3[13] = mpos.y;
 		g3[14] = mpos.z;
 		g_EyeMat = g3.GetInverse();
+		CEuler euler = g_EyeMat.ToEuler();
+		printf("Euler:h[%f],p[%f],b[%f]\n", euler.h, euler.p, euler.b);
 		mode = 0;
 	}
 	else {
 		CQuaternion startQuater = CEuler(startPoint.rpos.y, startPoint.rpos.x, startPoint.rpos.z).ToQuaternion();
 		CQuaternion targetQuater = CEuler(targetPoint.rpos.y, targetPoint.rpos.x, targetPoint.rpos.z).ToQuaternion();
 		CEuler euler = startQuater.Slerp(targetQuater, t).ToEuler();
+		printf("Euler:h[%f],p[%f],b[%f]\n", euler.h, euler.p, euler.b);
 		rpos = CVector3(euler.p, euler.h, euler.b);
 		CMatrix g1, g2, g3;
 		g_IEyeMat = g1.SetRotate(rpos.y, CVector3(0, 1, 0))*g2.SetRotate(rpos.x, CVector3(1, 0, 0))*g3.SetRotate(rpos.z, CVector3(0, 0, 1));
