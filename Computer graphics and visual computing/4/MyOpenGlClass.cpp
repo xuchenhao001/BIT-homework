@@ -9,10 +9,15 @@
 
 using namespace std;
 
+//浮点数误差设定
+const float deviation = 0.00001;
+
+//角度转弧度
 float toRad(float x) {
 	return x / 180 * 3.1415926;
 }
 
+//弧度转角度
 float toAngle(float x) {
 	return x / 3.1415926 * 180;
 }
@@ -20,7 +25,6 @@ float toAngle(float x) {
 //==============
 //向量类定义部分
 //==============
-const float deviation = 0.00001;//误差设定
 
 //构造函数
 CVector3::CVector3() {
@@ -404,6 +408,7 @@ void CMatrix::run() {
 	glMultMatrixf(*this);
 }
 
+//矩阵输出字符串
 string CMatrix::toString() {
 	ostringstream buffer;
 	buffer << setiosflags(ios::fixed);
@@ -691,5 +696,4 @@ CMatrix CQuaternion::ToMatrix() {
 	matrix.m33 = 1;
 	return matrix;
 }
-
 
