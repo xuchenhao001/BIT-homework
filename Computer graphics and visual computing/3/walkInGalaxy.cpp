@@ -421,8 +421,7 @@ void compute() {
 				getline(in, line);
 				out << line;
 				float seta;
-				readMatrix(cma, line);
-				line = line.substr(line.find("\t") + 1);
+				cma.Identity();
 				sscanf_s(line.c_str(), "%f", &seta);
 				line = line.substr(line.find("\t") + 1);
 				readVector(cva, line);
@@ -433,8 +432,8 @@ void compute() {
 				out << line << endl;
 				getline(in, line);
 				out << line;
-				readMatrix(cma, line);
-				readVector(cva, line.substr(line.find("\t")));
+				cma.Identity();
+				readVector(cva, line);
 				cmb = cma.SetTrans(cva);
 				out << "\t" << cmb.toString() << endl;
 			}
@@ -442,8 +441,7 @@ void compute() {
 				out << line << endl;
 				getline(in, line);
 				out << line;
-				readMatrix(cma, line);
-				line = line.substr(line.find("\t") + 1);
+				cma.Identity();
 				readVector(cva, line);
 				cmb = cma.SetScale(cva);
 				out << "\t" << cmb.toString() << endl;
