@@ -63,6 +63,12 @@
     <ClCompile Include="CglVector3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CglEuler.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CglQuaternion.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MyOpenGL.def">
@@ -117,6 +123,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CglVector3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CglEuler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CglQuaternion.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

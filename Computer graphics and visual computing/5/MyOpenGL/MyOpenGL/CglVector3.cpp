@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CglVector3.h"
-
+#include "CglEuler.h"
+#include <math.h>
 
 CglVector3::CglVector3() {
 	x = 0; y = 0; z = 0;
@@ -10,18 +11,11 @@ CglVector3::CglVector3(double fx, double fy, double fz) {
 	x = fx; y = fy; z = fz;
 }
 
-CglVector3::CglVector3(float *pos) {
-	x = pos[0];
-	y = pos[1];
-	z = pos[2];
-}
-
 CglVector3::CglVector3(double *pos) {
 	x = pos[0];
 	y = pos[1];
 	z = pos[2];
 }
-
 
 CglVector3::~CglVector3() {
 
@@ -29,13 +23,6 @@ CglVector3::~CglVector3() {
 
 void CglVector3::Set(double fx, double fy, double fz) {
 	x = fx; y = fy; z = fz;
-}
-
-
-void CglVector3::Set(float *pos) {
-	x = pos[0];
-	y = pos[1];
-	z = pos[2];
 }
 
 void CglVector3::Set(double *pos) {
@@ -48,12 +35,6 @@ void CglVector3::Get(double *pos) {
 	pos[0] = x;
 	pos[1] = y;
 	pos[2] = z;
-}
-
-void CglVector3::Get(float *pos) {
-	pos[0] = float(x);
-	pos[1] = float(y);
-	pos[2] = float(z);
 }
 
 CglVector3::operator double*() {
@@ -131,32 +112,6 @@ CglVector3 operator*(double data, const CglVector3& p) {
 	return vec;
 }
 
-CglVector3 CglVector3::operator*(float *mat) const {
-	double v[4];
-	int i;
-	for (i = 0; i<4; i++)
-	{
-		v[i] = mat[i * 4] * x + mat[1 + i * 4] * y + mat[2 + i * 4] * z + mat[3 + i * 4];
-	}
-	CglVector3 vec;
-	for (i = 0; i<3; i++)
-		vec[i] = v[0] / v[3];
-	return vec;
-}
-
-CglVector3 operator*(float *mat, const CglVector3& p) {
-	double v[4];
-	for (int i = 0; i<4; i++)
-	{
-		v[i] = mat[i] * p.x + mat[4 + i] * p.y + mat[8 + i] * p.z + mat[12 + i];
-	}
-	CglVector3 vec;
-	vec.x = v[0] / v[3];
-	vec.y = v[1] / v[3];
-	vec.z = v[2] / v[3];
-	return vec;
-}
-
 CglVector3 CglVector3::operator*(double *mat) const {
 	double v[4];
 	int i;
@@ -177,9 +132,9 @@ CglVector3 operator*(double *mat, const CglVector3& p) {
 		v[i] = mat[i] * p.x + mat[4 + i] * p.y + mat[8 + i] * p.z + mat[12 + i];
 	}
 	CglVector3 vec;
-	vec.x = float(v[0] / v[3]);
-	vec.y = float(v[1] / v[3]);
-	vec.z = float(v[2] / v[3]);
+	vec.x = v[0] / v[3];
+	vec.y = v[1] / v[3];
+	vec.z = v[2] / v[3];
 	return vec;
 }
 
@@ -212,6 +167,13 @@ void CglVector3::Normalize() {
 	x /= l;
 	y /= l;
 	z /= l;
+}
+
+//向量投影操作
+CglVector3 CglVector3::project(CglVector3 &p) {
+	double length = p.len();
+	double proportion = this->dotMul(p) / length / length;
+	return CglVector3(p.x*proportion, p.y*proportion, p.z*proportion);
 }
 
 void CglVector3::Add(int addr, double val) {
@@ -271,3 +233,22 @@ void CglVector3::Rotate(double seta, double x, double y, double z) {//绕某个方向
 	//绕x转回来。
 	Rotate(-setax, 0);
 }
+
+//向量转换为欧拉角
+CglEuler CglVector3::ToEuler() {
+	CglVector3 a(x, y, z), b(x, 0, z), z(0, 0, -1);
+	double h = acosf(b.dotMul(z) / (b.len()*z.len()));
+	if (x > 0) {
+		h = RadToAng(-fabs(h));
+	} else {
+		h = RadToAng(fabs(h));
+	}
+	double p = acosf(a.dotMul(b) / (a.len()*b.len()));
+	if (y > 0) {
+		p = RadToAng(fabs(p));
+	} else {
+		p = RadToAng(-fabs(p));
+	}
+	return CglEuler(h, p, 0);
+}
+

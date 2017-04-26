@@ -191,6 +191,7 @@
   <ItemGroup>
     <ClCompile Include="CglCamera.cpp" />
     <ClCompile Include="CglControl.cpp" />
+    <ClCompile Include="CglEuler.cpp" />
     <ClCompile Include="CglFont.cpp" />
     <ClCompile Include="CglMaterial.cpp" />
     <ClCompile Include="CglMath.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="CglParticle.cpp" />
     <ClCompile Include="CglParticleCtrl.cpp" />
     <ClCompile Include="CglPicLoad.cpp" />
+    <ClCompile Include="CglQuaternion.cpp" />
     <ClCompile Include="CglShape.cpp" />
     <ClCompile Include="CglVector3.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -231,6 +233,7 @@
   <ItemGroup>
     <ClInclude Include="CglCamera.h" />
     <ClInclude Include="CglControl.h" />
+    <ClInclude Include="CglEuler.h" />
     <ClInclude Include="CglFont.h" />
     <ClInclude Include="CglMaterial.h" />
     <ClInclude Include="CglMath.h" />
@@ -238,6 +241,7 @@
     <ClInclude Include="CglParticle.h" />
     <ClInclude Include="CglParticleCtrl.h" />
     <ClInclude Include="CglPicLoad.h" />
+    <ClInclude Include="CglQuaternion.h" />
     <ClInclude Include="CglShape.h" />
     <ClInclude Include="CglVector3.h" />
     <ClInclude Include="OpenGL.h" />
