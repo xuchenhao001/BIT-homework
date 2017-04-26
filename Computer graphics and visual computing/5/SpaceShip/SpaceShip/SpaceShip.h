@@ -26,13 +26,6 @@ public:
 	virtual int ExitInstance();
 
 // й╣ож
-	UINT  m_nAppLook;
-	BOOL  m_bHiColorIcons;
-
-	virtual void PreLoadState();
-	virtual void LoadCustomState();
-	virtual void SaveCustomState();
-
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };

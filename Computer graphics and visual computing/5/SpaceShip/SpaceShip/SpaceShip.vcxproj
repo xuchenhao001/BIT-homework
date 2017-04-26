@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{506A7262-F292-46F5-9536-060D56FDC1DA}</ProjectGuid>
+    <ProjectGuid>{BB27E0C5-2EDD-4938-B47D-DC87018AD4EB}</ProjectGuid>
     <RootNamespace>SpaceShip</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <Keyword>MFCProj</Keyword>
@@ -107,6 +107,9 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy ..\Debug\*.exe lib</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -189,8 +192,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CmyOpenGL.h" />
     <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="myOpenGL.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SpaceShip.h" />
     <ClInclude Include="SpaceShipDoc.h" />
@@ -199,8 +202,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmyOpenGL.cpp" />
     <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="myOpenGL.cpp" />
     <ClCompile Include="SpaceShip.cpp" />
     <ClCompile Include="SpaceShipDoc.cpp" />
     <ClCompile Include="SpaceShipView.cpp" />
@@ -215,16 +218,19 @@
     <ResourceCompile Include="SpaceShip.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\SpaceShip.rc2" />
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="res\SpaceShip.ico" />
     <Image Include="res\SpaceShipDoc.ico" />
     <Image Include="res\Toolbar.bmp" />
-    <Image Include="res\Toolbar256.bmp" />
-    <Image Include="UserImages.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\SpaceShip.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="SpaceShip.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

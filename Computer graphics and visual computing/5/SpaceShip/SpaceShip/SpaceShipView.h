@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "myOpenGL.h"
+#include"CmyOpenGL.h"
+
 class CSpaceShipView : public CView
 {
-	CmyOpenGL m_gl;
 protected: // 仅从序列化创建
 	CSpaceShipView();
 	DECLARE_DYNCREATE(CSpaceShipView)
@@ -23,8 +23,6 @@ public:
 public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void OnInitialUpdate();
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
@@ -37,18 +35,19 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	CmyOpenGL m_gl;
 
 protected:
 
 // 生成的消息映射函数
 protected:
-	afx_msg void OnFilePrintPreview();
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnTimer(UINT nIDEvent);
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual void OnInitialUpdate();
 };
 
 #ifndef _DEBUG  // SpaceShipView.cpp 中的调试版本
