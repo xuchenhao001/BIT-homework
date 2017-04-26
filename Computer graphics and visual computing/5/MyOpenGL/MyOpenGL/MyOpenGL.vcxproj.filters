@@ -27,37 +27,40 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glCamera.cpp">
+    <ClCompile Include="OpenGL.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glControl.cpp">
+    <ClCompile Include="CglCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glFont.cpp">
+    <ClCompile Include="CglControl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glMaterial.cpp">
+    <ClCompile Include="CglFont.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glMath.cpp">
+    <ClCompile Include="CglMaterial.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glParticle.cpp">
+    <ClCompile Include="CglMath.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glParticleCtrl.cpp">
+    <ClCompile Include="CglMatrix.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glPicLoad.cpp">
+    <ClCompile Include="CglParticle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glShape.cpp">
+    <ClCompile Include="CglParticleCtrl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glVector3.cpp">
+    <ClCompile Include="CglPicLoad.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\OpenGL.cpp">
+    <ClCompile Include="CglShape.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CglVector3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,6 +71,7 @@
     <None Include="res\MyOpenGL.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -79,37 +83,40 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glCamera.h">
+    <ClInclude Include="OpenGL.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glControl.h">
+    <ClInclude Include="CglCamera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glFont.h">
+    <ClInclude Include="CglControl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glMaterial.h">
+    <ClInclude Include="CglFont.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glMath.h">
+    <ClInclude Include="CglMaterial.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glParticle.h">
+    <ClInclude Include="CglMath.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glParticleCtrl.h">
+    <ClInclude Include="CglMatrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glPicLoad.h">
+    <ClInclude Include="CglParticle.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glShape.h">
+    <ClInclude Include="CglParticleCtrl.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\glVector3.h">
+    <ClInclude Include="CglPicLoad.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\OpenGL.h">
+    <ClInclude Include="CglShape.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CglVector3.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

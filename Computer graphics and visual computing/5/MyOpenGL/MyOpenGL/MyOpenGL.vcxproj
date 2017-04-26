@@ -189,17 +189,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\glCamera.cpp" />
-    <ClCompile Include="..\src\glControl.cpp" />
-    <ClCompile Include="..\src\glFont.cpp" />
-    <ClCompile Include="..\src\glMaterial.cpp" />
-    <ClCompile Include="..\src\glMath.cpp" />
-    <ClCompile Include="..\src\glParticle.cpp" />
-    <ClCompile Include="..\src\glParticleCtrl.cpp" />
-    <ClCompile Include="..\src\glPicLoad.cpp" />
-    <ClCompile Include="..\src\glShape.cpp" />
-    <ClCompile Include="..\src\glVector3.cpp" />
-    <ClCompile Include="..\src\OpenGL.cpp" />
+    <ClCompile Include="CglCamera.cpp" />
+    <ClCompile Include="CglControl.cpp" />
+    <ClCompile Include="CglFont.cpp" />
+    <ClCompile Include="CglMaterial.cpp" />
+    <ClCompile Include="CglMath.cpp" />
+    <ClCompile Include="CglMatrix.cpp" />
+    <ClCompile Include="CglParticle.cpp" />
+    <ClCompile Include="CglParticleCtrl.cpp" />
+    <ClCompile Include="CglPicLoad.cpp" />
+    <ClCompile Include="CglShape.cpp" />
+    <ClCompile Include="CglVector3.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -215,6 +215,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="MyOpenGL.cpp" />
+    <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -223,21 +224,23 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="MyOpenGL.def" />
     <None Include="res\MyOpenGL.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\glCamera.h" />
-    <ClInclude Include="..\src\glControl.h" />
-    <ClInclude Include="..\src\glFont.h" />
-    <ClInclude Include="..\src\glMaterial.h" />
-    <ClInclude Include="..\src\glMath.h" />
-    <ClInclude Include="..\src\glParticle.h" />
-    <ClInclude Include="..\src\glParticleCtrl.h" />
-    <ClInclude Include="..\src\glPicLoad.h" />
-    <ClInclude Include="..\src\glShape.h" />
-    <ClInclude Include="..\src\glVector3.h" />
-    <ClInclude Include="..\src\OpenGL.h" />
+    <ClInclude Include="CglCamera.h" />
+    <ClInclude Include="CglControl.h" />
+    <ClInclude Include="CglFont.h" />
+    <ClInclude Include="CglMaterial.h" />
+    <ClInclude Include="CglMath.h" />
+    <ClInclude Include="CglMatrix.h" />
+    <ClInclude Include="CglParticle.h" />
+    <ClInclude Include="CglParticleCtrl.h" />
+    <ClInclude Include="CglPicLoad.h" />
+    <ClInclude Include="CglShape.h" />
+    <ClInclude Include="CglVector3.h" />
+    <ClInclude Include="OpenGL.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
