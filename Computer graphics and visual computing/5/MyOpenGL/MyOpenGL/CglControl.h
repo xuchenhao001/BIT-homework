@@ -23,6 +23,9 @@ public:
 	COpenGL *m_pOpenGL;
 	CglCamera *m_pCamera;
 
+	double m_fStep[2];//移动和旋转步长缩放倍率
+	float m_fKeyStep;//键盘按下一个运动命令代表移动步长
+
 	CglControl();
 	~CglControl();
 
@@ -33,9 +36,7 @@ public:
 	CglControl(COpenGL *pGL);
 
 private:
-	double m_fStep[2];//移动和旋转步长缩放倍率
-	float m_fKeyStep;//键盘按下一个运动命令代表移动步长
-	
+
 	bool SetKeyStatus(unsigned int nChar, bool bVal);
 	bool MouseCtrlView(int message, CPoint pt);
 };

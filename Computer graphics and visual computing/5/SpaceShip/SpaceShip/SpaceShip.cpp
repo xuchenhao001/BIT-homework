@@ -30,8 +30,7 @@ END_MESSAGE_MAP()
 
 // CSpaceShipApp 构造
 
-CSpaceShipApp::CSpaceShipApp()
-{
+CSpaceShipApp::CSpaceShipApp() {
 	// 支持重新启动管理器
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS;
 #ifdef _MANAGED
@@ -56,8 +55,7 @@ CSpaceShipApp theApp;
 
 // CSpaceShipApp 初始化
 
-BOOL CSpaceShipApp::InitInstance()
-{
+BOOL CSpaceShipApp::InitInstance() {
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要
 	// 使用 ComCtl32.dll 版本 6 或更高版本来启用可视化方式，
 	//则需要 InitCommonControlsEx()。  否则，将无法创建窗口。
@@ -72,8 +70,7 @@ BOOL CSpaceShipApp::InitInstance()
 
 
 	// 初始化 OLE 库
-	if (!AfxOleInit())
-	{
+	if (!AfxOleInit()) {
 		AfxMessageBox(IDP_OLE_INIT_FAILED);
 		return FALSE;
 	}
@@ -96,8 +93,8 @@ BOOL CSpaceShipApp::InitInstance()
 	LoadStdProfileSettings(4);  // 加载标准 INI 文件选项(包括 MRU)
 
 
-	// 注册应用程序的文档模板。  文档模板
-	// 将用作文档、框架窗口和视图之间的连接
+								// 注册应用程序的文档模板。  文档模板
+								// 将用作文档、框架窗口和视图之间的连接
 	CSingleDocTemplate* pDocTemplate;
 	pDocTemplate = new CSingleDocTemplate(
 		IDR_MAINFRAME,
@@ -126,8 +123,7 @@ BOOL CSpaceShipApp::InitInstance()
 	return TRUE;
 }
 
-int CSpaceShipApp::ExitInstance()
-{
+int CSpaceShipApp::ExitInstance() {
 	//TODO: 处理可能已添加的附加资源
 	AfxOleTerm(FALSE);
 
@@ -139,12 +135,11 @@ int CSpaceShipApp::ExitInstance()
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
-class CAboutDlg : public CDialogEx
-{
+class CAboutDlg : public CDialogEx {
 public:
 	CAboutDlg();
 
-// 对话框数据
+	// 对话框数据
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
@@ -152,17 +147,15 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
-// 实现
+														// 实现
 protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
-{
+CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
+void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 	CDialogEx::DoDataExchange(pDX);
 }
 
@@ -170,8 +163,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 // 用于运行对话框的应用程序命令
-void CSpaceShipApp::OnAppAbout()
-{
+void CSpaceShipApp::OnAppAbout() {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }

@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "CglCamera.h"
 #include "CglMath.h"
+#include "CglQuaternion.h"
+#include "CglMatrix.h"
+#include "CglVector3.h"
 #include "gl\glut.h"
-
 
 CglCamera::CglCamera() {
 	Init();
 }
-
 
 CglCamera::~CglCamera() {
 
@@ -20,15 +21,11 @@ void CglCamera::Init() {
 	m_updir = CglVector3(0, 1, 0);
 	m_hpr = CglVector3(0, 0, 0);
 	int i;
-	for (i = 0; i<16; i++)
-	{
-		if (i == 0 || i == 5 || i == 10 || i == 15)
-		{
+	for (i = 0; i<16; i++) {
+		if (i == 0 || i == 5 || i == 10 || i == 15) {
 			m_viewMatrix[i] = 1;
 			m_viewMatrixSave[i] = 1;
-		}
-		else
-		{
+		} else {
 			m_viewMatrixSave[i] = 0;
 			m_viewMatrix[i] = 0;
 		}
@@ -36,25 +33,17 @@ void CglCamera::Init() {
 }
 
 void CglCamera::Move(int dir, double len) {//dir=0±íÊ¾×óÓÒÒÆ£¬dir=1±íÊ¾ÉÏÏÂÒÆ£¬dir=2±íÊ¾Ç°ºóÒÆ
-	if (m_type == 0)
-	{
+	if (m_type == 0) {
 		CglVector3 mov;
-		if (dir == 0)
-		{
+		if (dir == 0) {
 			mov.Set(&m_viewMatrixInverse[0]);
-		}
-		else if (dir == 1)
-		{
+		} else if (dir == 1) {
 			mov.Set(&m_viewMatrixInverse[4]);
-		}
-		else if (dir == 2)
-		{
+		} else if (dir == 2) {
 			mov.Set(&m_viewMatrixInverse[8]);
 		}
 		m_pos += mov*len;
-	}
-	else if (m_type == 1)
-	{
+	} else if (m_type == 1) {
 		glPushMatrix();
 		glLoadIdentity();
 		if (dir == 0)
@@ -72,12 +61,9 @@ void CglCamera::Move(int dir, double len) {//dir=0±íÊ¾×óÓÒÒÆ£¬dir=1±íÊ¾ÉÏÏÂÒÆ£¬d
 }
 
 void CglCamera::Rotate(int dir, double len) {//dir=0±íÊ¾×óÓÒ×ª£¬dir=1±íÊ¾ÉÏÏÂ×ª£¬dir=2±íÊ¾¹ö¶¯×ª
-	if (m_type == 0)
-	{
+	if (m_type == 0) {
 		m_hpr[dir] += len;
-	}
-	else if (m_type == 1)
-	{
+	} else if (m_type == 1) {
 		glPushMatrix();
 		glLoadIdentity();
 		if (dir == 0)
@@ -100,15 +86,12 @@ void CglCamera::Rotate(int dir, double len) {//dir=0±íÊ¾×óÓÒ×ª£¬dir=1±íÊ¾ÉÏÏÂ×ª£
 }
 
 void CglCamera::ShowView() {
-	if (m_type == 0)
-	{
+	if (m_type == 0) {
 		glRotated(-m_hpr[2], 0, 0, 1);	//r
 		glRotated(-m_hpr[1], 1, 0, 0);	//p
 		glRotated(-m_hpr[0], 0, 1, 0);	//h
 		glTranslatef(-m_pos[0], -m_pos[1], -m_pos[2]);
-	}
-	else if (m_type == 1)
-	{
+	} else if (m_type == 1) {
 		gluLookAt(m_pos.x, m_pos.y, m_pos.z,
 			m_pos.x + m_eyedir.x, m_pos.y + m_eyedir.y, m_pos.z + m_eyedir.z,
 			m_updir.x, m_updir.y, m_updir.z
@@ -120,18 +103,18 @@ void CglCamera::ShowView() {
 
 void CglCamera::SetCamera(const CglVector3 &pos, const CglVector3 &obj_dir, bool bObj, int type) {
 	m_pos = pos;
-	if (bObj)	//Èç¹ûµÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ¶ÔÏóÎ»ÖÃ
-	{
+	//Èç¹ûµÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ¶ÔÏóÎ»ÖÃ
+	if (bObj) {
 		m_type = 1;
 		m_eyedir = obj_dir - pos;
 	}
-	else if (m_type == 0)	//µÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ·½Ïò,Ë®Æ½ÂþÓÎhpr
-	{
+	//µÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ·½Ïò,Ë®Æ½ÂþÓÎhpr
+	else if (m_type == 0) {
 		m_type = 0;
 		m_hpr = obj_dir;
 	}
-	else if (m_type == 1)	//µÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ·½Ïò
-	{
+	//µÚ¶þ¸ö²ÎÊýÊÇ¹Û²ìµÄ·½Ïò
+	else if (m_type == 1) {
 		m_type = 1;
 		m_eyedir = obj_dir;
 	}
@@ -145,16 +128,33 @@ void CglCamera::SetCamera(const CglVector3 &pos, const CglVector3 &obj_dir, bool
 
 void CglCamera::SaveCamera() {
 	int i;
-	for (i = 0; i<16; i++)
-	{
+	for (i = 0; i<16; i++) {
 		m_viewMatrixSave[i] = m_viewMatrix[i];
 	}
 }
 
+double* CglCamera::Slerp(double m_toMatrix[16], int n, double *t, CglQuaternion *Result, CglVector3 *pos) {
+	double m_toMatrixInverse[16];
+	//¾ØÕóÇóÄæ,¼ÇÂ¼ÆðµãºÍÖÕµãÎ»ÖÃ
+	CglVector3 startPos(m_viewMatrixInverse[12], m_viewMatrixInverse[13], m_viewMatrixInverse[14]);
+	CglMath::InverseMatrix(m_toMatrix, m_toMatrixInverse);
+	CglVector3 targetPos(m_toMatrixInverse[12], m_toMatrixInverse[13], m_toMatrixInverse[14]);
+	//¾ØÕó×ªËÄÔªÊý
+	CglQuaternion startQuater = CglMatrix(m_viewMatrixInverse).ToQuaternion();
+	CglQuaternion targetQuater = CglMatrix(m_toMatrixInverse).ToQuaternion();
+	//Çó²åÖµ
+	startQuater.Slerp(targetQuater, n, t, Result);
+	//»Ö¸´ÊÓµãÎ»ÖÃ
+	for (int i = 0; i < n; i++) {
+		pos[i] = (targetPos - startPos)*t[i] + startPos;
+	}
+
+	return m_toMatrix;
+}
+
 void CglCamera::LoadCamera() {
 	int i;
-	for (i = 0; i<16; i++)
-	{
+	for (i = 0; i<16; i++) {
 		m_viewMatrix[i] = m_viewMatrixSave[i];
 	}
 	CglMath::InverseMatrix(m_viewMatrix, m_viewMatrixInverse);

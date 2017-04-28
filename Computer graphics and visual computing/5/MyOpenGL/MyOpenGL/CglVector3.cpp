@@ -237,13 +237,13 @@ void CglVector3::Rotate(double seta, double x, double y, double z) {//绕某个方向
 //向量转换为欧拉角
 CglEuler CglVector3::ToEuler() {
 	CglVector3 a(x, y, z), b(x, 0, z), z(0, 0, -1);
-	double h = acosf(b.dotMul(z) / (b.len()*z.len()));
+	double h = acos(b.dotMul(z) / (b.len()*z.len()));
 	if (x > 0) {
 		h = RadToAng(-fabs(h));
 	} else {
 		h = RadToAng(fabs(h));
 	}
-	double p = acosf(a.dotMul(b) / (a.len()*b.len()));
+	double p = acos(a.dotMul(b) / (a.len()*b.len()));
 	if (y > 0) {
 		p = RadToAng(fabs(p));
 	} else {

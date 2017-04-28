@@ -19,6 +19,7 @@ public:
 	double m03, m13, m23, m33;
 
 	CglMatrix();//构造函数(默认构造单位矩阵)
+	CglMatrix(double *matrix);//根据数组构造矩阵
 	~CglMatrix();
 
 	void Zero();

@@ -2,8 +2,9 @@
 
 #include "CglVector3.h"
 
-class AFX_API_EXPORT CglCamera
-{
+class CglQuaternion;
+
+class AFX_API_EXPORT CglCamera {
 public:
 	CglCamera();
 	~CglCamera();
@@ -25,5 +26,7 @@ public:
 	void ShowView();
 	void Rotate(int dir, double len);
 	void Move(int dir, double len);
+	//从当前视图矩阵插值到目标矩阵,返回Result列表和pos列表
+	double* Slerp(double m_toMatrix[16], int n, double *t, CglQuaternion *Result, CglVector3 *pos);
 };
 

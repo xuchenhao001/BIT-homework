@@ -110,7 +110,7 @@ bool CglControl::MouseCtrlView(int message, CPoint pt) {
 bool CglControl::SetKeyStatus(unsigned int nChar, bool bVal) {
 	m_pOpenGL->OnKey(nChar, bVal);
 	switch (nChar) {
-	case'Q':
+	case 'Q':
 		m_keyStatus[KS_M_BACK] = bVal;
 		break;
 	case 'E':
@@ -128,7 +128,7 @@ bool CglControl::SetKeyStatus(unsigned int nChar, bool bVal) {
 	case 'S':
 		m_keyStatus[KS_M_DOWN] = bVal;
 		break;
-	case'U':
+	case 'U':
 		m_keyStatus[KS_R_FRONT] = bVal;
 		break;
 	case 'O':
@@ -174,6 +174,7 @@ bool CglControl::SetKeyStatus(unsigned int nChar, bool bVal) {
 
 bool CglControl::KeyboardCtrlView() {
 	bool bHaveKeyDown = false;
+
 	//平移
 	if (m_keyStatus[KS_M_FRONT]) {
 		m_pCamera->Move(2, m_fKeyStep*m_fStep[0]);
@@ -225,30 +226,30 @@ bool CglControl::KeyboardCtrlView() {
 		m_pCamera->Rotate(1, -m_fKeyStep*m_fStep[1]);
 		bHaveKeyDown = true;
 	}
+	
 	//移动速度
-	if (m_keyStatus[KS_M_STEP_N])	//减小速度
-	{
+	//减小速度
+	if (m_keyStatus[KS_M_STEP_N]) {
 		m_fStep[0] *= 0.99;
 		bHaveKeyDown = true;
 	}
-	if (m_keyStatus[KS_M_STEP_P])	//增加速度
-	{
+	//增加速度
+	if (m_keyStatus[KS_M_STEP_P]) {
 		m_fStep[0] *= 1.01;
 		bHaveKeyDown = true;
 	}
-	if (m_keyStatus[KS_R_STEP_N])	//减小速度
-	{
+	//减小速度
+	if (m_keyStatus[KS_R_STEP_N]) {
 		m_fStep[1] *= 0.99;
 		bHaveKeyDown = true;
 	}
-	if (m_keyStatus[KS_R_STEP_P])	//增加速度
-	{
+	//增加速度
+	if (m_keyStatus[KS_R_STEP_P]) {
 		m_fStep[1] *= 1.01;
 		bHaveKeyDown = true;
 	}
-
-	if (m_keyStatus[KS_RESTORE])	//复原位置
-	{
+	//复原位置
+	if (m_keyStatus[KS_RESTORE]) {
 		//m_pCamera->Init();
 		m_pCamera->LoadCamera();
 		bHaveKeyDown = true;

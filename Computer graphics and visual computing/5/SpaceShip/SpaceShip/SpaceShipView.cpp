@@ -33,18 +33,15 @@ END_MESSAGE_MAP()
 
 // CSpaceShipView 构造/析构
 
-CSpaceShipView::CSpaceShipView()
-{
+CSpaceShipView::CSpaceShipView() {
 	// TODO: 在此处添加构造代码
 
 }
 
-CSpaceShipView::~CSpaceShipView()
-{
+CSpaceShipView::~CSpaceShipView() {
 }
 
-BOOL CSpaceShipView::PreCreateWindow(CREATESTRUCT& cs)
-{
+BOOL CSpaceShipView::PreCreateWindow(CREATESTRUCT& cs) {
 	// TODO: 在此处通过修改
 	//  CREATESTRUCT cs 来修改窗口类或样式
 
@@ -53,8 +50,7 @@ BOOL CSpaceShipView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CSpaceShipView 绘制
 
-void CSpaceShipView::OnDraw(CDC* /*pDC*/)
-{
+void CSpaceShipView::OnDraw(CDC* /*pDC*/) {
 	CSpaceShipDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
@@ -67,19 +63,16 @@ void CSpaceShipView::OnDraw(CDC* /*pDC*/)
 
 // CSpaceShipView 打印
 
-BOOL CSpaceShipView::OnPreparePrinting(CPrintInfo* pInfo)
-{
+BOOL CSpaceShipView::OnPreparePrinting(CPrintInfo* pInfo) {
 	// 默认准备
 	return DoPreparePrinting(pInfo);
 }
 
-void CSpaceShipView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
-{
+void CSpaceShipView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 	// TODO: 添加额外的打印前进行的初始化过程
 }
 
-void CSpaceShipView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
-{
+void CSpaceShipView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 	// TODO: 添加打印后进行的清理过程
 }
 
@@ -87,13 +80,11 @@ void CSpaceShipView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 // CSpaceShipView 诊断
 
 #ifdef _DEBUG
-void CSpaceShipView::AssertValid() const
-{
+void CSpaceShipView::AssertValid() const {
 	CView::AssertValid();
 }
 
-void CSpaceShipView::Dump(CDumpContext& dc) const
-{
+void CSpaceShipView::Dump(CDumpContext& dc) const {
 	CView::Dump(dc);
 }
 
@@ -108,32 +99,28 @@ CSpaceShipDoc* CSpaceShipView::GetDocument() const // 非调试版本是内联的
 // CSpaceShipView 消息处理程序
 
 
-void CSpaceShipView::OnSize(UINT nType, int cx, int cy)
-{
+void CSpaceShipView::OnSize(UINT nType, int cx, int cy) {
 	CView::OnSize(nType, cx, cy);
 	m_gl.OnSize(cx, cy);//当窗口大小调整时候调整OpenGL的视图
-	// TODO: 在此处添加消息处理程序代码
+						// TODO: 在此处添加消息处理程序代码
 }
 
 
-void CSpaceShipView::OnTimer(UINT_PTR nIDEvent)
-{
+void CSpaceShipView::OnTimer(UINT_PTR nIDEvent) {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	m_gl.OnPaint();
 	CView::OnTimer(nIDEvent);
 }
 
 
-BOOL CSpaceShipView::OnEraseBkgnd(CDC* pDC)
-{
+BOOL CSpaceShipView::OnEraseBkgnd(CDC* pDC) {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	return true;	//直接返回true，禁止windows绘制屏幕底色。绘制工作完全交给OpenGL
-	//return CView::OnEraseBkgnd(pDC);
+					//return CView::OnEraseBkgnd(pDC);
 }
 
 
-BOOL CSpaceShipView::PreTranslateMessage(MSG* pMsg)
-{
+BOOL CSpaceShipView::PreTranslateMessage(MSG* pMsg) {
 	// TODO: 在此添加专用代码和/或调用基类
 	//直接把所有鼠标键盘消息都发送给OpenGL处理。
 	m_gl.PreTranslateMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
@@ -141,12 +128,11 @@ BOOL CSpaceShipView::PreTranslateMessage(MSG* pMsg)
 }
 
 
-void CSpaceShipView::OnInitialUpdate()
-{
+void CSpaceShipView::OnInitialUpdate() {
 	CView::OnInitialUpdate();
 
 	// TODO: 在此添加专用代码和/或调用基类
-	if(!m_gl.Init(GetSafeHwnd()))
+	if (!m_gl.Init(GetSafeHwnd()))
 		AfxMessageBox("error!");
 	SetTimer(1, 30, NULL);
 }

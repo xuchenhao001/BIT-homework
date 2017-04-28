@@ -10,6 +10,12 @@ CglMatrix::CglMatrix() {
 	(*this).Identity();
 }
 
+CglMatrix::CglMatrix(double *matrix) {
+	for (int i = 0; i < 16; i++) {
+		(*this)[i] = matrix[i];
+	}
+}
+
 CglMatrix::~CglMatrix() {
 
 }
@@ -113,19 +119,19 @@ CglMatrix& CglMatrix::SetRotate(double seta, CglVector3 axis) {
 	double y = axis.y;
 	double z = axis.z;
 
-	this->m00 = x*x*(1 - cosf(seta)) + cosf(seta);
-	this->m01 = x*y*(1 - cosf(seta)) - z*sinf(seta);
-	this->m02 = x*z*(1 - cosf(seta)) + y*sinf(seta);
+	this->m00 = x*x*(1 - cos(seta)) + cos(seta);
+	this->m01 = x*y*(1 - cos(seta)) - z*sin(seta);
+	this->m02 = x*z*(1 - cos(seta)) + y*sin(seta);
 	this->m03 = 0;
 
-	this->m10 = x*y*(1 - cosf(seta)) + z*sinf(seta);
-	this->m11 = y*y*(1 - cosf(seta)) + cosf(seta);
-	this->m12 = y*z*(1 - cosf(seta)) - x*sinf(seta);
+	this->m10 = x*y*(1 - cos(seta)) + z*sin(seta);
+	this->m11 = y*y*(1 - cos(seta)) + cos(seta);
+	this->m12 = y*z*(1 - cos(seta)) - x*sin(seta);
 	this->m13 = 0;
 
-	this->m20 = x*z*(1 - cosf(seta)) - y*sinf(seta);
-	this->m21 = y*z*(1 - cosf(seta)) + x*sinf(seta);
-	this->m22 = z*z*(1 - cosf(seta)) + cosf(seta);
+	this->m20 = x*z*(1 - cos(seta)) - y*sin(seta);
+	this->m21 = y*z*(1 - cos(seta)) + x*sin(seta);
+	this->m22 = z*z*(1 - cos(seta)) + cos(seta);
 	this->m23 = 0;
 
 	this->m30 = 0;
@@ -201,9 +207,9 @@ CglMatrix CglMatrix::GetInverse() {
 
 CglEuler CglMatrix::ToEuler() {
 	if (this->m12 == 1 || this->m12 == -1) {
-		return CglEuler(RadToAng(atan2f(this->m20, this->m00)), RadToAng(this->m12*1.57), 0);
+		return CglEuler(RadToAng(atan2(this->m20, this->m00)), RadToAng(this->m12*1.57), 0);
 	} else {
-		return CglEuler(RadToAng(atan2f(this->m02, this->m22)), RadToAng(asinf(-this->m12)), RadToAng(atan2f(this->m10, this->m11)));
+		return CglEuler(RadToAng(atan2(this->m02, this->m22)), RadToAng(asin(-this->m12)), RadToAng(atan2(this->m10, this->m11)));
 	}
 }
 

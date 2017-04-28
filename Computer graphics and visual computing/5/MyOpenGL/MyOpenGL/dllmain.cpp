@@ -12,15 +12,13 @@
 static AFX_EXTENSION_MODULE MyOpenGLDLL = { NULL, NULL };
 
 extern "C" int APIENTRY
-DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
-{
+DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
 	// 如果使用 lpReserved，请将此移除
 	UNREFERENCED_PARAMETER(lpReserved);
 
-	if (dwReason == DLL_PROCESS_ATTACH)
-	{
+	if (dwReason == DLL_PROCESS_ATTACH) {
 		TRACE0("MyOpenGL.DLL 正在初始化!\n");
-		
+
 		// 扩展 DLL 一次性初始化
 		if (!AfxInitExtensionModule(MyOpenGLDLL, hInstance))
 			return 0;
@@ -39,9 +37,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 
 		new CDynLinkLibrary(MyOpenGLDLL);
 
-	}
-	else if (dwReason == DLL_PROCESS_DETACH)
-	{
+	} else if (dwReason == DLL_PROCESS_DETACH) {
 		TRACE0("MyOpenGL.DLL 正在终止!\n");
 
 		// 在调用析构函数之前终止该库

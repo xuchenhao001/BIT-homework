@@ -40,15 +40,15 @@ CglMatrix CglEuler::ToMatrix() {
 	double pRad = AngToRad(p);
 	double bRad = AngToRad(b);
 	CglMatrix m;
-	m.m00 = cosf(hRad)*cosf(bRad) + sinf(hRad)*sinf(pRad)*sinf(bRad);
-	m.m01 = -cosf(hRad)*sinf(bRad) + sinf(hRad)*sinf(pRad)*cosf(bRad);
-	m.m02 = sinf(hRad)*cosf(pRad);
-	m.m10 = sinf(bRad)*cosf(pRad);
-	m.m11 = cosf(bRad)*cosf(pRad);
-	m.m12 = -sinf(pRad);
-	m.m20 = -sinf(hRad)*cosf(bRad) + cosf(hRad)*sinf(pRad)*sinf(bRad);
-	m.m21 = sinf(bRad)*sinf(hRad) + cosf(hRad)*sinf(pRad)*cosf(bRad);
-	m.m22 = cosf(hRad)*cosf(pRad);
+	m.m00 = cos(hRad)*cos(bRad) + sin(hRad)*sin(pRad)*sin(bRad);
+	m.m01 = -cos(hRad)*sin(bRad) + sin(hRad)*sin(pRad)*cos(bRad);
+	m.m02 = sin(hRad)*cos(pRad);
+	m.m10 = sin(bRad)*cos(pRad);
+	m.m11 = cos(bRad)*cos(pRad);
+	m.m12 = -sin(pRad);
+	m.m20 = -sin(hRad)*cos(bRad) + cos(hRad)*sin(pRad)*sin(bRad);
+	m.m21 = sin(bRad)*sin(hRad) + cos(hRad)*sin(pRad)*cos(bRad);
+	m.m22 = cos(hRad)*cos(pRad);
 	m.m33 = 1;
 	return m;
 }

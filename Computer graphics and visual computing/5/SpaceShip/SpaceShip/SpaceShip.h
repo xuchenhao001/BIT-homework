@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error "在包含此文件之前包含“stdafx.h”以生成 PCH 文件"
+#error "在包含此文件之前包含“stdafx.h”以生成 PCH 文件"
 #endif
 
 #include "resource.h"       // 主符号
@@ -14,18 +14,17 @@
 // 有关此类的实现，请参阅 SpaceShip.cpp
 //
 
-class CSpaceShipApp : public CWinAppEx
-{
+class CSpaceShipApp : public CWinAppEx {
 public:
 	CSpaceShipApp();
 
 
-// 重写
+	// 重写
 public:
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
 
-// 实现
+	// 实现
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };

@@ -37,9 +37,9 @@ CglQuaternion::operator double*() {
 void CglQuaternion::SetAngle(double angle, CglVector3 axis) {
 	angle *= 0.5f;
 	axis.Normalize();
-	this->x = (axis.x * sinf(angle));
-	this->y = (axis.y * sinf(angle));
-	this->z = (axis.z * sinf(angle));
+	this->x = (axis.x * sin(angle));
+	this->y = (axis.y * sin(angle));
+	this->z = (axis.z * sin(angle));
 	this->w = cos(angle);
 }
 
@@ -125,15 +125,15 @@ CglQuaternion CglQuaternion::exp(const double t) {
 	CglVector3 vect;
 	this->GetAngle(angle, vect);
 	angle = AngToRad(angle);
-	vect = vect*(sinf(t*angle / 2));
-	return CglQuaternion(vect.x, vect.y, vect.z, cosf(t*angle / 2));
+	vect = vect*(sin(t*angle / 2));
+	return CglQuaternion(vect.x, vect.y, vect.z, cos(t*angle / 2));
 }
 
 //求旋转轴和角度
 void CglQuaternion::GetAngle(double &angle, CglVector3 &axis) {
 	this->Normalize();
-	angle = acosf(w);
-	axis = CglVector3(this->x / sinf(angle), this->y / sinf(angle), this->z / sinf(angle));
+	angle = acos(w);
+	axis = CglVector3(this->x / sin(angle), this->y / sin(angle), this->z / sin(angle));
 	angle = RadToAng(angle*2.0);
 }
 
@@ -149,8 +149,8 @@ CglQuaternion CglQuaternion::Slerp(const CglQuaternion &Vend, double t) {
 	if (omiga == 0) {
 		return Vend;
 	}
-	double k0 = sinf((1 - t)*omiga) / sinf(omiga);
-	double k1 = sinf(t*omiga) / sinf(omiga);
+	double k0 = sin((1 - t)*omiga) / sin(omiga);
+	double k1 = sin(t*omiga) / sin(omiga);
 	CglQuaternion result = (*this)*k0 + cqEnd*k1;
 	result.Normalize();
 	return result;
@@ -167,7 +167,7 @@ void CglQuaternion::Slerp(const CglQuaternion &Vend, int n, double *t, CglQuater
 CglEuler CglQuaternion::ToEuler() {
 	CglEuler euler;
 	euler.p = RadToAng(asin(2 * w*x - 2 * y*z));
-	if (cosf(euler.p) < 0) {
+	if (cos(euler.p) < 0) {
 		euler.h = RadToAng(atan2(2 * w*y - 2 * z*x, 1 - 2 * y*y - 2 * z*z));
 		euler.b = 0;
 	} else {
