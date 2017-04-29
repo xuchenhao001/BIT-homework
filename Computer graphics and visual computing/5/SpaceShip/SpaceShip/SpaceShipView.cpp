@@ -88,8 +88,8 @@ void CSpaceShipView::Dump(CDumpContext& dc) const {
 	CView::Dump(dc);
 }
 
-CSpaceShipDoc* CSpaceShipView::GetDocument() const // 非调试版本是内联的
-{
+// 非调试版本是内联的
+CSpaceShipDoc* CSpaceShipView::GetDocument() const {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CSpaceShipDoc)));
 	return (CSpaceShipDoc*)m_pDocument;
 }

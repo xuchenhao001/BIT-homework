@@ -29,7 +29,6 @@ END_MESSAGE_MAP()
 
 CSpaceShipDoc::CSpaceShipDoc() {
 	// TODO: 在此添加一次性构造代码
-
 }
 
 CSpaceShipDoc::~CSpaceShipDoc() {
