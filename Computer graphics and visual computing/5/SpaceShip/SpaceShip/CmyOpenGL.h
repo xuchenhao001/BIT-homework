@@ -10,7 +10,6 @@ public:
 
 	virtual void PostInit();
 	virtual void InDraw();
-	bool m_bWired;
 
 private:
 	virtual bool OnKey(unsigned int nChar, bool bDown);
