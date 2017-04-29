@@ -216,7 +216,7 @@ void CmyOpenGL::InDraw() {
 	
 	CString str;
 	glColor3f(1, 0, 0);
-	str.Format("%.2f,%.2f,%.2f", m_pCamere->m_pos.x, m_pCamere->m_pos.y, m_pCamere->m_pos.z);
+	str.Format("%.2f", mspeed);
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
@@ -234,7 +234,14 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 			//调用键盘控制函数以重置状态
 			mode = (mode + 1) % 2;
 			break;
-			
+		case '=':
+			mspeed += 0.1;
+			m_pControl->SetSpeed(mspeed, rspeed);
+			break;
+		case '-':
+			mspeed -= 0.1;
+			m_pControl->SetSpeed(mspeed, rspeed);
+			break;
 		}
 	return false;
 }
