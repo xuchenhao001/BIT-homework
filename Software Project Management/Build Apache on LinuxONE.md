@@ -88,7 +88,7 @@
 
 	vi /etc/sysconfig/iptables
 
-在开放端口`22`的规则下面写一条开放端口80的规则如下：
+在开放端口`22`的规则下面写一条开放端口`80`的规则如下：
 
 	-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
 
