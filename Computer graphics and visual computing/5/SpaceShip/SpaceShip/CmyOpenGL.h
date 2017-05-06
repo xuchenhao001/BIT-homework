@@ -2,6 +2,7 @@
 
 #include "opengl/OpenGL.h"
 #pragma comment(lib,"opengl/MyOpenGL")
+#include "CglPlane.h"
 
 class CmyOpenGL :public COpenGL {
 public:
@@ -12,6 +13,7 @@ public:
 	virtual void InDraw();
 
 private:
+	CglPlane airPlane;
 	virtual bool OnKey(unsigned int nChar, bool bDown);
 	virtual void DrawModel();
 };
@@ -49,6 +51,7 @@ public:
 		if (!this->isEmpty()) {
 			return m_data[m_now];
 		}
+		return NULL;
 	}
 
 	//继续迭代下一个元素
@@ -57,6 +60,7 @@ public:
 			m_now = (m_now + 1) % m_size;
 			return m_data[m_now];
 		}
+		return m_data[m_now];
 	}
 
 	//当前队列中元素数量
@@ -91,5 +95,6 @@ public:
 			m_front = (m_front + 1) % m_size;
 			return tmp;
 		}
+		return NULL;
 	}
 };

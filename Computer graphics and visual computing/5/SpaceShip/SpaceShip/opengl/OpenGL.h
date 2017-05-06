@@ -10,6 +10,10 @@
 #include "CglMath.h"
 #include "CglParticle.h"
 #include "CglParticleCtrl.h"
+#include "CglVector3.h"
+#include "CglQuaternion.h"
+#include "CglEuler.h"
+#include "CglMatrix.h"
 
 class AFX_API_EXPORT COpenGL
 {

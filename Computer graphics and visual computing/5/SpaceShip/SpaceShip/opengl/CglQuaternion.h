@@ -10,7 +10,7 @@ class CglVector3;
 class CglEuler;
 class CglMatrix;
 
-class CglQuaternion {
+class AFX_API_EXPORT CglQuaternion {
 public:
 	double x, y, z, w;
 

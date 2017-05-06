@@ -6,22 +6,29 @@
 //====================================
 //全局变量定义部分(可依据情况适当修改)
 //====================================
-int width = 1280, height = 720;		//星星绘制窗口默认大小为1280x720
-const int STAR_NUM = 10000;			//星星总数量，默认为10000个
-const int TAIL_LEN = 121;			//小尾巴长度+1，默认为120米
-const int SMOOTH = 100;				//视点过渡平滑程度，数值越大越平滑，默认为100
-float mspeed = 0.01, rspeed = 0.05;	//移动速度和旋转速度
-CglVector3 startAt(100, 200, 200);	//设定视点起始位置
-float size = 3;						//飞机大小
-int mode = 0;						//程序运行时的视点状态：0：自由变换 1：跟随并控制飞机
+int width = 1280, height = 720;					//星星绘制窗口默认大小为1280x720
+const int STAR_NUM = 10000;						//星星总数量，默认为10000个
+const int TAIL_LEN = 121;						//小尾巴长度+1，默认为120米
+const int SMOOTH = 100;							//视点过渡平滑程度，数值越大越平滑，默认为100
+const double AIR_PLANE_SIZE = 3;				//飞机大小
+float view_mspeed = 0.1, view_rspeed = 0.05;	//视点移动速度和旋转速度
+float ship_mspeed = 0.1, ship_rspeed = 0.5;		//飞机移动速度
+CglVector3 startAt(10, 20, 20);					//设定视点起始位置
+
+int mode = 0;									//程序运行时的视点状态：0欧拉视角 1自由视点控制
 
 //=========================
 //全局变量定义部分(不可更改)
 //=========================
 
-CglVector3 stars[STAR_NUM];
-//可爱的小尾巴
-cycleQueue<CglVector3> tail(TAIL_LEN);
+CglVector3 stars[STAR_NUM];				//星空
+cycleQueue<CglVector3> tail(TAIL_LEN);	//可爱的小尾巴
+CglVector3 *now_star = stars;			//当前星星指针
+
+int step = SMOOTH;						//控制平滑插值参数
+double t[SMOOTH];						//平滑参量数组
+CglQuaternion slerpResult[SMOOTH];		//平滑插值结果四元数数组
+CglVector3 posResult[SMOOTH];			//平滑插值位置结果数组
 
 //==============
 //绘制函数实现部分
@@ -122,62 +129,15 @@ void drawTail() {
 	glPopMatrix();
 }
 
-//画一个简易小飞机
-void drawPlane(CglCamera* m_pCamere) {
-	//飞机前后长度和左右宽度的比例
-	double ship_prop = 10;
-
+//画线段
+void drawLine() {
 	glPushMatrix();
-	//调整飞机与视点前后距离
-	CglVector3 fore_aft_dis;
-	fore_aft_dis.Set(&m_pCamere->m_viewMatrixInverse[8]);
-	fore_aft_dis = fore_aft_dis * 8;
-	//调整飞机与视点上下距离
-	CglVector3 up_down_dis;
-	up_down_dis.Set(&m_pCamere->m_viewMatrixInverse[4]);
-	up_down_dis = up_down_dis * 5;
-	//最终调整向量
-	CglVector3 plane_pos;
-	plane_pos = m_pCamere->m_pos - fore_aft_dis - up_down_dis;
-	//调整飞机位置姿势
-	glTranslatef(plane_pos.x, plane_pos.y, plane_pos.z);
-	glRotatef(m_pCamere->m_hpr.x, 0, 1, 0);
-	glRotatef(m_pCamere->m_hpr.y, 1, 0, 0);
-	glRotatef(m_pCamere->m_hpr.z, 0, 0, 1);
-	
-	//简易飞机(箭头)初始方向为y轴正方向，调整与视点方向负z轴一致
-	glRotatef(-90, 1, 0, 0);
-	//四个侧面
-	glBegin(GL_TRIANGLES);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, size * ship_prop, 0.0f);
-	glVertex3f(-size, -size, size);
-	glVertex3f(size, -size, size);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, size * ship_prop, 0.0f);
-	glVertex3f(size, -size, size);
-	glVertex3f(size, -size, -size);
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, size * ship_prop, 0.0f);
-	glVertex3f(size, -size, -size);
-	glVertex3f(-size, -size, -size);
-
-	glColor3f(1.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, size * ship_prop, 0.0f);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(-size, -size, size);
+	glTranslatef(0, 0, -1000);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(now_star->x, now_star->y, now_star->z);
+	now_star++;
+	glVertex3f(now_star->x, now_star->y, now_star->z);
 	glEnd();
-	//底面
-	glBegin(GL_QUADS);
-	glColor3f(0.0f, 1.0f, 1.0f);
-	glVertex3f(-size, -size, size);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(size, -size, -size);
-	glVertex3f(size, -size, size);
-	glEnd();
-
 	glPopMatrix();
 }
 
@@ -195,16 +155,22 @@ CmyOpenGL::~CmyOpenGL() {
 
 //程序初始化时调用
 void CmyOpenGL::PostInit() {
-	m_pControl->SetSpeed(mspeed, rspeed);
+	m_pControl->SetSpeed(view_mspeed, view_rspeed);//设置视点初始速度
+	//初始化平滑参量
+	for (int i = 0; i < SMOOTH; i++) {
+		t[i] = i / SMOOTH;
+	}
 
 	glClearColor(0, 0, 0, 1);
 	m_pCamere->SetCamera(startAt, CglVector3(0, 0, 0), true);
-	m_pCamere->SaveCamera();
 
 	//设置环境
 	SetRC();
 	//初始化星星
 	initStar();
+	//初始化飞机
+	airPlane.Init();
+	airPlane.SetSpeed(ship_mspeed, ship_rspeed);//设置飞船初始速度
 }
 
 //总绘制函数
@@ -216,7 +182,7 @@ void CmyOpenGL::InDraw() {
 	
 	CString str;
 	glColor3f(1, 0, 0);
-	str.Format("%.2f", mspeed);
+	str.Format("%d", mode);
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
@@ -231,27 +197,50 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 	if (bDown)
 		switch (nChar) {
 		case VK_F1:
-			//调用键盘控制函数以重置状态
-			mode = (mode + 1) % 2;
+			
+			break;
+		case VK_F2://变换视点模式, 0为欧拉角视图, 1为自由变换视角
+			mode = 1 - mode;
+			m_pCamere->SaveCamera();
+			m_pCamere->m_type = mode;
+			m_pCamere->LoadCamera();
 			break;
 		case '=':
-			mspeed += 0.1;
-			m_pControl->SetSpeed(mspeed, rspeed);
+			view_mspeed += 0.1;
+			m_pControl->SetSpeed(view_mspeed, view_rspeed);
 			break;
 		case '-':
-			mspeed -= 0.1;
-			m_pControl->SetSpeed(mspeed, rspeed);
+			view_mspeed -= 0.1;
+			m_pControl->SetSpeed(view_mspeed, view_rspeed);
+			break;
+		case ' ':
+			airPlane.Move(2, 1);
+			break;
+
+		case VK_LEFT:
+			airPlane.Rotate(0, 1);//向左，正方向
+			break;
+		case VK_RIGHT:
+			airPlane.Rotate(0, -1);//向左，负方向（向右）
+			break;
+		case VK_UP:
+			airPlane.Rotate(1, 1);//向上，正方向
+			break;
+		case VK_DOWN:
+			airPlane.Rotate(1, -1);//向上，负方向（向下）
 			break;
 		}
 	return false;
 }
 
 void CmyOpenGL::DrawModel() {
-	//SetView();
-	//画星星
-	drawStar();
+	drawStar();//画星星
+	drawTail();//画尾巴
+	//画前进轨迹
+	if (mode == 1 && step == 0) {
+		drawLine();
+	}
 	//画飞机
-	drawPlane(m_pCamere);
-	//画尾巴
-	drawTail();
+	airPlane.Draw(AIR_PLANE_SIZE);
+	//airPlane.Move(2, 1);//向前，正方向
 }

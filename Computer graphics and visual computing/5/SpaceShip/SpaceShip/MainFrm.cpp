@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "SpaceShip.h"
-
 #include "MainFrm.h"
 
 #ifdef _DEBUG
@@ -70,7 +69,8 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
 		return FALSE;
 	// TODO: 在此处通过修改
 	//  CREATESTRUCT cs 来修改窗口类或样式
-
+	cs.cx = 1280;
+	cs.cy = 720;
 	return TRUE;
 }
 

@@ -192,6 +192,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CglPlane.h" />
     <ClInclude Include="CmyOpenGL.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Resource.h" />
@@ -202,6 +203,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CglPlane.cpp" />
     <ClCompile Include="CmyOpenGL.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="SpaceShip.cpp" />
