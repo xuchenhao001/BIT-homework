@@ -11,11 +11,12 @@ const int STAR_NUM = 10000;						//星星总数量，默认为10000个
 const int TAIL_LEN = 121;						//小尾巴长度+1，默认为120米
 const int SMOOTH = 100;							//视点过渡平滑程度，数值越大越平滑，默认为100
 const double AIR_PLANE_SIZE = 3;				//飞机大小
-float view_mspeed = 0.1, view_rspeed = 0.05;	//视点移动速度和旋转速度
-float ship_mspeed = 0.1, ship_rspeed = 0.5;		//飞机移动速度
+float view_mspeed = 0.1, view_rspeed = 0.05;	//视点初始移动速度和旋转速度
+float ship_mspeed = 0.1, ship_rspeed = 0.5;		//飞机初始移动速度和旋转速度
 CglVector3 startAt(10, 20, 20);					//设定视点起始位置
 
-int mode = 0;									//程序运行时的视点状态：0欧拉视角 1自由视点控制
+int view_mode = 0;								//程序运行时的视点状态：0欧拉视角 1自由视点控制
+int fly_mode = 0;								//程序运行时的飞行状态：0手动控制 1跟随星星航行
 
 //=========================
 //全局变量定义部分(不可更改)
@@ -182,7 +183,7 @@ void CmyOpenGL::InDraw() {
 	
 	CString str;
 	glColor3f(1, 0, 0);
-	str.Format("%d", mode);
+	str.Format("飞船速度：%f", airPlane.getMSpeed());
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
@@ -196,27 +197,37 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 	}
 	if (bDown)
 		switch (nChar) {
+
+		//变换飞行模式, 0为手动控制, 1为跟随星星航行
 		case VK_F1:
 			
 			break;
-		case VK_F2://变换视点模式, 0为欧拉角视图, 1为自由变换视角
-			mode = 1 - mode;
+
+		//变换视点模式, 0为欧拉角视图, 1为自由变换视角
+		case VK_F2:
+			view_mode = 1 - view_mode;
 			m_pCamere->SaveCamera();
-			m_pCamere->m_type = mode;
+			m_pCamere->m_type = view_mode;
 			m_pCamere->LoadCamera();
 			break;
-		case '=':
-			view_mspeed += 0.1;
-			m_pControl->SetSpeed(view_mspeed, view_rspeed);
+
+		//飞船自动飞行, 加速
+		case VK_OEM_COMMA:
+			ship_mspeed += 0.1;
+			airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 			break;
-		case '-':
-			view_mspeed -= 0.1;
-			m_pControl->SetSpeed(view_mspeed, view_rspeed);
+		//飞船自动飞行, 减速
+		case VK_OEM_PERIOD:
+			ship_mspeed -= 0.1;
+			airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 			break;
-		case ' ':
+
+		//飞船手动飞行
+		case VK_SPACE:
 			airPlane.Move(2, 1);
 			break;
 
+		//飞船飞行方向控制
 		case VK_LEFT:
 			airPlane.Rotate(0, 1);//向左，正方向
 			break;
@@ -236,11 +247,13 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 void CmyOpenGL::DrawModel() {
 	drawStar();//画星星
 	drawTail();//画尾巴
+
 	//画前进轨迹
-	if (mode == 1 && step == 0) {
+	/*if (view_mode == 1 && step == 0) {
 		drawLine();
-	}
+	}*/
+
 	//画飞机
 	airPlane.Draw(AIR_PLANE_SIZE);
-	//airPlane.Move(2, 1);//向前，正方向
+	airPlane.Move(2, 1);//向前，正方向
 }

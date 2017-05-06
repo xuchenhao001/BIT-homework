@@ -104,31 +104,10 @@ void CglPlane::SetSpeed(float mspeed, float rspeed) {
 	m_fStep[1] = rspeed;
 }
 
-//if (mode == 0) {
-//	//设置飞机与视点前后距离
-//	CglVector3 fore_aft_dis;
-//	fore_aft_dis.Set(&m_pCamere->m_viewMatrixInverse[8]);
-//	fore_aft_dis = fore_aft_dis * 8;
-//	//设置飞机与视点上下距离
-//	CglVector3 up_down_dis;
-//	up_down_dis.Set(&m_pCamere->m_viewMatrixInverse[4]);
-//	up_down_dis = up_down_dis * 5;
-//	//完成最终调整向量
-//	CglVector3 plane_pos;
-//	plane_pos = m_pCamere->m_pos - fore_aft_dis - up_down_dis;
-//	//调整飞机位置姿势
-//	glTranslatef(plane_pos.x, plane_pos.y, plane_pos.z);
-//	glRotatef(m_pCamere->m_hpr.x, 0, 1, 0);
-//	glRotatef(m_pCamere->m_hpr.y, 1, 0, 0);
-//	glRotatef(m_pCamere->m_hpr.z, 0, 0, 1);
-//} else if (step != SMOOTH) {
-//	CglEuler slerpNowEuler = slerpResult[step].ToEuler();
-//	CglVector3 slerpNowPos = posResult[step];
+float CglPlane::getMSpeed() {
+	return m_fStep[0] * m_fKeyStep;
+}
 
-//	//调整飞机位置姿势
-//	glTranslatef(slerpNowPos.x, slerpNowPos.y, slerpNowPos.z);
-//	glRotatef(slerpNowEuler.h, 0, 1, 0);
-//	glRotatef(slerpNowEuler.p, 1, 0, 0);
-//	glRotatef(slerpNowEuler.b, 0, 0, 1);
-//	step++;
-//}
+float CglPlane::getRSpeed() {
+	return m_fStep[1] * m_fKeyStep;
+}
