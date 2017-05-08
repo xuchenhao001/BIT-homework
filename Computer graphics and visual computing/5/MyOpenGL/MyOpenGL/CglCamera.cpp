@@ -4,6 +4,7 @@
 #include "CglQuaternion.h"
 #include "CglMatrix.h"
 #include "CglVector3.h"
+#include "CglEuler.h"
 #include "gl\glut.h"
 
 CglCamera::CglCamera() {
@@ -124,6 +125,21 @@ void CglCamera::SetCamera(const CglVector3 &pos, const CglVector3 &obj_dir, bool
 	glPopMatrix();
 	if (type >= 0) m_type = type;
 	CglMath::Dir2HPR(m_eyedir, m_updir, m_hpr);
+}
+
+void CglCamera::followCamera(const CglVector3& pos, const CglVector3& obj_pos, CglMatrix& obj_matrix) {
+	m_pos = pos;
+	m_updir = CglVector3(obj_matrix[4], obj_matrix[5], obj_matrix[6]);
+	m_eyedir = obj_pos - pos;
+	m_hpr = obj_matrix.ToEuler();
+	glPushMatrix();
+	glLoadIdentity();
+	gluLookAt(m_pos.x, m_pos.y, m_pos.z,
+		obj_pos.x, obj_pos.y, obj_pos.z,
+		m_updir.x, m_updir.y, m_updir.z);
+	glGetDoublev(GL_MODELVIEW_MATRIX, m_viewMatrix);
+	CglMath::InverseMatrix(m_viewMatrix, m_viewMatrixInverse);
+	glPopMatrix();
 }
 
 void CglCamera::SaveCamera() {

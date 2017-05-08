@@ -16,6 +16,7 @@ float ship_mspeed = 0.1, ship_rspeed = 0.5;		//飞机初始移动速度和旋转速度
 CglVector3 startAt(10, 20, 20);					//设定视点起始位置
 
 int view_mode = 0;								//程序运行时的视点状态：0欧拉视角 1自由视点控制
+int view_pos = 0;								//程序运行时视点位置: 0自由变换 1跟随飞机
 int fly_mode = 0;								//程序运行时的飞行状态：0手动控制 1跟随星星航行
 
 //=========================
@@ -31,6 +32,7 @@ double t[SMOOTH];						//平滑参量数组
 CglQuaternion slerpResult[SMOOTH];		//平滑插值结果四元数数组
 CglVector3 posResult[SMOOTH];			//平滑插值位置结果数组
 
+CglVector3 follow_pos;
 //==============
 //绘制函数实现部分
 //==============
@@ -183,7 +185,7 @@ void CmyOpenGL::InDraw() {
 	
 	CString str;
 	glColor3f(1, 0, 0);
-	str.Format("飞船速度：%f", airPlane.getMSpeed());
+	str.Format("%.2f, %.2f, %.2f", follow_pos.x, follow_pos.y, follow_pos.z);
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
@@ -200,7 +202,8 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 
 		//变换飞行模式, 0为手动控制, 1为跟随星星航行
 		case VK_F1:
-			
+			//fly_mode = 1 - fly_mode;
+
 			break;
 
 		//变换视点模式, 0为欧拉角视图, 1为自由变换视角
@@ -222,9 +225,9 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 			airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 			break;
 
-		//飞船手动飞行
+		//跟踪视点变换
 		case VK_SPACE:
-			airPlane.Move(2, 1);
+			view_pos = 1 - view_pos;
 			break;
 
 		//飞船飞行方向控制
@@ -255,5 +258,12 @@ void CmyOpenGL::DrawModel() {
 
 	//画飞机
 	airPlane.Draw(AIR_PLANE_SIZE);
-	airPlane.Move(2, 1);//向前，正方向
+	//airPlane.Move(2, 1);//向前，正方向
+
+	//视点是否跟随飞机
+	if (view_pos == 1) {
+		follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
+		m_pCamere->followCamera(follow_pos, airPlane.m_pos, airPlane.m_matrix);
+	}
+	
 }

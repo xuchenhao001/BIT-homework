@@ -3,7 +3,7 @@
 #include "gl\glut.h"
 #include "CglVector3.h"
 
-class CglMath
+class AFX_API_EXPORT CglMath
 {
 public:
 	CglMath();

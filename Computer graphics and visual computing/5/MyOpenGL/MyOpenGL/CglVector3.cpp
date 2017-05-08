@@ -50,6 +50,11 @@ CglVector3& CglVector3::operator=(const CglVector3& p) {
 	return *this;
 }
 
+CglVector3& CglVector3::operator=(const CglEuler& p) {
+	x = p.h; y = p.p; z = p.b;
+	return *this;
+}
+
 CglVector3 CglVector3::operator+(const CglVector3& p) const {
 	CglVector3 vec;
 	vec.x = x + p.x;

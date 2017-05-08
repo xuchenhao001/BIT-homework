@@ -24,6 +24,7 @@ public:
 	operator double*();
 	operator const double*() const;
 	CglVector3& operator=(const CglVector3& p);
+	CglVector3& operator=(const CglEuler& p);
 	CglVector3 operator+(const CglVector3& p) const;
 	bool operator==(const CglVector3& p);
 	CglVector3& operator+=(const CglVector3& p);
