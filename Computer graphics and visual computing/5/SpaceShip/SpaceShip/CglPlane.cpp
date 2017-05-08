@@ -14,21 +14,19 @@ void CglPlane::Init() {
 	m_pos = CglVector3(0, 0, 0);
 	m_updir = CglVector3(0, 1, 0);
 	m_matrix.Identity();
-	m_fStep[0] = 0.01;
-	m_fStep[1] = 0.01;
-	m_fKeyStep = 3;
+	scale_step[0] = 0.01;
+	scale_step[1] = 0.01;
+	key_step = 3;
 }
 
-void CglPlane::Draw(double size) {
+void CglPlane::Draw(double size, double prop) {
 	//飞机前后长度和左右宽度的比例
-	double ship_prop = 10;
+	double ship_prop = prop;
 
 	glPushMatrix();
 	//载入模型矩阵变化
 	glMultMatrixd(m_matrix);
 
-	//简易飞机当前位置变化
-	//glTranslatef(m_pos.x, m_pos.y, m_pos.z);
 	//简易飞机(箭头)初始方向为y轴正方向，调整与视点方向负z轴一致
 	glRotatef(-90, 1, 0, 0);
 	//四个侧面
@@ -68,12 +66,12 @@ void CglPlane::Draw(double size) {
 void CglPlane::Move(int dir, double plus_or_minus) {
 	CglMatrix m_tr;
 	if (dir == 0)
-		m_tr.SetTrans(CglVector3(-m_fKeyStep*m_fStep[0] * plus_or_minus, 0, 0));
+		m_tr.SetTrans(CglVector3(-key_step * scale_step[0] * plus_or_minus, 0, 0));
 	else if (dir == 1) 
-		m_tr.SetTrans(CglVector3(0, -m_fKeyStep*m_fStep[0] * plus_or_minus, 0));
+		m_tr.SetTrans(CglVector3(0, -key_step * scale_step[0] * plus_or_minus, 0));
 	else
-		m_tr.SetTrans(CglVector3(0, 0, -m_fKeyStep*m_fStep[0] * plus_or_minus));
-	m_matrix = m_matrix*m_tr;
+		m_tr.SetTrans(CglVector3(0, 0, -key_step * scale_step[0] * plus_or_minus));
+	m_matrix = m_matrix * m_tr;
 	m_pos = &m_matrix[12];
 }
 
@@ -81,11 +79,11 @@ void CglPlane::Move(int dir, double plus_or_minus) {
 void CglPlane::Rotate(int dir, double plus_or_minus) {
 	CglMatrix m_ro;
 	if (dir == 0)
-		m_ro.SetRotate(m_fKeyStep*m_fStep[1]*plus_or_minus, CglVector3(0, 1, 0));//h
+		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(0, 1, 0));//h
 	else if (dir == 1)
-		m_ro.SetRotate(m_fKeyStep*m_fStep[1]*plus_or_minus, CglVector3(1, 0, 0));//p
+		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(1, 0, 0));//p
 	else
-		m_ro.SetRotate(m_fKeyStep*m_fStep[1]*plus_or_minus, CglVector3(0, 0, 1));//r
+		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(0, 0, 1));//r
 	
 	m_matrix[12] = 0;
 	m_matrix[13] = 0;
@@ -100,14 +98,14 @@ void CglPlane::Rotate(int dir, double plus_or_minus) {
 }
 
 void CglPlane::SetSpeed(float mspeed, float rspeed) {
-	m_fStep[0] = mspeed;
-	m_fStep[1] = rspeed;
+	scale_step[0] = mspeed;
+	scale_step[1] = rspeed;
 }
 
 float CglPlane::getMSpeed() {
-	return m_fStep[0] * m_fKeyStep;
+	return scale_step[0] * key_step;
 }
 
 float CglPlane::getRSpeed() {
-	return m_fStep[1] * m_fKeyStep;
+	return scale_step[1] * key_step;
 }

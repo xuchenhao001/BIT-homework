@@ -64,8 +64,13 @@ public:
 	}
 
 	//当前队列中元素数量
-	int size() {
+	int nowSize() {
 		return now_size;
+	}
+
+	//队列总容量
+	int size() {
+		return m_size;
 	}
 
 	//循环队列是否空

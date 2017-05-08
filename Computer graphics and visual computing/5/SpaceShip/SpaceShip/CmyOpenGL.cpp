@@ -6,18 +6,19 @@
 //====================================
 //全局变量定义部分(可依据情况适当修改)
 //====================================
-int width = 1280, height = 720;					//星星绘制窗口默认大小为1280x720
-const int STAR_NUM = 10000;						//星星总数量，默认为10000个
-const int TAIL_LEN = 121;						//小尾巴长度+1，默认为120米
-const int SMOOTH = 100;							//视点过渡平滑程度，数值越大越平滑，默认为100
-const double AIR_PLANE_SIZE = 3;				//飞机大小
-float view_mspeed = 0.1, view_rspeed = 0.05;	//视点初始移动速度和旋转速度
-float ship_mspeed = 0.1, ship_rspeed = 0.5;		//飞机初始移动速度和旋转速度
-CglVector3 startAt(10, 20, 20);					//设定视点起始位置
+int width = 1280, height = 720;						//星星绘制窗口默认大小为1280x720
+const int STAR_NUM = 10000;							//星星总数量，默认为10000个
+const int SMOOTH = 100;								//视点过渡平滑程度，数值越大越平滑，默认为100
+const double AIR_PLANE_SIZE = 3;					//飞机大小
+const double AIR_PLANE_PROP = 10;					//飞机长宽比例
+int TAIL_LEN = AIR_PLANE_SIZE*AIR_PLANE_PROP * 100;	//小尾巴长度+1，默认为飞机长度100倍
+float view_mspeed = 0.1, view_rspeed = 0.05;		//视点初始移动速度和旋转速度
+float ship_mspeed = 0.1, ship_rspeed = 0.5;			//飞机初始移动速度和旋转速度
+CglVector3 startAt(10, 20, 20);						//设定视点起始位置
 
-int view_mode = 0;								//程序运行时的视点状态：0欧拉视角 1自由视点控制
-int view_pos = 0;								//程序运行时视点位置: 0自由变换 1跟随飞机
-int fly_mode = 0;								//程序运行时的飞行状态：0手动控制 1跟随星星航行
+int view_mode = 0;									//程序运行时的视点状态：0欧拉视角 1自由视点控制
+int view_pos = 0;									//程序运行时视点位置: 0自由变换 1跟随飞机
+int fly_mode = 0;									//程序运行时的飞行状态：0手动控制 1跟随星星航行
 
 //=========================
 //全局变量定义部分(不可更改)
@@ -113,12 +114,12 @@ void drawStar() {
 void drawTail() {
 	glPushMatrix();
 	tail.reset();
-	for (int i = 0; i < tail.size() - 1; i++) {
+	for (int i = 0; i < tail.nowSize() - 1; i++) {
 		float color;
 		glLineWidth(1);
-		//当尾巴长度达到120的时候，控制最后20米的尾巴渐渐消失
-		if (tail.size() == 120 && i < 20) {
-			color = i / 20.0;
+		//当尾巴长度达到最长的时候，控制最后20%的尾巴渐渐消失
+		if (tail.nowSize() == tail.size() - 1 && i < tail.size() / 5.0) {
+			color = i / (tail.size() / 5.0);
 		} else {
 			color = 1.0;
 		}
@@ -173,7 +174,8 @@ void CmyOpenGL::PostInit() {
 	initStar();
 	//初始化飞机
 	airPlane.Init();
-	airPlane.SetSpeed(ship_mspeed, ship_rspeed);//设置飞船初始速度
+	//设置飞船初始速度
+	airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 }
 
 //总绘制函数
@@ -190,13 +192,6 @@ void CmyOpenGL::InDraw() {
 }
 
 bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
-	if (nChar == 'w' || nChar == 's' || nChar == 'a' || nChar == 'd' || nChar == 'q' || nChar == 'e'||
-		nChar == 'W' || nChar == 'S' || nChar == 'A' || nChar == 'D' || nChar == 'Q' || nChar == 'E') {
-		if (tail.isFull()) {
-			tail.pop();
-		}
-		tail.push(m_pCamere->m_pos);
-	}
 	if (bDown)
 		switch (nChar) {
 
@@ -257,8 +252,13 @@ void CmyOpenGL::DrawModel() {
 	}*/
 
 	//画飞机
-	airPlane.Draw(AIR_PLANE_SIZE);
-	//airPlane.Move(2, 1);//向前，正方向
+	airPlane.Draw(AIR_PLANE_SIZE, AIR_PLANE_PROP);
+	//向前, 正方向, 画尾巴
+	airPlane.Move(2, 1);
+	if (tail.isFull()) {
+		tail.pop();
+	}
+	tail.push(airPlane.m_pos);
 
 	//视点是否跟随飞机
 	if (view_pos == 1) {
