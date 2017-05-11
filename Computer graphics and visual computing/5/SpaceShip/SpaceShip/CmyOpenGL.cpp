@@ -191,6 +191,25 @@ void CmyOpenGL::InDraw() {
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
+//更新每一帧绘图的数据
+void CmyOpenGL::Update() {
+	//向前, 正方向, 画尾巴
+	airPlane.Move(2, 1);
+
+	//视点如果跟随飞机
+	if (view_pos == 1) {
+		follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
+		m_pCamere->followCamera(follow_pos, airPlane.m_pos, airPlane.m_updir);
+	}
+
+	//尾巴跟随
+	if (tail.isFull()) {
+		tail.pop();
+	}
+	tail.push(airPlane.m_pos);
+
+}
+
 bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 	if (bDown)
 		switch (nChar) {
@@ -198,15 +217,12 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 		//变换飞行模式, 0为手动控制, 1为跟随星星航行
 		case VK_F1:
 			//fly_mode = 1 - fly_mode;
-
 			break;
 
 		//变换视点模式, 0为欧拉角视图, 1为自由变换视角
 		case VK_F2:
 			view_mode = 1 - view_mode;
-			m_pCamere->SaveCamera();
 			m_pCamere->m_type = view_mode;
-			m_pCamere->LoadCamera();
 			break;
 
 		//飞船自动飞行, 加速
@@ -246,24 +262,7 @@ void CmyOpenGL::DrawModel() {
 	drawStar();//画星星
 	drawTail();//画尾巴
 
-	//画前进轨迹
-	/*if (view_mode == 1 && step == 0) {
-		drawLine();
-	}*/
-
 	//画飞机
 	airPlane.Draw(AIR_PLANE_SIZE, AIR_PLANE_PROP);
-	//向前, 正方向, 画尾巴
-	airPlane.Move(2, 1);
-	if (tail.isFull()) {
-		tail.pop();
-	}
-	tail.push(airPlane.m_pos);
 
-	//视点是否跟随飞机
-	if (view_pos == 1) {
-		follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
-		m_pCamere->followCamera(follow_pos, airPlane.m_pos, airPlane.m_matrix);
-	}
-	
 }

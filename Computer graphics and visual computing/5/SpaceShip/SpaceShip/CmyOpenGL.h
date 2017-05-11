@@ -11,7 +11,8 @@ public:
 
 	virtual void PostInit();
 	virtual void InDraw();
-
+	//更新所有绘图所需参数，之后一起画
+	virtual void Update();
 private:
 	CglPlane airPlane;
 	virtual bool OnKey(unsigned int nChar, bool bDown);

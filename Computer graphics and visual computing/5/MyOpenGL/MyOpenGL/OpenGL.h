@@ -28,6 +28,7 @@ public:
 	void OnPaint();
 	virtual void PostInit();
 	bool Init(HWND hWnd);
+	virtual void Update();
 	virtual bool OnKey(unsigned int nChar, bool bDown);
 	virtual bool OnMouse(int message, CPoint pt);
 	friend class CglControl;

@@ -62,15 +62,23 @@ void CglPlane::Draw(double size, double prop) {
 
 	glPopMatrix();
 }
-
+int lasttime = -1;
 void CglPlane::Move(int dir, double plus_or_minus) {
+	int curtime = GetTickCount();
+	int usetime = 0;
+	if (lasttime > 0) 
+	{
+		usetime = curtime - lasttime;
+	}
+	lasttime = curtime;
+	float movedis = usetime*key_step / 30;
 	CglMatrix m_tr;
 	if (dir == 0)
-		m_tr.SetTrans(CglVector3(-key_step * scale_step[0] * plus_or_minus, 0, 0));
+		m_tr.SetTrans(CglVector3(-movedis * scale_step[0] * plus_or_minus, 0, 0));
 	else if (dir == 1) 
-		m_tr.SetTrans(CglVector3(0, -key_step * scale_step[0] * plus_or_minus, 0));
+		m_tr.SetTrans(CglVector3(0, -movedis * scale_step[0] * plus_or_minus, 0));
 	else
-		m_tr.SetTrans(CglVector3(0, 0, -key_step * scale_step[0] * plus_or_minus));
+		m_tr.SetTrans(CglVector3(0, 0, -movedis * scale_step[0] * plus_or_minus));
 	m_matrix = m_matrix * m_tr;
 	m_pos = &m_matrix[12];
 }

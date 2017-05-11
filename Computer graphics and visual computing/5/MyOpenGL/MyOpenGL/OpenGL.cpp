@@ -85,9 +85,14 @@ void COpenGL::PostInit() {
 
 }
 
+void COpenGL::Update() {
+
+}
+
 //每帧刷新函数
 void COpenGL::OnPaint() {
 	int begintime = GetTickCount();
+	Update();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();	//主绘制场景
 	OnView();

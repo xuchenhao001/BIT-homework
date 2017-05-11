@@ -127,19 +127,23 @@ void CglCamera::SetCamera(const CglVector3 &pos, const CglVector3 &obj_dir, bool
 	CglMath::Dir2HPR(m_eyedir, m_updir, m_hpr);
 }
 
-void CglCamera::followCamera(const CglVector3& pos, const CglVector3& obj_pos, CglMatrix& obj_matrix) {
+//相机跟随物体
+void CglCamera::followCamera(const CglVector3& pos, const CglVector3& obj_pos, CglVector3& updir) {
 	m_pos = pos;
-	m_updir = CglVector3(obj_matrix[4], obj_matrix[5], obj_matrix[6]);
-	m_eyedir = obj_pos - pos;
-	m_hpr = obj_matrix.ToEuler();
-	glPushMatrix();
-	glLoadIdentity();
-	gluLookAt(m_pos.x, m_pos.y, m_pos.z,
-		obj_pos.x, obj_pos.y, obj_pos.z,
-		m_updir.x, m_updir.y, m_updir.z);
-	glGetDoublev(GL_MODELVIEW_MATRIX, m_viewMatrix);
-	CglMath::InverseMatrix(m_viewMatrix, m_viewMatrixInverse);
-	glPopMatrix();
+	m_updir = updir; 
+	m_updir.Normalize();
+	m_eyedir = obj_pos - pos; 
+	m_eyedir.Normalize();
+	
+	CglMatrix eyeCm;
+	CglVector3 xdir = m_eyedir.crossMul(m_updir); 
+	xdir.Normalize();
+	CglVector3 ydir = xdir.crossMul(m_eyedir); 
+	ydir.Normalize();
+	eyeCm.SetCol(0, xdir);
+	eyeCm.SetCol(1, ydir);
+	eyeCm.SetCol(2, -m_eyedir);
+	m_hpr = eyeCm.ToEuler();
 }
 
 void CglCamera::SaveCamera() {

@@ -24,7 +24,8 @@ public:
 	void SaveCamera();
 	void Init();
 	void SetCamera(const CglVector3& pos, const CglVector3& obj_dir, bool bObj = true, int type = 0);
-	void followCamera(const CglVector3& pos, const CglVector3& obj_pos, CglMatrix& obj_matrix);
+	//相机跟随物体
+	void followCamera(const CglVector3& pos, const CglVector3& obj_pos, CglVector3& updir);
 	void ShowView();
 	void Rotate(int dir, double len);
 	void Move(int dir, double len);
