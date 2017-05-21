@@ -28,12 +28,13 @@ CglVector3 stars[STAR_NUM];				//星空
 cycleQueue<CglVector3> tail(TAIL_LEN);	//可爱的小尾巴
 CglVector3 *now_star = stars;			//当前星星指针
 
+int usetime;
 int step = SMOOTH;						//控制平滑插值参数
 double t[SMOOTH];						//平滑参量数组
 CglQuaternion slerpResult[SMOOTH];		//平滑插值结果四元数数组
 CglVector3 posResult[SMOOTH];			//平滑插值位置结果数组
+bool trick = false;
 
-CglVector3 follow_pos;
 //==============
 //绘制函数实现部分
 //==============
@@ -187,18 +188,19 @@ void CmyOpenGL::InDraw() {
 	
 	CString str;
 	glColor3f(1, 0, 0);
-	str.Format("%.2f, %.2f, %.2f", follow_pos.x, follow_pos.y, follow_pos.z);
+	str.Format("%d", trick);
 	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
 }
 
 //更新每一帧绘图的数据
 void CmyOpenGL::Update() {
+	usetime = airPlane.GetUseTime();
 	//向前, 正方向, 画尾巴
-	airPlane.Move(2, 1);
+	airPlane.Move(2, 1, usetime);
 
 	//视点如果跟随飞机
 	if (view_pos == 1) {
-		follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
+		CglVector3 follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
 		m_pCamere->followCamera(follow_pos, airPlane.m_pos, airPlane.m_updir);
 	}
 
@@ -208,6 +210,10 @@ void CmyOpenGL::Update() {
 	}
 	tail.push(airPlane.m_pos);
 
+	//控制特技
+	if (trick == true) {
+		airPlane.Trick(usetime);
+	}
 }
 
 bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
@@ -225,34 +231,39 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 			m_pCamere->m_type = view_mode;
 			break;
 
-		//飞船自动飞行, 加速
+		//飞船自动飞行, 加速, [,<]键
 		case VK_OEM_COMMA:
 			ship_mspeed += 0.1;
 			airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 			break;
-		//飞船自动飞行, 减速
+		//飞船自动飞行, 减速, [.>]键
 		case VK_OEM_PERIOD:
 			ship_mspeed -= 0.1;
 			airPlane.SetSpeed(ship_mspeed, ship_rspeed);
 			break;
 
-		//跟踪视点变换
+		//飞船特技[/?]键
+		case VK_OEM_2:
+			trick = (trick == true) ? false : true;
+			break;
+
+		//跟踪视点变换, [space]键
 		case VK_SPACE:
 			view_pos = 1 - view_pos;
 			break;
 
 		//飞船飞行方向控制
 		case VK_LEFT:
-			airPlane.Rotate(0, 1);//向左，正方向
+			airPlane.Rotate(0, 1, usetime);//向左，正方向
 			break;
 		case VK_RIGHT:
-			airPlane.Rotate(0, -1);//向左，负方向（向右）
+			airPlane.Rotate(0, -1, usetime);//向左，负方向（向右）
 			break;
 		case VK_UP:
-			airPlane.Rotate(1, 1);//向上，正方向
+			airPlane.Rotate(1, 1, usetime);//向上，正方向
 			break;
 		case VK_DOWN:
-			airPlane.Rotate(1, -1);//向上，负方向（向下）
+			airPlane.Rotate(1, -1, usetime);//向上，负方向（向下）
 			break;
 		}
 	return false;

@@ -62,16 +62,10 @@ void CglPlane::Draw(double size, double prop) {
 
 	glPopMatrix();
 }
-int lasttime = -1;
-void CglPlane::Move(int dir, double plus_or_minus) {
-	int curtime = GetTickCount();
-	int usetime = 0;
-	if (lasttime > 0) 
-	{
-		usetime = curtime - lasttime;
-	}
-	lasttime = curtime;
-	float movedis = usetime*key_step / 30;
+
+void CglPlane::Move(int dir, double plus_or_minus, float usetime) {
+
+	float movedis = usetime * key_step / 30;
 	CglMatrix m_tr;
 	if (dir == 0)
 		m_tr.SetTrans(CglVector3(-movedis * scale_step[0] * plus_or_minus, 0, 0));
@@ -84,14 +78,16 @@ void CglPlane::Move(int dir, double plus_or_minus) {
 }
 
 //dir=0表示左右转，dir=1表示上下转，dir=2表示滚动转
-void CglPlane::Rotate(int dir, double plus_or_minus) {
+void CglPlane::Rotate(int dir, double plus_or_minus, float usetime) {
+	//float rotdis = GetUseTime() * key_step / 30;
+	float rotdis = usetime * key_step / 30;
 	CglMatrix m_ro;
 	if (dir == 0)
-		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(0, 1, 0));//h
+		m_ro.SetRotate(rotdis*scale_step[1]*plus_or_minus, CglVector3(0, 1, 0));//h
 	else if (dir == 1)
-		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(1, 0, 0));//p
+		m_ro.SetRotate(rotdis*scale_step[1]*plus_or_minus, CglVector3(1, 0, 0));//p
 	else
-		m_ro.SetRotate(key_step*scale_step[1]*plus_or_minus, CglVector3(0, 0, 1));//r
+		m_ro.SetRotate(rotdis*scale_step[1]*plus_or_minus, CglVector3(0, 0, 1));//r
 	
 	m_matrix[12] = 0;
 	m_matrix[13] = 0;
@@ -110,10 +106,24 @@ void CglPlane::SetSpeed(float mspeed, float rspeed) {
 	scale_step[1] = rspeed;
 }
 
-float CglPlane::getMSpeed() {
+float CglPlane::GetMSpeed() {
 	return scale_step[0] * key_step;
 }
 
-float CglPlane::getRSpeed() {
+float CglPlane::GetRSpeed() {
 	return scale_step[1] * key_step;
+}
+
+void CglPlane::Trick(float usetime) {
+	this->Rotate(2, 1, usetime);
+}
+
+int CglPlane::GetUseTime() {
+	int curtime = GetTickCount();
+	int usetime = 0;
+	if (lasttime > 0) {
+		usetime = curtime - lasttime;
+	}
+	lasttime = curtime;
+	return usetime;
 }
