@@ -18,7 +18,7 @@ CglVector3 startAt(10, 20, 20);						//设定视点起始位置
 
 int view_mode = 0;									//程序运行时的视点状态：0欧拉视角 1自由视点控制
 int view_pos = 0;									//程序运行时视点位置: 0自由变换 1跟随飞机
-int fly_mode = 0;									//程序运行时的飞行状态：0手动控制 1跟随星星航行
+int flyMode = 0;									//程序运行时的飞行状态：0手动控制 1跟随星星航行
 
 //=========================
 //全局变量定义部分(不可更改)
@@ -26,34 +26,36 @@ int fly_mode = 0;									//程序运行时的飞行状态：0手动控制 1跟随星星航行
 
 CglVector3 stars[STAR_NUM];				//星空
 cycleQueue<CglVector3> tail(TAIL_LEN);	//可爱的小尾巴
-CglVector3 *now_star = stars;			//当前星星指针
+CglVector3 *nowStar = stars;			//当前星星指针
 
 int usetime;
 int step = SMOOTH;						//控制平滑插值参数
 double t[SMOOTH];						//平滑参量数组
 CglQuaternion slerpResult[SMOOTH];		//平滑插值结果四元数数组
 CglVector3 posResult[SMOOTH];			//平滑插值位置结果数组
-bool trick = false;
+bool trick = false;						//特效动作状态控制
+bool toNextStar = false;				//转向下一个星星控制
 
 //==============
 //绘制函数实现部分
 //==============
 
-//计算星星距离函数
-float starDis(CglVector3 a, CglVector3 b) {
+//计算两点距离函数
+float posDis(CglVector3 a, CglVector3 b) {
 	return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) + (a.z - b.z)*(a.z - b.z);;
 }
 
 //对星星进行排序
 void sortStars() {
-	stars[0] = startAt;
+	stars[0] = CglVector3(0, 0, 0);
 	CglVector3 tmp_star;
 	float tmp_dis = FLT_MAX;
 	int tmp_j;
 	for (int i = 0; i < STAR_NUM - 1; i++) {
 		tmp_dis = FLT_MAX;
+		tmp_j = i + 1;
 		for (int j = i + 1; j < STAR_NUM; j++) {
-			float dis = starDis(stars[i], stars[j]);
+			float dis = posDis(stars[i], stars[j]);
 			if (dis < tmp_dis) {
 				tmp_dis = dis;
 				tmp_j = j;
@@ -73,13 +75,13 @@ void initStar() {
 		stars[i].z = rand() / double(RAND_MAX) * 32000 - 16000;
 	}
 	
-	//sortStars();
+	sortStars();
 }
 
 //设置环境
 void SetRC() {
 
-	//星星是圆的(与控制大小变换冲突所以注视掉了)
+	//星星是圆的(由于我的显卡兼容性问题，与控制星星大小变换冲突所以注视掉了)
 	//glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -134,14 +136,19 @@ void drawTail() {
 	glPopMatrix();
 }
 
-//画线段
-void drawLine() {
+//画星迹线
+void drawStarLine() {
+	CglVector3 *pStar = stars;
+
 	glPushMatrix();
-	glTranslatef(0, 0, -1000);
+	glLineWidth(1);
+	glColor3f(1.0, 1.0, 0);
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(now_star->x, now_star->y, now_star->z);
-	now_star++;
-	glVertex3f(now_star->x, now_star->y, now_star->z);
+	do{
+		glVertex3f(pStar->x, pStar->y, pStar->z);
+		glVertex3f((pStar + 1)->x, (pStar + 1)->y, (pStar + 1)->z);
+		pStar++;
+	} while (pStar != nowStar);
 	glEnd();
 	glPopMatrix();
 }
@@ -165,10 +172,8 @@ void CmyOpenGL::PostInit() {
 	for (int i = 0; i < SMOOTH; i++) {
 		t[i] = i / SMOOTH;
 	}
-
 	glClearColor(0, 0, 0, 1);
 	m_pCamere->SetCamera(startAt, CglVector3(0, 0, 0), true);
-
 	//设置环境
 	SetRC();
 	//初始化星星
@@ -186,18 +191,33 @@ void CmyOpenGL::InDraw() {
 	//画模型
 	DrawModel();
 	
-	CString str;
+	//参数显示
+	/*CString str;
 	glColor3f(1, 0, 0);
-	str.Format("%d", trick);
-	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);
+	str.Format("%lf, %lf, %lf", (nowStar + 1)->x, (nowStar + 1)->y, (nowStar + 1)->z);
+	m_pFont->Font2D(str.GetBuffer(0), -0.9, 0.9, 7);*/
 }
 
 //更新每一帧绘图的数据
 void CmyOpenGL::Update() {
 	usetime = airPlane.GetUseTime();
-	//向前, 正方向, 画尾巴
-	airPlane.Move(2, 1, usetime);
 
+	//向前, 正方向, 画尾巴
+	float movdis = airPlane.Move(2, 1, usetime);
+
+	//沿着星迹线飞行
+	if (flyMode == 1) {
+		if (toNextStar == true) {
+			toNextStar = false;
+			airPlane.SetDir(*nowStar - airPlane.m_pos);
+		}
+		//飞机距离目标星星0.1时，认为飞机已经达到目标星星
+		if (posDis(*nowStar, airPlane.m_pos) <= movdis*2) {
+			toNextStar = true;
+			nowStar++;
+		}
+	}
+	
 	//视点如果跟随飞机
 	if (view_pos == 1) {
 		CglVector3 follow_pos = airPlane.m_pos - airPlane.m_dir * 30 + airPlane.m_updir * 15;
@@ -205,10 +225,12 @@ void CmyOpenGL::Update() {
 	}
 
 	//尾巴跟随
-	if (tail.isFull()) {
-		tail.pop();
+	for (int i = 0; i < movdis; i++) {
+		if (tail.isFull()) {
+			tail.pop();
+		}
+		tail.push(airPlane.m_pos);
 	}
-	tail.push(airPlane.m_pos);
 
 	//控制特技
 	if (trick == true) {
@@ -222,7 +244,9 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 
 		//变换飞行模式, 0为手动控制, 1为跟随星星航行
 		case VK_F1:
-			//fly_mode = 1 - fly_mode;
+			flyMode = 1 - flyMode;
+			toNextStar = true;
+			nowStar++;
 			break;
 
 		//变换视点模式, 0为欧拉角视图, 1为自由变换视角
@@ -272,8 +296,10 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 void CmyOpenGL::DrawModel() {
 	drawStar();//画星星
 	drawTail();//画尾巴
-
 	//画飞机
 	airPlane.Draw(AIR_PLANE_SIZE, AIR_PLANE_PROP);
-
+	//画星迹线
+	if (flyMode == 1) {
+		drawStarLine();
+	}
 }

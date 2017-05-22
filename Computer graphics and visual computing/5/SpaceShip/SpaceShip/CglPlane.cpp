@@ -63,8 +63,7 @@ void CglPlane::Draw(double size, double prop) {
 	glPopMatrix();
 }
 
-void CglPlane::Move(int dir, double plus_or_minus, float usetime) {
-
+float CglPlane::Move(int dir, double plus_or_minus, float usetime) {
 	float movedis = usetime * key_step / 30;
 	CglMatrix m_tr;
 	if (dir == 0)
@@ -75,6 +74,7 @@ void CglPlane::Move(int dir, double plus_or_minus, float usetime) {
 		m_tr.SetTrans(CglVector3(0, 0, -movedis * scale_step[0] * plus_or_minus));
 	m_matrix = m_matrix * m_tr;
 	m_pos = &m_matrix[12];
+	return movedis * scale_step[0];
 }
 
 //dir=0表示左右转，dir=1表示上下转，dir=2表示滚动转
@@ -104,6 +104,19 @@ void CglPlane::Rotate(int dir, double plus_or_minus, float usetime) {
 void CglPlane::SetSpeed(float mspeed, float rspeed) {
 	scale_step[0] = mspeed;
 	scale_step[1] = rspeed;
+}
+
+void CglPlane::SetDir(CglVector3 dir) {
+	dir.Normalize();
+	CglVector3 xdir = dir.crossMul(m_updir);	//确定子坐标系x方向
+	xdir.Normalize();
+	CglVector3 ydir = xdir.crossMul(dir);		//确定子坐标系y方向
+	ydir.Normalize();
+	m_matrix.SetCol(0, xdir);
+	m_matrix.SetCol(1, ydir);
+	m_matrix.SetCol(2, -dir);
+	m_updir = ydir;
+	m_dir = dir;
 }
 
 float CglPlane::GetMSpeed() {

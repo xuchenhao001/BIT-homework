@@ -15,9 +15,10 @@ public:
 
 	void Init();
 	void Draw(double size, double prop);
-	void Move(int dir, double plus_or_minus, float usetime);
+	float Move(int dir, double plus_or_minus, float usetime);
 	void Rotate(int dir, double plus_or_minus, float usetime);
 	void SetSpeed(float mspeed, float rspeed);
+	void SetDir(CglVector3 dir);
 	float GetMSpeed();
 	float GetRSpeed();
 	int GetUseTime();
