@@ -79,7 +79,6 @@ float CglPlane::Move(int dir, double plus_or_minus, float usetime) {
 
 //dir=0表示左右转，dir=1表示上下转，dir=2表示滚动转
 void CglPlane::Rotate(int dir, double plus_or_minus, float usetime) {
-	//float rotdis = GetUseTime() * key_step / 30;
 	float rotdis = usetime * key_step / 30;
 	CglMatrix m_ro;
 	if (dir == 0)

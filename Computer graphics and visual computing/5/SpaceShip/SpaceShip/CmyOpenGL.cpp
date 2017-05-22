@@ -211,7 +211,7 @@ void CmyOpenGL::Update() {
 			toNextStar = false;
 			airPlane.SetDir(*nowStar - airPlane.m_pos);
 		}
-		//飞机距离目标星星0.1时，认为飞机已经达到目标星星
+		//飞机距离目标星星小于移动步长两倍时，认为飞机已经达到目标星星
 		if (posDis(*nowStar, airPlane.m_pos) <= movdis*2) {
 			toNextStar = true;
 			nowStar++;
@@ -255,6 +255,11 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 			m_pCamere->m_type = view_mode;
 			break;
 
+		//跟踪视点变换, [space]键
+		case VK_SPACE:
+			view_pos = 1 - view_pos;
+			break;
+
 		//飞船自动飞行, 加速, [,<]键
 		case VK_OEM_COMMA:
 			ship_mspeed += 0.1;
@@ -269,11 +274,6 @@ bool CmyOpenGL::OnKey(unsigned int nChar, bool bDown) {
 		//飞船特技[/?]键
 		case VK_OEM_2:
 			trick = (trick == true) ? false : true;
-			break;
-
-		//跟踪视点变换, [space]键
-		case VK_SPACE:
-			view_pos = 1 - view_pos;
 			break;
 
 		//飞船飞行方向控制
