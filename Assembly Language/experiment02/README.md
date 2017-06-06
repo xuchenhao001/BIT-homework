@@ -6,3 +6,10 @@
 
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/01.jpg)
 
+## 寻找最长共有单词
+
+从键盘输入两个英文句子，每句的单词之间用空格隔开，请输出两个句子中最长的共有单词。
+
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/02.jpg)
+
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/03.jpg)
