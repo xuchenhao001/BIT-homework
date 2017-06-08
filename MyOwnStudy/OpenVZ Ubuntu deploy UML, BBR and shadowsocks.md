@@ -16,7 +16,8 @@ $ apt-get install e2fsprogs uml-utilities screen
 
 ## OpenVZ主机上的网络设置
 
-先设置一个tap虚拟网络设备`tap0`，设置子虚拟机的网络为`10.0.0.1`，启用`tap0`设备，开启`iptable`转发：
+先设置一个tap虚拟网络设备`tap0`，设置子虚拟机的网络为`10.0.0.1`，启用`tap0`设备，添加`venet0`转发规则到`iptable`转发表的`POSTROUTING`链上：
+
 ```
 $ ip tuntap add tap0 mode tap
 $ ip addr add 10.0.0.1/24 dev tap0
@@ -25,9 +26,22 @@ $ iptables -P FORWARD ACCEPT
 $ iptables -t nat -A POSTROUTING -o venet0 -j MASQUERADE
 ```
 
+检查`iptables`转发表的`POSTROUTING`链：
+
+```
+$ iptables -t nat -vnL POSTROUTING --line-number
+```
+可以看到如下规则被写入链中：
+
+```
+Chain POSTROUTING (policy ACCEPT 109 packets, 6460 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+1      115  6900 MASQUERADE  all  --  *      venet0  0.0.0.0/0            0.0.0.0/0 
+```
+
 ## OpenVZ主机上转发规则设置
 
-预留`22`端口给ssh：
+预留`22`端口给`SSH`：
 ```
 $ iptables -t nat -A PREROUTING -p tcp --dport 22 -j RETURN
 ```
@@ -40,6 +54,28 @@ $ iptables -t nat -A PREROUTING -i venet0 -j DNAT --to-destination 10.0.0.2
 ```
 $ iptables -t nat -A PREROUTING -i venet0 -p tcp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
 $ iptables -t nat -A PREROUTING -i venet0 -p udp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
+```
+
+检查`iptables`转发表的`PREROUTING`链：
+
+```
+$ iptables -t nat -vnL PREROUTING --line-number
+```
+
+可以看到如下内容被写入`PREROUTING`链，表明当前`10000`~`20000`部分端口已经开启转发至虚拟机：
+
+```
+Chain PREROUTING (policy ACCEPT 430 packets, 25730 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+1       25  1368 RETURN     tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+2      385 23020 DNAT       tcp  --  venet0 *       0.0.0.0/0            0.0.0.0/0            tcp dpts:10000:20000 to:10.0.0.2
+3        0     0 DNAT       udp  --  venet0 *       0.0.0.0/0            0.0.0.0/0            udp dpts:10000:20000 to:10.0.0.2
+```
+
+删除某条规则，比如第二条，可以使用：
+
+```
+iptables -t nat -D PREROUTING 2
 ```
 
 之后下载91yun.org为我们提供的uml内核（后续我可能会自己编译一个uml，如果有机会的话）：
@@ -111,7 +147,14 @@ net.ipv4.tcp_available_congestion_control = bbr reno cubic highspeed
 
 ## 部署shadowsocks server
 
-首先安装`python`和`pip`：
+首先更新一下数据源，升级一下软件包：
+
+```
+apt-get update
+apt-get upgrade
+```
+
+安装`python`和`pip`：
 
 ```
 $ apt install python python-pip
@@ -119,6 +162,10 @@ $ apt install python python-pip
 
 安装`shadowsocks`：
 
+```
+$ pip install shadowsocks
+```
+或最新版
 ```
 $ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 ```
