@@ -6,7 +6,7 @@
 
 单线程循环调用`wget`进行下载。可以设置从某个暂停行继续进行下载。
 
-后来感觉速度维持在700K-1M左右，花了一个月才下载了220GB，于是想要提速，继而学习了如果在OpenVZ上部署`Google`的`BBR`拥塞控制技术。[（参见此文）](https://github.com/xuchenhao001/BIT-homework/blob/master/MyOwnStudy/pull%20videos%20from%20flickr.com/OpenVZ Ubuntu deploy UML, BBR and shadowsocks.md)
+后来感觉速度维持在700K-1M左右，花了一个月才下载了220GB，于是想要提速，继而学习了如果在OpenVZ上部署`Google`的`BBR`拥塞控制技术。可以参见[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/MyOwnStudy/pull%20videos%20from%20flickr.com/OpenVZ%20Ubuntu%20deploy%20UML%2C%20BBR%20and%20shadowsocks.md)
 
 利用BBR提速效果明显，大概比原来快了1倍左右。
 
