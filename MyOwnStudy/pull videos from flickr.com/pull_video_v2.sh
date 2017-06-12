@@ -2,36 +2,47 @@
 # wget http://data.csail.mit.edu/soundnet/urls_public.txt
 # http://www.flickr.com/videos/28042570@N08/4637976820/play/orig/5b222e6773
 
-pause_at="http://www.flickr.com/videos/28042570@N08/4637976820/play/orig/5b222e6773"
+pause_at="http://www.flickr.com/videos/27606531@N02/2898394758/play/orig/241c1c0d25"
 thread_num=10
 
 PID=()
-pause=false
+pause="false"
 while read line
 do
 {
-	downloaded=false
-	if [[ ! $pause ]]; then
-		if [[ $line = $pause_at ]]; then
-			pause=true
+	downloaded="false"
+	if test "$pause" = "false"
+		then
+		if test "$line" = "$pause_at"
+			then
+			pause="true"
 			echo "continue at $line !"
-		else
-			echo "pass $line"
 		fi
 	else
-		for ((index=0; index<$thread_num; )); do
-		{
-			if [[ ! "${PID[index]}" ]] || ! kill -0 ${PID[index]} 2>/dev/null; then
-				wget $line &
-				PID[index]=$!
-				downloaded=true
-			fi
-			if [[ $downloaded = false && $index = `expr $index - 1` ]]; then
-				index=0
+		echo -e "\n\n##############################\ndownloading...\n$line\n##############################\n\n"
+		index=0
+		while (( $index<$thread_num ))
+		do
+			if test "$downloaded" = "false"
+				then
+				if [[ ! "${PID[index]}" ]] || ! kill -0 ${PID[index]} 2>/dev/null; then
+					wget $line &
+					PID[$index]=$!
+					downloaded="true"
+				elif [[ $index -eq `expr $thread_num - 1` ]]; then
+					index=0
+				else
+					let "index++"
+				fi
 			else
-				index=`expr $index + 1`
+				let "index++"
 			fi
-		}
+			# set -x
+			# echo $index
+			# if [[ "${PID[index]}" ]] && kill -0 ${PID[index]} 2>/dev/null; then
+			# 	echo "${PID[index]}"
+			# fi
+			set +x
 		done
 	fi
 }
