@@ -13,3 +13,15 @@
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/02.jpg)
 
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/03.jpg)
+
+## 学生信息管理
+
+编程实现：
+* 键入某组学生（共10 人）的学号、姓名、组成原理考试成绩、数据结构考试成绩、汇编语言考试成绩。
+* 对学生数据进行排序，按三科总分降序排列。
+* 按此排序结果在屏幕上显示前三名学生的成绩。
+* 在屏幕上显示学号最靠前的5 名学生的成绩。
+
+请编写主程序及四个子程序，使用跳转表法实现调用关系，并用结构字段记录学生成绩数据。
+
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/04.jpg)
