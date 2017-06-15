@@ -25,3 +25,11 @@
 请编写主程序及四个子程序，使用跳转表法实现调用关系，并用结构字段记录学生成绩数据。
 
 ![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/04.jpg)
+
+## 屏幕动画
+
+在屏幕上显示一个`*`字符。要求背景颜色不断改变（间隔0.5秒），且`＊`字符可在屏幕上无规则移动（速度0.1 秒）。
+
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/05.jpg)
+
+![](https://github.com/xuchenhao001/BIT-homework/blob/master/Assembly%20Language/experiment02/06.jpg)
