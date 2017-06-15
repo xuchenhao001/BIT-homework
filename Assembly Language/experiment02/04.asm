@@ -35,14 +35,14 @@ ASSUME	CS:CODE, DS:DATA, SS:STSG, ES:NOTHING
 		INT		21H
 		POP		DS
 
-		; set timer interrupt
+		; set timer & keyboard interrupt
 		IN		AL, 21H
-		AND		AL, 11111110B
+		AND		AL, 11111100B
 		OUT		21H, AL
 
 		; start interrupt
 		STI
-NOTHG:
+
 		; set 80x25 colorful mode
 		MOV		AH, 00H
 		MOV		AL, 03H
@@ -53,6 +53,7 @@ NOTHG:
 		MOV		CX, 2000H
 		INT		10H
 
+NOTHG:
 		; input a char, if CR exit
 		MOV		AH, 0
 		INT		16H
@@ -83,7 +84,7 @@ INT_1CH	PROC	FAR
 		JNZ		NBGCLOR
 
 		; change the background color
-		ADD		BGCLOR, 01110000B
+		ADD		BGCLOR, 00010000B
 		AND		BGCLOR, 01111111B
 
 		; 0.5s counter
@@ -152,3 +153,4 @@ INT_1CH	ENDP
 
 CODE	ENDS
 END	MAIN
+
