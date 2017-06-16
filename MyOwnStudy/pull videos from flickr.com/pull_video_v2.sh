@@ -1,9 +1,8 @@
 #!/bin/bash
 # wget http://data.csail.mit.edu/soundnet/urls_public.txt
-# http://www.flickr.com/videos/28042570@N08/4637976820/play/orig/5b222e6773
 
-pause_at="http://www.flickr.com/videos/27606531@N02/2898394758/play/orig/241c1c0d25"
-thread_num=10
+pause_at="http://www.flickr.com/videos/47762553@N00/9419455509/play/orig/8461e78d0d"
+thread_num=20
 
 PID=()
 pause="false"
@@ -19,7 +18,6 @@ do
 			echo "continue at $line !"
 		fi
 	else
-		echo -e "\n\n##############################\ndownloading...\n$line\n##############################\n\n"
 		index=0
 		while (( $index<$thread_num ))
 		do
@@ -29,6 +27,7 @@ do
 					wget $line &
 					PID[$index]=$!
 					downloaded="true"
+					echo -e "\n\n##############################\ndownloading...\n$line\nAt thread [$index]\n##############################\n\n"
 				elif [[ $index -eq `expr $thread_num - 1` ]]; then
 					index=0
 				else
