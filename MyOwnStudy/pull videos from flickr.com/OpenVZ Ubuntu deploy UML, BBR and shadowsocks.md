@@ -145,6 +145,10 @@ net.ipv4.tcp_available_congestion_control = bbr reno cubic highspeed
 
 表明BBR已经在运行了。
 
+> 从screen中分离（从虚拟机中脱离）：`Ctrl-a`+`d`
+>
+> 重新连接你的screen：`screen -r`
+
 ## 部署shadowsocks server
 
 首先更新一下数据源，升级一下软件包：
