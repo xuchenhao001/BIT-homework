@@ -203,46 +203,6 @@ $ ssserver -c /etc/shadowsocks.json -d start
 
 此时已经在子虚拟机中成功启动了`shadowsocks`，并且发送到OpenVZ主机的消息都会转发到子虚拟机中。
 
-## 本地Ubuntu Server连接`shadowsocks`代理
+## 本地Ubuntu Server连接`shadowsocks`代理服务器
 
-安装与配置`shadowsocks`步骤与上面服务器端配置相同，要注意将配置文件中`server`的值设置成你的OpenVZ主机地址。服务器端口要统一，加密方式一定要统一。
-
-本地后台启动`shadowsocks`客户端：
-
-```
-$ sslocal -c /etc/shadowsocks.json -d start
-```
-
-本地安装`privoxy`将http消息代理为`socks5`：
-
-```
-$ apt install privoxy
-$ vim /etc/privoxy/config
-```
-
-去掉这一行的注释：
-
-```
-forward-socks5t   /               127.0.0.1:1080 .
-```
-
-开启`privoxy`代理：
-
-```
-$ service privoxy start 
-```
-
-现在，如果你想在`terminal`里走`socks5`代理：（其中`8118`就是`privoxy`的默认代理端口，本地`shadowsocks`的代理端口是`1080`）
-
-```
-$ export http_proxy='http://localhost:8118'
-$ export https_proxy='https://localhost:8118'
-```
-
-可以查看一下是否成功连接了`shadowsocks server`：
-
-```
-$ curl ip.gs
-```
-
-如果返回的不是你当前机器的IP地址，而是国外的IP，恭喜你，代理成功。
+有关本地`Shell`或者其他应用走`shadowsocks`代理的问题，请参考[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/MyOwnStudy/pull%20videos%20from%20flickr.com/Local%20Ubuntu%20Server%20Connect%20to%20shadowsocks%20proxy.md)。
