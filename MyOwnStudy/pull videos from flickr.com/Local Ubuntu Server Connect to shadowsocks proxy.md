@@ -93,3 +93,12 @@ $ systemctl restart docker
 ```
 
 之后就可以从gcr等库中拉镜像了。
+
+## npm
+
+配置npm代理，就不需要每次都安装淘宝的`cnpm`了：
+
+```shell
+$ npm config set proxy http://localhost:8118
+$ npm config set https-proxy http://localhost:8118
+```
