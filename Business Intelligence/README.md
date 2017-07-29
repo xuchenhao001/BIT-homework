@@ -11,6 +11,7 @@ For our Business Intelligence class project. Database table structure & REST API
 | user_id         | CHAR(22) | PRIMARY KEY |
 | password        | CHAR(22) |             |
 | sex             | INT      |             |
+| age             | INT      |             |
 | height          | DOUBLE   |             |
 | weight          | DOUBLE   |             |
 | fat_rate        | DOUBLE   |             |
@@ -54,6 +55,7 @@ Sign up
   "user_id": "your_id",
   "password": "your_password",
   "sex": "male|female",
+  "age": 20,
   "height": 10.24,
   "weight": 10.24,
   "fat_rate": 10.24,
@@ -73,6 +75,7 @@ Update
   "user_id": "your_id",
   "password": "your_new_password",
   "sex": "male|female",
+  "age": 21,
   "height": 10.24,
   "weight": 10.24,
   "fat_rate": 10.24,
@@ -92,6 +95,7 @@ Check
   "user_id": "your_id",
   "password": "",
   "sex": "",
+  "age": 0,
   "height": 0,
   "weight": 0,
   "fat_rate": 0,
