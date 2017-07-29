@@ -26,7 +26,7 @@ For our Business Intelligence class project. Database table structure & REST API
 | user_id                       | CHAR(22) | FOREIGN KEY                 |
 | start_longitude               | DOUBLE   |                             |
 | start_latitude                | DOUBLE   |                             |
-| full_range_longitude_latitude | STRING   |                             |
+| full_range_longitude_latitude | BLOB     |                             |
 | full_range_speed              | DOUBLE   |                             |
 | full_range_distance           | DOUBLE   |                             |
 | start_time                    | DATETIME |                             |

@@ -8,14 +8,15 @@ import tornado.web
 import mysql.connector
 
 # 数据库参数设置：
-host = "127.0.0.1"
-user = "root"
-password = "root"
-database_name = "runner"
+mysql_host = "127.0.0.1"
+mysql_user = "root"
+mysql_password = "root"
+mysql_database_name = "runner"
 
 
 def database_connect():
-    return mysql.connector.connect(host=host, user=user, password=password, db=database_name)
+    return mysql.connector.connect(
+        host=mysql_host, user=mysql_user, password=mysql_password, db=mysql_database_name)
 
 
 # 初始化数据库表函数
@@ -40,7 +41,7 @@ def init_database():
                         fat_rate DOUBLE, 
                         target_weight DOUBLE, 
                         target_fat_rate DOUBLE)
-                        character set = utf8;"""
+                        CHARACTER SET = utf8;"""
         cursor.execute(sql)
         # 创建运动数据表sports
         sql = """CREATE TABLE events (
@@ -48,7 +49,7 @@ def init_database():
                         user_id CHAR(22), 
                         start_longitude DOUBLE, 
                         start_latitude DOUBLE, 
-                        full_longitude_latitude STRING, 
+                        full_longitude_latitude BLOB, 
                         full_speed DOUBLE, 
                         full_distance DOUBLE,
                         start_time TIMESTAMP, 
@@ -56,14 +57,14 @@ def init_database():
                         duration_time TIMESTAMP,
                         FOREIGN KEY(user_id) REFERENCES users(user_id),
                         PRIMARY KEY(sports_id))
-                        character set = utf8;"""
+                        CHARACTER SET = utf8;"""
         cursor.execute(sql)
         # 创建好友表friends
         sql = """CREATE TABLE friends (
                         user_id CHAR(22) PRIMARY KEY,
                         friend_id CHAR(22),
                         FOREIGN KEY(friend_id) REFERENCES users(user_id))
-                        character set = utf8;"""
+                        CHARACTER SET = utf8;"""
         cursor.execute(sql)
     except Exception, e:
         print e
@@ -75,7 +76,7 @@ def init_database():
 
 
 # 维护数据库中用户表
-def users(method, user_id, password, sex, height,
+def users(method, user_id, password, sex, age, height,
           weight, fat_rate, target_weight, target_fat_rate):
     db = None
     try:
@@ -83,25 +84,67 @@ def users(method, user_id, password, sex, height,
         db = database_connect()
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
+
+        # 注册用户
         if method == "signup":
-            None
-        # 插入数据库
-        sql = "INSERT INTO users VALUES(" \
-              "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" \
-              % (user_id, password, sex, height, weight, fat_rate, target_weight, target_fat_rate)
-        cursor.execute(sql)
-        # 提交到数据库执行
-        db.commit()
+            # 插入数据库
+            sql = "INSERT INTO users VALUES(" \
+                  "{}, {}, {}, {}, {}, {}, {}, {}, {})".format(
+                    user_id, password, sex, age, height, weight,
+                    fat_rate, target_weight, target_fat_rate)
+            cursor.execute(sql)
+            db.commit()
+            detail = ""
+        # 更新用户信息
+        elif method == "update":
+            # 筛选其中不为0和""的值, 存入to_update列表
+            dic = {"password": password,
+                   "sex": sex,
+                   "age": age,
+                   "height": height,
+                   "weight": weight,
+                   "fat_rate": fat_rate,
+                   "target_weight": target_weight,
+                   "target_fat_rate": target_fat_rate}
+            for k, v in dic.items():
+                if v == 0 or v == "":
+                    dic.pop(k)
+            to_update = []
+            for k, v in dic.items():
+                to_update.append(k + "=" + str(v))
+            # 更新数据库
+            sql = "UPDATE users SET {} WHERE user_id = {}".format(",".join(to_update), user_id)
+            cursor.execute(sql)
+            db.commit()
+            detail = ""
+        # 检查用户信息
+        elif method == "check":
+            sql = "SELECT * FROM users WHERE user_id = {}".format(user_id)
+            cursor.execute(sql)
+            record = cursor.fetchone()
+            detail = {'user_id': record[0],
+                      'password': record[1],
+                      'sex': record[2],
+                      'age': record[3],
+                      'height': record[4],
+                      'weight': record[5],
+                      'fat_rate': record[6],
+                      'target_weight': record[7],
+                      'target_fat_rate': record[8]}
+        # method不存在
+        else:
+            return "no", "Please check your method!"
+
     except Exception, e:
         # 发生错误时回滚
         db.rollback()
         print e
-        return "Membership '%s' registered failed: %s" % (user_id, e)
+        return "no", "{}".format(e)
     finally:
         if db is not None:
             db.close()
 
-    return "", ""
+    return "yes", detail
 
 
 # 维护数据库中运动表
@@ -160,14 +203,16 @@ class MainHandler(tornado.web.RequestHandler):
         # 判断消息类型
         if data["message"] == "users":
             (status, detail) = users(data["method"], data["user_id"], data["password"],
-                                     data["sex"], data["height"], data["weight"],
-                                     data["fat_rate"], data["target_weight"], data["target_fat_rate"])
+                                     data["sex"], data["age"], data["height"],
+                                     data["weight"], data["fat_rate"],
+                                     data["target_weight"], data["target_fat_rate"])
         elif data["message"] == "sports":
             (status, detail) = sports(data["method"], data["user_id"],
                                       data["start_longitude"], data["start_latitude"],
                                       data["full_range_longitude_latitude"],
                                       data["full_range_speed"], data["full_range_distance"],
-                                      data["start_time"], data["end_time"], data["duration_time"])
+                                      data["start_time"], data["end_time"],
+                                      data["duration_time"])
         elif data["message"] == "friends":
             (status, detail) = friends(data["method"], data["user_id"], data["friend_id"])
 
