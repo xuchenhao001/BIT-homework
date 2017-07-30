@@ -10,7 +10,7 @@ For our Business Intelligence class project. Database table structure & REST API
 | --------------- | -------- | ----------- |
 | user_id         | CHAR(22) | PRIMARY KEY |
 | password        | CHAR(22) |             |
-| sex             | INT      |             |
+| sex             | CHAR(22) |             |
 | age             | INT      |             |
 | height          | DOUBLE   |             |
 | weight          | DOUBLE   |             |
@@ -46,7 +46,7 @@ After that, you can test or build your Android application with APIs below with 
 
 ### Users
 
-Sign up
+* Sign up
 
 ```json
 {
@@ -65,8 +65,17 @@ Sign up
 ```
 
 > `message`, `method`, `user_id`, `password` is necessary. `user_id` should be unique. The othe values, which is `""` or `0`, will not be recorded, but they must be sent as normal.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {}
+> }
+> ```
 
-Update
+* Update
 
 ```json
 {
@@ -85,8 +94,17 @@ Update
 ```
 
 > `message`, `method`, `user_id` is necessary. The othe values, which is `""` or `0`, will not be updated, but they must be sent as normal.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {}
+> }
+> ```
 
-Check
+* Check
 
 ```json
 {
@@ -105,10 +123,29 @@ Check
 ```
 
 > `message`, `method`, `user_id` is necessary. Other values will be ignored whatever it is, but you must sent them as normal, or there will be an error occured.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {
+>         "height": 10.25,
+>         "target_fat_rate": 10.25,
+>         "target_weight": 10.24,
+>         "user_id": "your_id",
+>         "fat_rate": 10.25,
+>         "weight": 10.25,
+>         "age": 21,
+>         "password": "your_new_password",
+>         "sex": "male"
+>     }
+> }
+> ```
 
 ### Sports
 
-Add record
+* Add record
 
 ```json
 {
@@ -131,8 +168,17 @@ Add record
 ```
 
 > Each key & value is necessary. `full_range_longitude_latitude` allow as much values as you want.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {}
+> }
+> ```
 
-Check records
+* Check records
 
 ```json
 {
@@ -150,6 +196,63 @@ Check records
 ```
 
 >  `message`, `method`, `user_id` is necessary. Other values will be ignored whatever it is, but you must sent them as normal, or there will be an error occured.
+>
+>  Result:
+>
+>  ```json
+>  {
+>      "status": "yes",
+>      "detail": {
+>          "user_id": "your_id",
+>          "sports_record": [
+>              {
+>                  "start_longitude": 10.24,
+>                  "end_time": "2014-04-14 20:14:14",
+>                  "start_time": "2014-04-14 20:14:04",
+>                  "full_range_longitude_latitude": [
+>                      {
+>                          "latitude": 10.24,
+>                          "longitude": 10.24
+>                      },
+>                      {
+>                          "latitude": 10.25,
+>                          "longitude": 10.25
+>                      },
+>                      {
+>                          "latitude": 11.24,
+>                          "longitude": 11.24
+>                      }
+>                  ],
+>                  "full_range_speed": 10.24,
+>                  "full_range_distance": 10.24,
+>                  "start_latitude": 10.24
+>              },
+>              {
+>                  "start_longitude": 10.24,
+>                  "end_time": "2015-04-14 20:14:14",
+>                  "start_time": "2015-04-14 20:14:04",
+>                  "full_range_longitude_latitude": [
+>                      {
+>                          "latitude": 10.24,
+>                          "longitude": 10.24
+>                      },
+>                      {
+>                          "latitude": 10.25,
+>                          "longitude": 10.25
+>                      },
+>                      {
+>                          "latitude": 11.24,
+>                          "longitude": 11.24
+>                      }
+>                  ],
+>                  "full_range_speed": 10.24,
+>                  "full_range_distance": 10.24,
+>                  "start_latitude": 10.24
+>              }
+>          ]
+>      }
+>  }
+>  ```
 
 ### Friends
 
