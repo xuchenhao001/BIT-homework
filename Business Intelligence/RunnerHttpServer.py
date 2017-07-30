@@ -30,9 +30,9 @@ def init_database():
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
         # 如果数据表已经存在使用 execute() 方法删除表。
-        cursor.execute("DROP TABLE IF EXISTS users;")
         cursor.execute("DROP TABLE IF EXISTS sports;")
         cursor.execute("DROP TABLE IF EXISTS friends;")
+        cursor.execute("DROP TABLE IF EXISTS users;")
         # 创建用户表users
         sql = """CREATE TABLE users (
                         user_id CHAR(22) PRIMARY KEY,
