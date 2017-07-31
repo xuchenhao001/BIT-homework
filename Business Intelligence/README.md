@@ -64,7 +64,7 @@ After that, you can test or build your Android application with APIs below with 
 }
 ```
 
-> `message`, `method`, `user_id`, `password` is necessary. `user_id` should be unique. The othe values, which is `""` or `0`, will not be recorded, but they must be sent as normal.
+> `message`, `method`, `user_id`, `password` is necessary. `user_id` should be unique. 
 >
 > Result:
 >
@@ -93,7 +93,7 @@ After that, you can test or build your Android application with APIs below with 
 }
 ```
 
-> `message`, `method`, `user_id` is necessary. The othe values, which is `""` or `0`, will not be updated, but they must be sent as normal.
+> `message`, `method`, `user_id` is necessary. Each value here will cover the value set before.
 >
 > Result:
 >
@@ -110,19 +110,11 @@ After that, you can test or build your Android application with APIs below with 
 {
   "message": "users",
   "method": "check",
-  "user_id": "your_id",
-  "password": "",
-  "sex": "",
-  "age": 0,
-  "height": 0,
-  "weight": 0,
-  "fat_rate": 0,
-  "target_weight": 0,
-  "target_fat_rate": 0
+  "user_id": "your_id"
 }
 ```
 
-> `message`, `method`, `user_id` is necessary. Other values will be ignored whatever it is, but you must sent them as normal, or there will be an error occured.
+> `message`, `method`, `user_id` is necessary. 
 >
 > Result:
 >
@@ -167,7 +159,7 @@ After that, you can test or build your Android application with APIs below with 
 }
 ```
 
-> Each key & value is necessary. `full_range_longitude_latitude` allow as much values as you want.
+> `message`, `method`, `user_id` is necessary. `full_range_longitude_latitude` is an array that allows as much values as you want.
 >
 > Result:
 >
@@ -184,18 +176,11 @@ After that, you can test or build your Android application with APIs below with 
 {
   "message": "sports",
   "method": "check",
-  "user_id": "your_id",
-  "start_longitude": 0,
-  "start_latitude": 0,
-  "full_range_longitude_latitude": [],
-  "full_range_speed": 0,
-  "full_range_distance": 0,
-  "start_time": "",
-  "end_time": ""
+  "user_id": "your_id"
 }
 ```
 
->  `message`, `method`, `user_id` is necessary. Other values will be ignored whatever it is, but you must sent them as normal, or there will be an error occured.
+>  `message`, `method`, `user_id` is necessary.
 >
 >  Result:
 >
