@@ -16,6 +16,7 @@ mysql_password = "root"
 mysql_database_name = "runner"
 
 
+# 连接数据库
 def database_connect():
     return mysql.connector.connect(
         host=mysql_host,
@@ -80,6 +81,7 @@ def init_database():
             db.close()
 
 
+# 字典的值转字符串列表
 def dic_values_to_string_list(dic_values):
     string_list = []
     for value in dic_values:
@@ -160,11 +162,6 @@ def users(data):
 
 
 # 维护数据库中运动表
-# def sports(method, user_id, start_longitude, start_latitude,
-#            full_range_longitude_latitude, full_range_speed,
-#            full_range_distance, start_time, end_time):
-
-
 def sports(data):
     db = None
     try:
