@@ -32,6 +32,15 @@ For our Business Intelligence class project. Database table structure & REST API
 | start_time                    | DATETIME |                             |
 | end_time                      | DATETIME |                             |
 
+### friends
+
+| Name        | Type     | Remarks                  |
+| ----------- | -------- | ------------------------ |
+| user_id     | CHAR(22) | PRIMARY KEY, FOREIGN KEY |
+| longitude   | DOUBLE   |                          |
+| latitude    | DOUBLE   |                          |
+| update_time | DATETIME |                          |
+
 ## REST APIs
 
 You can test your connection to the server through `GET` method. And if it's okay, you will get a result:
@@ -212,6 +221,7 @@ After that, you can test or build your Android application with APIs below with 
 >                  "full_range_distance": 10.24,
 >                  "start_latitude": 10.24
 >              },
+>              ...
 >              {
 >                  "start_longitude": 10.24,
 >                  "end_time": "2015-04-14 20:14:14",
@@ -241,4 +251,62 @@ After that, you can test or build your Android application with APIs below with 
 
 ### Friends
 
-coming soon...
+* Update
+
+```json
+{
+  "message": "friends",
+  "method": "update",
+  "user_id": "your_id",
+  "longitude": 10.24,
+  "latitude": 10.24
+}
+```
+
+> `message`, `method`, `user_id` is necessary.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {}
+> }
+> ```
+
+* Check friends
+
+```json
+{
+  "message": "friends",
+  "method": "check"
+}
+```
+
+> `message`, `method` is necessary.
+>
+> Result:
+>
+> ```json
+> {
+>     "status": "yes",
+>     "detail": {
+>       "friends":[
+>         {
+>           "user_id":"friends_id_1",
+>           "longitude":10.24,
+>           "latitude":10.24,
+>           "update_time":"2017-04-14 20:14:14"
+>         },
+>         ...
+>         {
+>           "user_id":"friends_id_2",
+>           "longitude":11.24,
+>           "latitude":11.24,
+>           "update_time":"2015-04-14 20:14:14"
+>         }
+>       ]
+>     }
+> }
+> ```
+
