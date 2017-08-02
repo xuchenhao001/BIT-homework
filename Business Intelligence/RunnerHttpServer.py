@@ -68,8 +68,10 @@ def init_database():
         # 创建好友表friends
         sql = """CREATE TABLE friends (
                         user_id CHAR(22) PRIMARY KEY,
-                        friend_id CHAR(22),
-                        FOREIGN KEY(friend_id) REFERENCES users(user_id))
+                        longitude DOUBLE,
+                        latitude DOUBLE,
+                        update_time DATETIME,
+                        FOREIGN KEY(user_id) REFERENCES users(user_id))
                         CHARACTER SET = utf8;"""
         cursor.execute(sql)
     except Exception, e:
@@ -92,12 +94,24 @@ def dic_values_to_string_list(dic_values):
     return string_list
 
 
+# 字典的键值对转"k=v"形式字符串列表
+def dic_to_string_list(dic):
+    string_list = []
+    for k, v in dic.items():
+        if isinstance(v, basestring):
+            string_list.append(k + "='" + str(v) + "'")
+        else:
+            string_list.append(k + "=" + str(v))
+    return string_list
+
+
 # 维护数据库中用户表
 def users(data):
     db = None
     try:
         # 打开数据库连接
         db = database_connect()
+        # 使用cursor()方法获取操作游标
         cursor = db.cursor()
 
         method = data.pop("method")
@@ -114,12 +128,7 @@ def users(data):
         # 更新用户
         elif method == "update":
             user_id = data.pop("user_id")
-            to_update = []
-            for k, v in data.items():
-                if isinstance(v, basestring):
-                    to_update.append(k + "='" + str(v) + "'")
-                else:
-                    to_update.append(k + "=" + str(v))
+            to_update = dic_to_string_list(data)
             sql = "UPDATE users SET {} WHERE user_id = '{}';".format(
                 ",".join(to_update),
                 user_id)
@@ -217,7 +226,7 @@ def sports(data):
         # 发生错误时回滚
         db.rollback()
         print e
-        return "Events added failed: %s" % e
+        return "no", "{}".format(e)
     finally:
         if db is not None:
             db.close()
@@ -225,8 +234,71 @@ def sports(data):
 
 
 # 维护数据库中好友表
-def friends(method, user_id, friend_id):
-    return "", ""
+def friends(data):
+    db = None
+    try:
+        # 打开数据库连接
+        db = database_connect()
+        # 使用cursor()方法获取操作游标
+        cursor = db.cursor()
+
+        method = data.pop("method")
+        # 添加或更新用户位置
+        if method == "update":
+            user_id = data["user_id"]
+            sql = "SELECT * FROM friends WHERE user_id = '{}';".format(user_id)
+            print sql
+            cursor.execute(sql)
+            records = cursor.fetchall()
+            if len(records) == 0:
+                to_insert = dic_values_to_string_list(data.values())
+                sql = "INSERT INTO friends ({}) VALUES ({});".format(
+                    ",".join(data.keys()),
+                    ",".join(to_insert))
+                print sql
+                cursor.execute(sql)
+                db.commit()
+                detail = {}
+            else:
+                data.pop("user_id")
+                to_update = dic_to_string_list(data)
+                sql = "UPDATE friends SET {} WHERE user_id = '{}';".format(
+                    ",".join(to_update),
+                    user_id)
+                print sql
+                cursor.execute(sql)
+                db.commit()
+                detail = {}
+        # 获取用户位置
+        elif method == "check":
+            sql = "SELECT * FROM friends;"
+            print sql
+            cursor.execute(sql)
+            records = cursor.fetchall()
+            results = []
+            for record in records:
+                result = {
+                    'user_id': record[0],
+                    'longitude': record[1],
+                    'latitude': record[2],
+                    'update_time': str(record[3])
+                }
+                results.append(copy.copy(result))
+            db.commit()
+            detail = {'friends': results}
+        # method不存在
+        else:
+            return "no", {"method": method}
+
+    except Exception, e:
+        # 发生错误时回滚
+        db.rollback()
+        print e
+        return "no", "{}".format(e)
+    finally:
+        if db is not None:
+            db.close()
+    return "yes", detail
 
 
 # JSON REST服务处理

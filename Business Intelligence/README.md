@@ -259,7 +259,8 @@ After that, you can test or build your Android application with APIs below with 
   "method": "update",
   "user_id": "your_id",
   "longitude": 10.24,
-  "latitude": 10.24
+  "latitude": 10.24,
+  "update_time": "2017-04-14 20:14:14"
 }
 ```
 
@@ -293,17 +294,17 @@ After that, you can test or build your Android application with APIs below with 
 >     "detail": {
 >       "friends":[
 >         {
->           "user_id":"friends_id_1",
->           "longitude":10.24,
->           "latitude":10.24,
->           "update_time":"2017-04-14 20:14:14"
+>           "latitude": 10.24,
+>           "update_time": "2017-04-14 20:14:14",
+>           "user_id": "friend_id_1",
+>           "longitude": 10.24
 >         },
 >         ...
 >         {
->           "user_id":"friends_id_2",
->           "longitude":11.24,
->           "latitude":11.24,
->           "update_time":"2015-04-14 20:14:14"
+>           "latitude": 10.24,
+>           "update_time": "2015-04-14 20:14:14",
+>           "user_id": "friend_id_2",
+>           "longitude": 10.24
 >         }
 >       ]
 >     }
