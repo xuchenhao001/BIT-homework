@@ -5,6 +5,7 @@ import copy
 import json
 import mysql.connector
 import os
+import recommends_system
 import sys
 import tornado.ioloop
 import tornado.web
@@ -106,7 +107,7 @@ def dic_to_string_list(dic):
 
 
 # 维护数据库中用户表
-def users(data):
+def users(data, train=0):
     db = None
     try:
         # 打开数据库连接
@@ -114,7 +115,10 @@ def users(data):
         # 使用cursor()方法获取操作游标
         cursor = db.cursor()
 
-        method = data.pop("method")
+        if train == 0:
+            method = data.pop("method")
+        else:
+            method = "check"
         # 用户注册
         if method == "signup":
             to_insert = dic_values_to_string_list(data.values())
@@ -143,6 +147,8 @@ def users(data):
             print sql
             cursor.execute(sql)
             record = cursor.fetchone()
+            if train != 0:
+                return record
             if record is not None:
                 detail = {'user_id': record[0],
                           'password': record[1],
@@ -301,6 +307,12 @@ def friends(data):
     return "yes", detail
 
 
+# 推荐系统
+def recommends(data):
+    record = users(data, train=1)
+    return recommends_system.recommend(record)
+
+
 # JSON REST服务处理
 class MainHandler(tornado.web.RequestHandler):
     def data_received(self, chunk):
@@ -326,6 +338,8 @@ class MainHandler(tornado.web.RequestHandler):
             (status, detail) = sports(data)
         elif message == "friends":
             (status, detail) = friends(data)
+        elif message == "recommends":
+            (status, detail) = recommends(data)
 
         self.set_header("Content-Type", "application/json")
         data = {"status": status, "detail": detail}
