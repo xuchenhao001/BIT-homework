@@ -55,10 +55,9 @@ def init_database():
         sql = """CREATE TABLE sports (
                         sports_id INT AUTO_INCREMENT,
                         user_id CHAR(22),
-                        start_longitude DOUBLE,
-                        start_latitude DOUBLE,
                         full_range_longitude_latitude BLOB,
                         full_range_speed DOUBLE,
+                        full_range_steps INT,
                         full_range_distance DOUBLE,
                         start_time DATETIME,
                         end_time DATETIME,
@@ -212,14 +211,13 @@ def sports(data):
             records = cursor.fetchall()
             for record in records:
                 result = {
-                    'start_longitude': record[2],
-                    'start_latitude': record[3],
                     'full_range_longitude_latitude':
-                        json.loads(base64.b64decode(record[4])),
-                    'full_range_speed': record[5],
-                    'full_range_distance': record[6],
-                    'start_time': str(record[7]),
-                    'end_time': str(record[8])
+                        json.loads(base64.b64decode(record[2])),
+                    'full_range_speed': record[3],
+                    'full_range_steps': record[4],
+                    'full_range_distance': record[5],
+                    'start_time': str(record[6]),
+                    'end_time': str(record[7])
                 }
                 results.append(copy.copy(result))
             db.commit()

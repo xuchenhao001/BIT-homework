@@ -24,10 +24,9 @@ For our Business Intelligence class project. Database table structure & REST API
 | ----------------------------- | -------- | --------------------------- |
 | sports_id                     | INT      | AUTO_INCREMENT, PRIMARY KEY |
 | user_id                       | CHAR(22) | FOREIGN KEY                 |
-| start_longitude               | DOUBLE   |                             |
-| start_latitude                | DOUBLE   |                             |
 | full_range_longitude_latitude | BLOB     |                             |
 | full_range_speed              | DOUBLE   |                             |
+| full_range_steps              | INT      |                             |
 | full_range_distance           | DOUBLE   |                             |
 | start_time                    | DATETIME |                             |
 | end_time                      | DATETIME |                             |
@@ -153,8 +152,6 @@ After that, you can test or build your Android application with APIs below with 
   "message": "sports",
   "method": "add",
   "user_id": "your_id",
-  "start_longitude": 10.24,
-  "start_latitude": 10.24,
   "full_range_longitude_latitude": [
     {"longitude": 10.24, "latitude":10.24},
     {"longitude": 10.25, "latitude":10.25},
@@ -162,6 +159,7 @@ After that, you can test or build your Android application with APIs below with 
     {"longitude": 11.24, "latitude":11.24}
   ],
   "full_range_speed": 10.24,
+  "full_range_steps": 1024,
   "full_range_distance": 10.24,
   "start_time": "YYYY-MM-DD HH:MM:SS",
   "end_time": "YYYY-MM-DD HH:MM:SS"
@@ -200,7 +198,6 @@ After that, you can test or build your Android application with APIs below with 
 >      "user_id": "your_id",
 >      "sports_record": [
 >        {
->          "start_longitude": 10.24,
 >          "end_time": "2014-04-14 20:14:14",
 >          "start_time": "2014-04-14 20:14:04",
 >          "full_range_longitude_latitude": [
@@ -217,13 +214,12 @@ After that, you can test or build your Android application with APIs below with 
 >              "longitude": 11.24
 >            }
 >          ],
->          "full_range_speed": 10.24,
+>          "full_range_steps": 1024,
 >          "full_range_distance": 10.24,
->          "start_latitude": 10.24
+>          "full_range_speed": 10.24
 >        },
 >        ...
 >        {
->          "start_longitude": 10.24,
 >          "end_time": "2015-04-14 20:14:14",
 >          "start_time": "2015-04-14 20:14:04",
 >          "full_range_longitude_latitude": [
@@ -240,9 +236,9 @@ After that, you can test or build your Android application with APIs below with 
 >              "longitude": 11.24
 >            }
 >          ],
->          "full_range_speed": 10.24,
+>          "full_range_steps": 1024,
 >          "full_range_distance": 10.24,
->          "start_latitude": 10.24
+>          "full_range_speed": 10.24
 >        }
 >      ]
 >    }
