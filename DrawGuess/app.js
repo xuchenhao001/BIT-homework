@@ -4,9 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var sharedsession = require("express-socket.io-session");
+var socket_io = require('socket.io');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 var login = require('./routes/login');
 
 var app = express();
@@ -25,15 +27,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* session config */
+app.use(session({
+  secret:'secret',
+  resave:true,
+  saveUninitialized:false,
+  cookie:{
+    maxAge: 10*60*1000 //expiration set (ms)
+  }
+}));
+
 app.use('/', index);
-app.use('/users', users);
 app.use('/login',login);
-app.use('/register',index);
 app.use('/home',index);
 app.use("/logout",index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  res.locals.user = req.session.user;
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -49,5 +60,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// app.ready=function(server){
+//   index.prepareSocketIO(server);
+// };
 
 module.exports = app;

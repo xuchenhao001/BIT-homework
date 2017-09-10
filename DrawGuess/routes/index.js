@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
+var session = require('express-session');
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  if ("session" in req && req.session.user !== null) {
-    res.render('index', {title: 'Express'});
+  if (req.session.username) {
+    res.render('index', {username: req.session.username });
   } else {
-    console.log("error: please login first!");
     res.redirect('login');
   }
-
 });
+
 
 module.exports = router;

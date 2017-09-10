@@ -33,15 +33,6 @@
       </button>
       <a class="navbar-brand" href="#"><img src="images/user.png"/></a>
     </div>
-    <div class="collapse navbar-collapse" id="navbar">
-      <ul class="nav navbar-nav">
-        <li class="disabled"><a href="#">昵称：妈妈说名字一定要起的非常非常长才会让人注意到我</a></li>
-        <li class="disabled"><a href="#">积分：233</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Log out</a></li>
-      </ul>
-    </div>
   </div>
 </nav>
 
@@ -65,12 +56,17 @@
     console.log(data);
     //$.post("login", { username: username.value } );
     $.ajax({
-        url: '/login',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data)
+      url: '/login',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (data) {
+        console.log(data);
+        if (data === "OK"){
+          window.location.href = "home"
+        }
       }
-    );
+    });
   };
 </script>
 </body>

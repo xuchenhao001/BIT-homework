@@ -1,20 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
-var session = require('express-session');
 
 /* parse application/json */
 router.use(bodyParser.json());
-
-/* session config */
-router.use(session({
-  secret:'secret',
-  resave:true,
-  saveUninitialized:false,
-  cookie:{
-    maxAge: 10*60*1000 //expiration set (ms)
-  }
-}));
 
 /* GET login page. */
 router.get('/', function (req, res) {
@@ -28,7 +17,8 @@ router.post('/', function (req, res) {
     username: 'admin'
   };
   if (req.body.username === user.username) {
-    res.sendStatus(200);
+    req.session.username = req.body.username;
+    res.send('OK');
   } else {
     res.sendStatus(404);
   }
