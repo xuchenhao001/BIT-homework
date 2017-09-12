@@ -51,7 +51,7 @@
         <li id="roomName" class="disabled"><a href="#">房间：<%= roomName %></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Log out</a></li>
+        <li id="logout"><a href="#">Log out</a></li>
       </ul>
     </div>
   </div>
@@ -184,7 +184,21 @@
   });
 
   logoutBtn.onclick = function () {
-
+    let data = {};
+    data.type = "logout";
+    console.log(data);
+    $.ajax({
+      url: '/home',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (data) {
+        console.log(data);
+        if (data === "OK") {
+          window.location.href = "login";
+        }
+      }
+    });
   };
 </script>
 

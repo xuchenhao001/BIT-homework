@@ -40,7 +40,7 @@ router.get('/', function (req, res, next) {
   }
 });
 
-/* POST create room or select room info. */
+/* POST create/select room or logout info. */
 router.post('/', function (req, res) {
   if (req.body.type === 'create') {
 
@@ -71,6 +71,9 @@ router.post('/', function (req, res) {
     global.connection_socket.join(req.body.roomName);
     console.log("join: " + req.body.roomName);
     req.session.roomName = req.body.roomName;
+    res.send('OK');
+  } else if (req.body.type === 'logout') {
+    req.session.username = null;
     res.send('OK');
   } else {
     res.sendStatus(404);

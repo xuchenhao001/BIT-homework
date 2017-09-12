@@ -29,8 +29,8 @@ global.io.sockets.on('connection', function (socket) {
     console.log(socket.rooms);
     //io.sockets.emit("__message", message);
     // broadcast to a room
-    global.io.to(roomID).emit("__message", message);
-    //global.io.sockets.emit("__message", message);
+    //global.io.to(roomID).emit("__message", message);
+    global.io.sockets.emit("__message", message);
   });
   global.connection_socket = socket;
 });

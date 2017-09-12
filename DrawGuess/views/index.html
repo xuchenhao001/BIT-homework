@@ -172,7 +172,21 @@
   };
 
   logoutBtn.onclick = function () {
-
+    let data = {};
+    data.type = "logout";
+    console.log(data);
+    $.ajax({
+      url: '/home',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (data) {
+        console.log(data);
+        if (data === "OK") {
+          window.location.href = "login";
+        }
+      }
+    });
   };
 </script>
 
