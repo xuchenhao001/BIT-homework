@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 
-  <title>webchat</title>
+  <title>Draw & Guess</title>
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="stylesheets/bootstrap.min.css" media="screen">
@@ -18,7 +18,7 @@
   <script src="javascripts/messenger.min.js"></script>
 
 </head>
-<body>
+<body background="images/bkg3.jpg">
 
 <!-- here start the nav-bar -->
 <nav class="navbar navbar-default">
@@ -38,23 +38,27 @@
 
 <!-- container -->
 <div class="container">
-  <div class="col-md-6 col-md-offset-3">
-    <input id="username" type="text" class="form-control" placeholder="Username">
+  <!--<div class="col-md-6 col-md-offset-3">-->
+    <!--<input id="username" autofocus="autofocus" type="text" class="form-control" placeholder="Username">-->
+    <!--<br/>-->
+    <!--<button id="login" type="button" class="btn btn-lg btn-primary">登陆</button>-->
+    <!--<br/>-->
+  <!--</div>-->
+  <form class="col-md-6 col-md-offset-3">
+    <input id="username" autofocus="autofocus" type="text" class="form-control" placeholder="Username">
     <br/>
-    <button id="login" type="button" class="btn btn-lg btn-primary">登陆</button>
-    <br/>
-  </div>
+    <button id="login" type="submit" class="btn btn-lg btn-primary">登陆</button>
+  </form>
 </div>
 
 <script type="text/javascript">
-  var loginBtn = document.getElementById('login');
+  let loginBtn = document.getElementById('login');
 
   loginBtn.onclick = function () {
-    var username = document.getElementById('username').value;
-    var data = {};
+    let username = document.getElementById('username').value;
+    let data = {};
     data.username = username;
     console.log(data);
-    //$.post("login", { username: username.value } );
     $.ajax({
       url: '/login',
       type: 'POST',

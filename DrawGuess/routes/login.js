@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
+let express = require('express');
+let router = express.Router();
+let bodyParser = require('body-parser');
 
 /* parse application/json */
 router.use(bodyParser.json());
@@ -13,10 +13,7 @@ router.get('/', function (req, res) {
 /* POST login info. */
 router.post('/', function (req, res) {
   console.log("用户名称为：" + req.body.username);
-  var user = {
-    username: 'admin'
-  };
-  if (req.body.username === user.username) {
+  if (req.body.username) {
     req.session.username = req.body.username;
     res.send('OK');
   } else {

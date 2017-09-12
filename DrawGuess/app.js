@@ -1,17 +1,15 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var session = require('express-session');
-var sharedsession = require("express-socket.io-session");
-var socket_io = require('socket.io');
+let express = require('express');
+let path = require('path');
+let favicon = require('serve-favicon');
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var login = require('./routes/login');
+let index = require('./routes/index');
+let login = require('./routes/login');
+let drawBoard = require('./routes/drawBoard');
 
-var app = express();
+let app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,24 +26,27 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 /* session config */
-app.use(session({
-  secret:'secret',
-  resave:true,
-  saveUninitialized:false,
+let session = require("express-session")({
+  secret: "keyboard cat",
+  resave: true,
+  saveUninitialized: true,
   cookie:{
     maxAge: 10*60*1000 //expiration set (ms)
   }
-}));
+});
 
+app.use(session);
+
+// routing
 app.use('/', index);
 app.use('/login',login);
 app.use('/home',index);
+app.use('/drawBoard', drawBoard);
 app.use("/logout",index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.locals.user = req.session.user;
-  var err = new Error('Not Found');
+  let err = new Error('Not Found');
   err.status = 404;
   next(err);
 });

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+
+  <title>Draw & Guess</title>
+
+  <!--sql_connect-->
+  <script type="text/javascript" src="javascripts/sql_connect.js"></script>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="stylesheets/bootstrap.min.css" media="screen">
+  <script src="javascripts/jquery.js"></script>
+  <script src="javascripts/bootstrap.min.js"></script>
+
+  <!--Messenger-->
+  <link rel="stylesheet" href="stylesheets/messenger.css">
+  <link rel="stylesheet" href="stylesheets/messenger-theme-air.css">
+  <script src="javascripts/messenger.min.js"></script>
+
+  <!--drawingboard-->
+  <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="stylesheets/db.css">
+  <script type="text/javascript" src="javascripts/drawingboard.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="stylesheets/drawingboard.min.css">
+
+  <!--Web socket-->
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body background="images/bkg3.jpg">
+
+<!-- here start the nav-bar -->
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false">
+        <span class="sr-only">切换导航</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><img src="images/user.png"/></a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar">
+      <ul class="nav navbar-nav">
+        <li id="username" class="disabled"><a href="#"><%= username %></a></li>
+        <li class="disabled"><a href="#">积分：233</a></li>
+        <li id="roomName" class="disabled"><a href="#">房间：<%= roomName %></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Log out</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- container -->
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div id="db_topbar">
+      <div id="countdown">
+        <span>
+          <span id="clock1"></span>
+        </span>
+        <script src="javascripts/jquery.countdown.js"></script>
+        <script type="text/javascript">
+          $(function () {
+            var timenow = new Date();
+            timenow.setSeconds(timenow.getSeconds() + 10);
+
+            $('#clock1').countdown(timenow, function (event) {
+              var timeformat = event.strftime('%M:%S'); //定义倒计时格式
+              $(this).html(timeformat);
+            }).on('finish.countdown', function () {
+              $('.roundfinish_frame').css('z-index', "999");
+              $('#roundfinish').css('display', "block");
+            });
+          });
+        </script>
+      </div>
+      <div id="hint">
+        <span>n个字</span>
+        <span>,</span>
+        <span id="type">类别</span>
+        <script type="text/javascript">
+          $.ajax({
+            type: "post",
+            url: "../js/sql_connect.js",
+            data: {"typeid": 2},
+            dataType: "json",
+            success: function (data) {
+              // var result_type=eval("("+data+")");
+              // alert(result_type);
+              alert(data);
+              alert("success");
+            }
+          });
+
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="roundfinish_frame">
+      <div id="roundfinish">
+        <div style="text-align: center;font-size: 25px;color: white;">
+          <!-- <span>第</span> -->
+          <!-- <span id="round_num">n</span> -->
+          <span>回合结束</span>
+          </br>
+          <span style="font-size: 15px;">答案:</span>
+          <span style="font-size: 15px;">堵车</span>
+        </div>
+        <div style="text-align: center;">
+        </div>
+        <div></br></div>
+        <div style="text-align: center;">
+          <button type="button" class="btn btn-info" onclick="nextgame()">下一回合</button>
+          <button type="button" class="btn btn-danger">退出游戏</button>
+          <script>
+            function nextgame() {
+              $('.roundfinish_frame').css('z-index', "-1");
+              $('#roundfinish').css('display', "none");
+              location.reload(false);
+            }
+          </script>
+        </div>
+        <div></br></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div id="default-board" class="board"></div>
+    <script type="text/javascript">
+      let defaultBoard = new DrawingBoard.Board('default-board');
+    </script>
+  </div>
+</div>
+<div><br/></div>
+<!-- here start the input-group -->
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="input-group">
+      <input id="messages" type="text" class="form-control" placeholder="输入答案">
+      <span class="input-group-btn">
+        <button id="sendBtn" class="btn btn-danger" type="button">发送</button>
+      </span>
+    </div>
+  </div>
+</div>
+</body>
+
+<script type="text/javascript">
+  let socket = io();
+
+  let userID = "<%= username %>";
+  let roomID = "<%= roomName %>";
+  let sendMessageBtn = document.getElementById('sendBtn');
+  let logoutBtn = document.getElementById('logout');
+
+  Messenger.options = {
+    extraClasses: 'messenger-fixed messenger-on-bottom',
+    theme: 'air'
+  };
+  msg = Messenger().post({
+    message: "欢迎玩家" + userID,
+    hideAfter: 3
+  });
+
+  sendMessageBtn.onclick = function () {
+    let message = document.getElementById('messages').value;
+    socket.emit("__message", roomID, userID, message);
+  };
+
+  socket.on('__message', function (message) {
+    msg.update(message);
+  });
+
+  logoutBtn.onclick = function () {
+
+  };
+</script>
+
+</html>

@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 
-  <title>webchat</title>
+  <title>Draw & Guess</title>
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="stylesheets/bootstrap.min.css" media="screen">
@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="stylesheets/messenger.css">
   <link rel="stylesheet" href="stylesheets/messenger-theme-air.css">
   <script src="javascripts/messenger.min.js"></script>
-  
+
+  <!--Web socket-->
+  <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body background="images/bkg3.jpg">
@@ -40,7 +42,7 @@
         <li id="points" class="disabled"><a href="#">积分：233</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Log out</a></li>
+        <li id="logout"><a href="#">Log out</a></li>
       </ul>
     </div>
   </div>
@@ -50,16 +52,29 @@
 <div class="container">
   <div class="col-md-6 col-md-offset-3">
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="房间号...">
+      <input id="room-name" type="text" class="form-control" placeholder="房间号...">
       <span class="input-group-btn">
-                <button class="btn btn-info" type="button">新建房间</button>
-            </span>
+        <button id="create-room" class="btn btn-info" type="button">新建房间</button>
+      </span>
     </div>
   </div>
 </div>
+
 <div><br/></div>
+
 <div class="container">
   <div id="room-list" class="row">
+    <% let i = 0; %>
+    <% rooms.forEach(function (room) { %>
+    <div class="col-md-6 col-md-offset-3">
+      <button id="<%= i++ %>" onclick="select(this.value)" type="button"
+              class="list-group-item list-group-item-info" value="<%= room %>">
+        <%= room %>
+        <span class="badge">1</span>
+      </button>
+    </div>
+    <div class="col-md-6"><br></div>
+    <% }) %>
     <div class="col-md-6 col-md-offset-3">
       <button type="button" class="list-group-item list-group-item-info">
         妈妈说房间名一定要长长长才会吸引同学们的注意力
@@ -110,8 +125,55 @@
   </div>
 </div>
 
-<script type="text/javascript">
-
-</script>
 </body>
+
+<script type="text/javascript">
+  let socket = io();
+  let createRoomBtn = document.getElementById('create-room');
+  let logoutBtn = document.getElementById('logout');
+
+  createRoomBtn.onclick = function () {
+    let roomName = document.getElementById('room-name').value;
+    let data = {};
+    data.type = "create";
+    data.roomName = roomName;
+    console.log(data);
+    $.ajax({
+      url: '/home',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (data) {
+        console.log(data);
+        if (data === "OK") {
+          alert("创建成功")
+        }
+      }
+    });
+  };
+
+  select = function (roomName) {
+    let data = {};
+    data.type = "select";
+    data.roomName = roomName;
+    console.log(data);
+    $.ajax({
+      url: '/home',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (data) {
+        console.log(data);
+        if (data === "OK") {
+          window.location.href = "drawBoard";
+        }
+      }
+    });
+  };
+
+  logoutBtn.onclick = function () {
+
+  };
+</script>
+
 </html>
