@@ -20,20 +20,7 @@ app.set('port', port);
  */
 
 let server = http.createServer(app);
-// app.ready(server);
 global.io = require('socket.io').listen(server);
-global.io.sockets.on('connection', function (socket) {
-  // maintain messages
-  socket.on('__message', function (roomID, userID, message) {
-    console.log(roomID + ": " + userID + ": " + message);
-    console.log(socket.rooms);
-    //io.sockets.emit("__message", message);
-    // broadcast to a room
-    //global.io.to(roomID).emit("__message", message);
-    global.io.sockets.emit("__message", message);
-  });
-  global.connection_socket = socket;
-});
 
 /**
  * Listen on provided port, on all network interfaces.

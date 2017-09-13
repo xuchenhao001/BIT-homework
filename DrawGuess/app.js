@@ -62,8 +62,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// app.ready=function(server){
-//   index.prepareSocketIO(server);
-// };
-
 module.exports = app;

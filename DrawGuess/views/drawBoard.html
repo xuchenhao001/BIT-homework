@@ -158,16 +158,15 @@
 </body>
 
 <script type="text/javascript">
-  let socket = io();
-
   let userID = "<%= username %>";
   let roomID = "<%= roomName %>";
-  let sendMessageBtn = document.getElementById('sendBtn');
-  let logoutBtn = document.getElementById('logout');
+  let socket = io("/" + roomID);
+  let sendMessageBtn = document.getElementById("sendBtn");
+  let logoutBtn = document.getElementById("logout");
 
   Messenger.options = {
-    extraClasses: 'messenger-fixed messenger-on-bottom',
-    theme: 'air'
+    extraClasses: "messenger-fixed messenger-on-bottom",
+    theme: "air"
   };
   msg = Messenger().post({
     message: "欢迎玩家" + userID,
@@ -175,11 +174,12 @@
   });
 
   sendMessageBtn.onclick = function () {
-    let message = document.getElementById('messages').value;
-    socket.emit("__message", roomID, userID, message);
+    let message = document.getElementById("messages").value;
+    console.log("sent:" + message);
+    socket.emit("message", message);
   };
 
-  socket.on('__message', function (message) {
+  socket.on("message", function (message) {
     msg.update(message);
   });
 
@@ -188,9 +188,9 @@
     data.type = "logout";
     console.log(data);
     $.ajax({
-      url: '/home',
-      type: 'POST',
-      contentType: 'application/json',
+      url: "/home",
+      type: "POST",
+      contentType: "application/json",
       data: JSON.stringify(data),
       success: function (data) {
         console.log(data);
