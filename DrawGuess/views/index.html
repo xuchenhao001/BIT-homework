@@ -64,16 +64,17 @@
 
 <div class="container">
   <div id="room-list" class="row">
-    <% let i = 0; %>
     <% rooms.forEach(function (room) { %>
+    <% if (room.length > 0) { %>
     <div class="col-md-6 col-md-offset-3">
-      <button id="<%= i++ %>" onclick="select(this.value)" type="button"
+      <button onclick="select(this.value)" type="button"
               class="list-group-item list-group-item-info" value="<%= room %>">
         <%= room %>
         <span class="badge">1</span>
       </button>
     </div>
     <div class="col-md-6"><br></div>
+    <% } %>
     <% }) %>
     <div class="col-md-6 col-md-offset-3">
       <button type="button" class="list-group-item list-group-item-info">
@@ -105,8 +106,6 @@
 </body>
 
 <script type="text/javascript">
-  let socket = io();
-
   let createRoomBtn = document.getElementById('create-room');
   let logoutBtn = document.getElementById('logout');
 
@@ -122,13 +121,8 @@
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: function (data) {
-        console.log(data);
-        if (data === "OK") {
-          // join the new room
-          socket = io("/" + roomName);
-
-          alert("创建成功")
-        }
+        // login to drawBoard in specified namespace(room)
+        window.location = data.redirect
       }
     });
   };

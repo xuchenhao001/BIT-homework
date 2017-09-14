@@ -7,16 +7,18 @@ router.get("/", function (req, res, next) {
   if (req.session.username) {
     let nsp = io.of(req.session.roomName);
     nsp.on("connection", function (socket) {
-      console.log("someone again!!!");
-
       socket.on("message", function (message) {
         console.log(message);
         nsp.emit("message", message);
       });
     });
+
+    console.log(nsp);
+
     res.render("drawBoard", {
       username: req.session.username,
-      roomName: req.session.roomName
+      roomName: req.session.roomName,
+      endTime: nsp.flags.endTime
     });
   } else {
     res.redirect("login");
