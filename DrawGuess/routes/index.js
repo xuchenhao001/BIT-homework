@@ -4,6 +4,7 @@ let session = require('express-session');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
+
   // if login
   if (req.session.username) {
 
@@ -29,13 +30,12 @@ router.get('/', function (req, res, next) {
     let rooms = Object.keys(io.nsps).map(function (room) {
         return room.substr(1);
     });
-    console.log("rooms: " + rooms);
-    console.log(rooms.length);
     res.render('index', {
       username: req.session.username,
       rooms: rooms
     });
   }
+
   // please login first
   else {
     res.redirect('login');
@@ -44,6 +44,7 @@ router.get('/', function (req, res, next) {
 
 /* POST create/select room or logout info. */
 router.post('/', function (req, res) {
+
   // create new room
   if (req.body.type === 'create') {
     let nsp = io.of(req.body.roomName);
@@ -52,28 +53,24 @@ router.post('/', function (req, res) {
     });
     req.session.roomName = req.body.roomName;
 
-    // set first round start timestamp
-    nsp.flags.startTime = (new Date()).valueOf();
-    // set round interval(s)
-    nsp.flags.interval = 80 * 1000;
-    // set first round end timestamp
-    nsp.flags.endTime = nsp.flags.startTime + nsp.flags.interval;
-
     console.log("create: " + req.body.roomName);
     res.send({redirect: '/drawBoard'});
   }
+
   // select a room
   else if (req.body.type === 'select') {
     console.log("join: " + req.body.roomName);
     req.session.roomName = req.body.roomName;
     res.send({redirect: '/drawBoard'});
   }
+
   // logout
   else if (req.body.type === 'logout') {
     req.session.username = null;
     res.send('OK');
   }
-  // please login first
+
+  // or others...
   else {
     res.sendStatus(404);
   }

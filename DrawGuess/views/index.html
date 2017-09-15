@@ -109,24 +109,25 @@
   let createRoomBtn = document.getElementById('create-room');
   let logoutBtn = document.getElementById('logout');
 
+  // create room button function
   createRoomBtn.onclick = function () {
     let roomName = document.getElementById('room-name').value;
     let data = {};
     data.type = "create";
     data.roomName = roomName;
-    console.log(data);
     $.ajax({
       url: '/home',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: function (data) {
-        // login to drawBoard in specified namespace(room)
+        // login to specified namespace(room)
         window.location = data.redirect
       }
     });
   };
 
+  // room select function
   select = function (roomName) {
     let data = {};
     data.type = "select";
@@ -144,6 +145,7 @@
     });
   };
 
+  // logout button function
   logoutBtn.onclick = function () {
     let data = {};
     data.type = "logout";
