@@ -52,14 +52,12 @@
     let username = document.getElementById('username').value;
     let data = {};
     data.username = username;
-    console.log(data);
     $.ajax({
       url: '/login',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: function (data) {
-        console.log(data);
         if (data === "OK"){
           window.location.href = "home"
         }

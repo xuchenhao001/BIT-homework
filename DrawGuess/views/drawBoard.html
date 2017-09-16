@@ -106,7 +106,7 @@
         </div>
         <div><br/></div>
         <div style="text-align: center;">
-          <button type="button" class="btn btn-info" onclick="nextRound()">下一回合</button>
+          <button type="button" class="btn btn-info" onclick="startNextRound()">下一回合</button>
           <button type="button" class="btn btn-danger">退出游戏</button>
         </div>
         <div><br/></div>
@@ -141,6 +141,7 @@
   let socket = io("/" + roomID);
   let sendMessageBtn = document.getElementById("sendBtn");
   let logoutBtn = document.getElementById("logout");
+  let drawingBoard;
 
   // set Messenger options
   Messenger.options = {
@@ -149,7 +150,7 @@
   };
 
   // post welcome when page loading
-  msg = Messenger().post({
+  let msgNotice = Messenger().post({
     message: "欢迎玩家" + userID,
     hideAfter: 3
   });
@@ -157,14 +158,13 @@
   // send message button function
   sendMessageBtn.onclick = function () {
     let message = document.getElementById("messages");
-    console.log("sent:" + message.value);
     socket.emit("message", message.value);
     message.value = "";
   };
 
   // listen on messages
   socket.on("message", function (message) {
-    msg.update(message);
+    msgNotice.update(message);
   });
 
   // Timer
@@ -183,8 +183,9 @@
   }
 
   // when start the next round
-  nextRound = function () {
-    socket.emit("nextRound", "nextRound");
+  startNextRound = function () {
+
+    socket.emit("nextRound", new Date());
     $('.roundfinish_frame').css('z-index', "-1");
     $('#roundfinish').css('display', "none");
   };
@@ -214,7 +215,7 @@
 
   // DrawBoard, if roomLeader===1, you can draw
   if (roomLeader === "1") {
-    new DrawingBoard.Board('draw-board', {
+    drawingBoard = new DrawingBoard.Board('draw-board', {
       controls: [
         'Color',
         {Size: {type: 'dropdown' }},
@@ -227,12 +228,19 @@
       webStorage: 'false',
       enlargeYourContainer: true
     });
+
+    // listen to drawing event, and send to server
+    drawingBoard.ev.bind('board:stopDrawing', function (pointer) {
+      socket.emit("drawing", drawingBoard.history.stack.pop());
+    });
   }
   // or roomLeader===0, you can just watch
   else if (roomLeader === "0") {
-    new DrawingBoard.Board('draw-board', {
-      controls: false,
-      webStorage: false
+    let drawBoard = document.getElementById('draw-board');
+
+    // listen on room leader's drawing event
+    socket.on("drawing", function (img) {
+      drawBoard.innerHTML = "<img src='" + img + "' class='img-responsive' />"
     });
   }
 
@@ -240,14 +248,12 @@
   logoutBtn.onclick = function () {
     let data = {};
     data.type = "logout";
-    console.log(data);
     $.ajax({
       url: "/drawBoard",
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify(data),
       success: function (data) {
-        console.log(data);
         if (data === "OK") {
           window.location.href = "login";
         }

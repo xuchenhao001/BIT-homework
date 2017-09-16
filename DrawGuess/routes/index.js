@@ -49,7 +49,7 @@ router.post('/', function (req, res) {
   if (req.body.type === 'create') {
     let nsp = io.of(req.body.roomName);
     nsp.on('connection', function (socket) {
-      console.log(req.body.roomName)
+
     });
     req.session.roomName = req.body.roomName;
 
@@ -59,7 +59,6 @@ router.post('/', function (req, res) {
 
   // select a room
   else if (req.body.type === 'select') {
-    console.log("join: " + req.body.roomName);
     req.session.roomName = req.body.roomName;
     res.send({redirect: '/drawBoard'});
   }

@@ -12,14 +12,18 @@ router.get("/", function (req, res, next) {
     let nsp = io.of(req.session.roomName);
     nsp.on("connection", function (socket) {
 
+      // first remove all repeat server side listeners
+      socket.removeAllListeners("message");
       // listen to the messages
       socket.on("message", function (message) {
-        console.log(message);
         nsp.emit("message", message);
       });
 
+      // first remove all repeat server side listeners
+      socket.removeAllListeners("nextRound");
       // listen to the next round signal (whatever client sent)
-      socket.on("nextRound", function () {
+      socket.on("nextRound", function (date) {
+        // select one room leader and broadcast
         let onlineSockets = Object.keys(nsp.sockets);
         let index = Math.floor((Math.random()*onlineSockets.length));
         for (let i=0; i<onlineSockets.length; i++) {
@@ -31,6 +35,13 @@ router.get("/", function (req, res, next) {
           }
         }
       });
+
+      // first remove all repeat server side listeners
+      socket.removeAllListeners("drawing");
+      // listen to drawing operation, and just relay coordinates
+      socket.on("drawing", function (img) {
+        nsp.emit("drawing", img);
+      })
     });
 
     // detect room leader
