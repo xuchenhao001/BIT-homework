@@ -22,7 +22,7 @@ router.get("/", function (req, res, next) {
       // first remove all repeat server side listeners
       socket.removeAllListeners("nextRound");
       // listen to the next round signal (whatever client sent)
-      socket.on("nextRound", function (date) {
+      socket.on("nextRound", function () {
         // select one room leader and broadcast
         let onlineSockets = Object.keys(nsp.sockets);
         let index = Math.floor((Math.random()*onlineSockets.length));

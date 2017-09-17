@@ -94,26 +94,34 @@
   <div class="col-md-6 col-md-offset-3">
     <div class="roundfinish_frame">
       <div id="roundfinish">
-        <div style="text-align: center;font-size: 25px;color: white;">
-          <!-- <span>第</span> -->
-          <!-- <span id="round_num">n</span> -->
-          <span>回合结束</span>
-          <br/>
-          <span style="font-size: 15px;">答案:</span>
-          <span style="font-size: 15px;">堵车</span>
-        </div>
-        <div style="text-align: center;">
-        </div>
+        <span style="font-size: 25px;">回合结束</span>
+        <br/>
+        <span style="font-size: 15px;">答案:</span>
+        <span style="font-size: 15px;">堵车</span>
         <div><br/></div>
-        <div style="text-align: center;">
-          <button type="button" class="btn btn-info" onclick="startNextRound()">下一回合</button>
-          <button type="button" class="btn btn-danger">退出游戏</button>
-        </div>
+        <button type="button" class="btn btn-info" onclick="startNextRound()">下一回合</button>
         <div><br/></div>
       </div>
     </div>
   </div>
 </div>
+
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="gamestart_frame">
+      <div id="gamestart">
+        <span style="font-size: 25px;">欢迎进入游戏</span>
+        <br/>
+        <span style="font-size: 15px;">房间内人数:</span>
+        <span style="font-size: 15px;">n</span>
+        <div><br/></div>
+        <button type="button" class="btn btn-info" onclick="startNextRound()">开始游戏</button>
+        <div><br/></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
   <div class="col-md-6 col-md-offset-3">
     <div id="draw-board" class="board"></div>
@@ -137,6 +145,7 @@
   let userID = "<%= username %>";
   let roomID = "<%= roomName %>";
   let roomLeader = "<%= roomLeader %>";
+  let endTime = Number("<%= endTime %>");
 
   let socket = io("/" + roomID);
   let sendMessageBtn = document.getElementById("sendBtn");
@@ -177,17 +186,14 @@
   });
 
   // first round
-  if ("<%= endTime %>".length === 0) {
-    $('.roundfinish_frame').css('z-index', "999");
-    $('#roundfinish').css('display', "block");
+  if (endTime === 0 || endTime < (new Date()).valueOf()) {
+    $('.gamestart_frame').css('z-index', "999");
+    $('#gamestart').css('display', "block");
   }
 
   // when start the next round
   startNextRound = function () {
-
-    socket.emit("nextRound", new Date());
-    $('.roundfinish_frame').css('z-index', "-1");
-    $('#roundfinish').css('display', "none");
+    socket.emit("nextRound");
   };
 
   // when received netRound signal, reload page

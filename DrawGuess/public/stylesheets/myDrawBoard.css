@@ -1,67 +1,89 @@
-		.board {
-			margin: 0 auto;
-			width: auto;
-			height: 450px;
-		}
-		#default-board {
-			width: auto;
-			height: 450px;
-		}
-		#page_drawingboard{
-			width: 400px;
-			height: 600px;
-			border: 1px solid rgb(202,202,202);
-			margin: 0 auto;
-			/*background-image: url(./image/bkg3.jpg);*/
-			/*background: url(/image/bkg3.jpg);*/
-		}
-		#db_topbar{
-			width: 100%;
-			height: 40px;	
-			/*color: #7d7d7d;		*/
-			color: #000000;
-			font-size: 20px;
-			padding: 2px 2px;
-			margin:5px 0 25px 0;
-			border-bottom: 1px solid rgb(202,202,202);
-		}
-		#countdown{
-			float: left;
-			width: 25%;
-			height: 30px;
-			color:white;
-			text-align: center;
-			background-color:rgb(217,83,79);
-			/*border: 1px solid black;*/
-			border-radius: 10px;
-		}
-		#hint{
-			float: right;
-			width: 70%;
-			height: 40px;
-			text-align: right;
-			padding-right: 20px;
-			/*border: 1px solid black;	*/
-		}
-		.roundfinish_frame{
-			position: fixed;
-			top: 250px;
-			left: 0;
-			text-align: center;
-			/*background: rgba(25,250,250,0.5);*/
-			width: 100%;
-			height: 200px;
-			/*border: 1px solid red;*/
-			z-index: -1;
-		}
-		#roundfinish{
-			/*background: url(../img/bkg3.jpg);*/
-			background-color:rgba(217,83,79,0.7);
-			margin: 0 auto;
-			width: 70%;
-			display: none;
-			height: auto;
-		}
-		#db_board{
-			text-align: center;
-		}
+.board {
+    margin: 0 auto;
+    width: auto;
+    height: 450px;
+}
+
+#default-board {
+    width: auto;
+    height: 450px;
+}
+
+#page_drawingboard {
+    width: 400px;
+    height: 600px;
+    border: 1px solid rgb(202, 202, 202);
+    margin: 0 auto;
+}
+
+#db_topbar {
+    width: 100%;
+    height: 40px;
+    color: #000000;
+    font-size: 20px;
+    padding: 2px 2px;
+    margin: 5px 0 25px 0;
+    border-bottom: 1px solid rgb(202, 202, 202);
+}
+
+#countdown {
+    float: left;
+    width: 25%;
+    height: 30px;
+    color: white;
+    text-align: center;
+    background-color: rgb(217, 83, 79);
+    border-radius: 10px;
+}
+
+#hint {
+    float: right;
+    width: 70%;
+    height: 40px;
+    text-align: right;
+    padding-right: 20px;
+}
+
+.roundfinish_frame {
+    position: fixed;
+    top: 250px;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    z-index: -1;
+}
+
+#roundfinish {
+    background-color: rgb(217, 83, 79);
+    margin: 0 auto;
+    width: 60%;
+    display: none;
+    height: auto;
+    text-align: center;
+    color: white;
+}
+
+.gamestart_frame {
+    position: fixed;
+    top: 250px;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    z-index: -1;
+}
+
+#gamestart {
+    background-color: rgb(217, 83, 79);
+    margin: 0 auto;
+    width: 60%;
+    display: none;
+    height: auto;
+    text-align: center;
+    color: white;
+}
+
+#db_board {
+    text-align: center;
+}
