@@ -7,9 +7,6 @@
 
   <title>Draw & Guess</title>
 
-  <!--sql_connect-->
-  <script type="text/javascript" src="javascripts/sql_connect.js"></script>
-
   <!-- Bootstrap -->
   <link rel="stylesheet" href="stylesheets/bootstrap.min.css" media="screen">
   <script src="javascripts/jquery.js"></script>
@@ -70,37 +67,7 @@
         </span>
       </div>
       <div id="hint">
-        <span>n个字</span>
-        <span>,</span>
-        <span id="type">类别</span>
-        <script type="text/javascript">
-          $.ajax({
-            type: "post",
-            url: "../js/sql_connect.js",
-            data: {"typeid": 2},
-            dataType: "json",
-            success: function (data) {
-              alert(data);
-              alert("success");
-            }
-          });
-
-        </script>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="col-md-6 col-md-offset-3">
-    <div class="roundfinish_frame">
-      <div id="roundfinish">
-        <span style="font-size: 25px;">回合结束</span>
-        <br/>
-        <span style="font-size: 15px;">答案:</span>
-        <span style="font-size: 15px;">堵车</span>
-        <div><br/></div>
-        <button type="button" class="btn btn-info" onclick="startNextRound()">下一回合</button>
-        <div><br/></div>
+        <span id="prompt">n个字, 类别</span>
       </div>
     </div>
   </div>
@@ -116,6 +83,22 @@
         <span style="font-size: 15px;">n</span>
         <div><br/></div>
         <button type="button" class="btn btn-info" onclick="startNextRound()">开始游戏</button>
+        <div><br/></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="roundfinish_frame">
+      <div id="roundfinish">
+        <span style="font-size: 25px;">回合结束</span>
+        <br/>
+        <span style="font-size: 15px;">答案:</span>
+        <span id="answer" style="font-size: 15px;"></span>
+        <div><br/></div>
+        <button type="button" class="btn btn-info" onclick="startNextRound()">下一回合</button>
         <div><br/></div>
       </div>
     </div>
@@ -150,7 +133,9 @@
   let socket = io("/" + roomID);
   let sendMessageBtn = document.getElementById("sendBtn");
   let logoutBtn = document.getElementById("logout");
-  let drawingBoard;
+  let prompt = document.getElementById("prompt");
+  let answerShow = document.getElementById("answer");
+  let drawingBoard, term;
 
   // set Messenger options
   Messenger.options = {
@@ -167,13 +152,45 @@
   // send message button function
   sendMessageBtn.onclick = function () {
     let message = document.getElementById("messages");
-    socket.emit("message", message.value);
+    socket.emit("message", message.value, userID, roomLeader ,term);
     message.value = "";
   };
 
+  // query term of this round
+  queryTerm = function () {
+    let data = {};
+    data.type = "queryTerm";
+    $.ajax({
+      url: "/drawBoard",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(data),
+      success: function (answer) {
+        term = answer;
+        // if term exists, show the prompt
+        if (term) {
+          if (roomLeader === "1") {
+            prompt.innerText = term.termCon;
+          } else if (roomLeader === "0") {
+            prompt.innerText = term.termLen + "个字, " + term.termType;
+          }
+        }
+      }
+    });
+  };
+  // start query the term when page loaded
+  queryTerm();
+
   // listen on messages
-  socket.on("message", function (message) {
+  socket.on("message", function (message, finishflag) {
     msgNotice.update(message);
+    // if someone got the right answer
+    if (finishflag === "1") {
+      answerShow.innerText = term.termCon;
+      $('#clock1').countdown('pause');
+      $('.roundfinish_frame').css('z-index', "999");
+      $('#roundfinish').css('display', "block");
+    }
   });
 
   // Timer
@@ -181,6 +198,7 @@
     // set Timer format
     $(this).html(event.strftime('%M:%S'));
   }).on('finish.countdown', function () {
+    answerShow.innerText = term.termCon;
     $('.roundfinish_frame').css('z-index', "999");
     $('#roundfinish').css('display', "block");
   });

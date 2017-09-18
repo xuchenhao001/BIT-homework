@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 let session = require('express-session');
+let nsp;
 
 /* GET drawBoard page. */
 router.get("/", function (req, res, next) {
@@ -9,15 +10,8 @@ router.get("/", function (req, res, next) {
   if (req.session.username) {
 
     // set about the websocket
-    let nsp = io.of(req.session.roomName);
+    nsp = io.of(req.session.roomName);
     nsp.on("connection", function (socket) {
-
-      // first remove all repeat server side listeners
-      socket.removeAllListeners("message");
-      // listen to the messages
-      socket.on("message", function (message) {
-        nsp.emit("message", message);
-      });
 
       // first remove all repeat server side listeners
       socket.removeAllListeners("nextRound");
@@ -34,14 +28,43 @@ router.get("/", function (req, res, next) {
             nsp.to(onlineSockets[i]).emit("nextRound", "0");
           }
         }
+
+        // reset round unfinished status
+        nsp.flags.roundFinish = 0;
+
+        // generate a random term from MySQL
+        let mysql = require("../db/MySQLConnection");
+        let query = "SELECT * FROM term WHERE termID >= " +
+          "((SELECT MAX(termID) FROM term) - (SELECT MIN(termID) FROM term)) * RAND() " +
+          "+ (SELECT MIN(termID) FROM term)  LIMIT 1;";
+        mysql.executeQuery(query, function (status, result) {
+          nsp.flags.term = result.rows[0];
+          console.log(nsp.flags.term);
+        });
       });
 
+      // listen to drawing operation, and just relay coordinates
       // first remove all repeat server side listeners
       socket.removeAllListeners("drawing");
-      // listen to drawing operation, and just relay coordinates
       socket.on("drawing", function (img) {
         nsp.emit("drawing", img);
-      })
+      });
+
+      // listen to the messages
+      // first remove all repeat server side listeners
+      socket.removeAllListeners("message");
+      socket.on("message", function (message, userID, roomLeader, term) {
+        // correct answer, do not sent by room leader, and round didn't finished
+        if (message === term.termCon && roomLeader !== "1" && !nsp.flags.roundFinish) {
+          nsp.emit("message", userID + "答对了：" + message, "1");
+          // set round finished status
+          nsp.flags.roundFinish = 1;
+        }
+        // the answer is wrong
+        else {
+          nsp.emit("message", message, "0");
+        }
+      });
     });
 
     // detect room leader
@@ -70,15 +93,9 @@ router.get("/", function (req, res, next) {
 /* POST logout info. */
 router.post("/", function (req, res) {
 
-  // if logout
-  if (req.body.type === "logout") {
-    req.session.username = null;
-    res.send("OK");
-  }
-
   // if next round, choose the room leader,
   // and then reset the timer
-  else if (req.body.type === "nextRound") {
+  if (req.body.type === "nextRound") {
 
     // choose the room leader
     if (req.body.leader === 1) {
@@ -88,15 +105,25 @@ router.post("/", function (req, res) {
     }
 
     // reset the timer
-    let nsp = io.of(req.session.roomName);
     // set first round start timestamp
     nsp.flags.startTime = (new Date()).valueOf();
     // set round interval(s)
-    nsp.flags.interval = 80 * 1000;
+    nsp.flags.interval = 60 * 1000;
     // set first round end timestamp
     nsp.flags.endTime = nsp.flags.startTime + nsp.flags.interval;
 
-    res.send("OK")
+    res.send("OK");
+  }
+
+  // if query the term
+  else if (req.body.type === "queryTerm") {
+    res.send(nsp.flags.term);
+  }
+
+  // if logout
+  else if (req.body.type === "logout") {
+    req.session.username = null;
+    res.send("OK");
   }
 
   // or others...

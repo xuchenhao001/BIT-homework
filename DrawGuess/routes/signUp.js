@@ -5,31 +5,33 @@ let bodyParser = require('body-parser');
 /* parse application/json */
 router.use(bodyParser.json());
 
-/* GET login page. */
+/* GET sign up page. */
 router.get('/', function (req, res) {
-  res.render('login');
+  res.render('signUp');
 });
 
-/* POST login info. */
+/* POST sign up info. */
 router.post('/', function (req, res) {
   let mysql = require("../db/MySQLConnection");
   let query = "SELECT * FROM userInfo WHERE email = '" + req.body.email + "';";
+  let insert = "INSERT INTO userInfo (`email`, `nickname`, `password`, `points`) VALUES ('" +
+    req.body.email + "', '" + req.body.nickname + "', '" + req.body.password +
+    "', 0);";
   mysql.executeQuery(query, function (status, result) {
     if (status === "OK") {
-      console.log(req.body.email);
-      console.log(result.rows.length);
       // if email does not exist
       if (result.rows.length === 0) {
-        res.send("EMAIL_NOT_EXIST");
+        mysql.executeQuery(insert, function (status) {
+          if (status === "OK") {
+            res.send("OK");
+          } else {
+            res.send("ERR");
+          }
+        });
       }
-      // if email exists & password is correct
-      else if (result.rows[0].password === req.body.password) {
-        req.session.username = result.rows[0].nickname;
-        res.send("OK");
-      }
-      // or password is wrong
+      // if email exists
       else {
-        res.send("PW_ERR");
+        res.send("EXIST");
       }
     }
     // or error from mysql

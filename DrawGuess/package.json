@@ -15,6 +15,7 @@
     "serve-favicon": "~2.4.2",
     "express-session": "~1.15.5",
     "socket.io": "~2.0.3",
-    "connect": "~3.6.3"
+    "connect": "~3.6.3",
+    "mysql": "~2.14.1"
   }
 }

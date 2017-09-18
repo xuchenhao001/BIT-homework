@@ -7,6 +7,7 @@ let bodyParser = require('body-parser');
 
 let index = require('./routes/index');
 let login = require('./routes/login');
+let signUp = require('./routes/signUp');
 let drawBoard = require('./routes/drawBoard');
 
 let app = express();
@@ -40,6 +41,7 @@ app.use(session);
 // routing
 app.use('/', index);
 app.use('/login',login);
+app.use('/signUp', signUp);
 app.use('/home',index);
 app.use('/drawBoard', drawBoard);
 app.use("/logout",index);
