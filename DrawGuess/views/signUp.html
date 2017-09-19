@@ -28,16 +28,16 @@
     <form id="signUpForm" class="form-horizontal">
       <span class="heading"><br/></span>
       <div class="form-group">
-        <input type="email" name="email" class="form-control" placeholder="电子邮件">
+        <input id="email" type="email" name="email" class="form-control" placeholder="电子邮件">
       </div>
       <div class="form-group">
-        <input name="nickname" class="form-control" placeholder="昵  称">
+        <input id="nickname" name="nickname" class="form-control" placeholder="昵  称">
       </div>
       <div class="form-group">
-        <input type="password" name="password" class="form-control" placeholder="密　码">
+        <input id="password" type="password" name="password" class="form-control" placeholder="密　码">
       </div>
       <div class="form-group">
-        <input type="password" name="confirmPassword" class="form-control" placeholder="确认密码">
+        <input id="confirmPassword" type="password" name="confirmPassword" class="form-control" placeholder="确认密码">
       </div>
       <div class="form-group">
         <button id="goBack" type="button" class="btn btn-default pull-left">返回</button>
@@ -112,6 +112,7 @@
 
       // Send data to backend
       let data = {};
+
       data.email = $("#email").val();
       data.nickname = $("#nickname").val();
       data.password = $("#password").val();
