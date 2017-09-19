@@ -52,7 +52,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li id="quit"><a href="#">退出房间</a></li>
-        <li id="logout"><a href="#">用户注销</a></li>
+        <li id="logout"><a href="#">注销用户</a></li>
       </ul>
     </div>
   </div>
@@ -114,14 +114,14 @@
 <div><br/></div>
 <!-- here start the input-group -->
 <div class="container">
-  <div class="col-md-6 col-md-offset-3">
+  <form id="messages-form" class="col-md-6 col-md-offset-3">
     <div class="input-group">
       <input id="messages" type="text" class="form-control" placeholder="输入答案">
       <span class="input-group-btn">
         <button id="sendBtn" class="btn btn-danger" type="button">发送</button>
       </span>
     </div>
-  </div>
+  </form>
 </div>
 </body>
 
@@ -152,11 +152,16 @@
     hideAfter: 5
   });
 
-  // send message button function
+  // send message Enter key or button function
+  $("#messages-form").keypress(function (e) {
+    if(e.keyCode === 13){
+      e.preventDefault();
+      $("#sendBtn").click();
+    }
+  });
   $("#sendBtn").click(function () {
-    let message = document.getElementById("messages");
-    socket.emit("message", message.value, email, nickName, roomLeader ,term, roundStatus);
-    message.value = "";
+    socket.emit("message", $("#messages").val(), email, nickName, roomLeader ,term, roundStatus);
+    $("#messages").val("");
   });
 
   // query term of this round

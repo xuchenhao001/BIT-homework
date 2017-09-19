@@ -42,7 +42,7 @@
         <li id="points" class="disabled"><a href="#">积分: <%= points %></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li id="logout"><a href="#">用户注销</a></li>
+        <li id="logout"><a href="#">注销用户</a></li>
       </ul>
     </div>
   </div>
@@ -50,7 +50,7 @@
 
 <!-- container -->
 <div class="container">
-  <form class="col-md-6 col-md-offset-3">
+  <form id="create-room-form" class="col-md-6 col-md-offset-3">
     <div class="input-group">
       <input id="room-name" type="text" class="form-control" placeholder="房间号...">
       <span class="input-group-btn">
@@ -64,13 +64,13 @@
 
 <div class="container">
   <div id="room-list" class="row">
-    <% rooms.forEach(function (room) { %>
-    <% if (room.length > 0) { %>
+    <% rooms.forEach(function (roomDetail) { %>
+    <% if (roomDetail.roomName.length > 0) { %>
     <div class="col-md-6 col-md-offset-3">
       <button onclick="select(this.value)" type="button"
-              class="list-group-item list-group-item-info" value="<%= room %>">
-        <%= room %>
-        <span class="badge">1</span>
+              class="list-group-item list-group-item-info" value="<%= roomDetail.roomName %>">
+        <%= roomDetail.roomName %>
+        <span class="badge"><%= roomDetail.roomPlayerNum %></span>
       </button>
     </div>
     <div class="col-md-6"><br></div>
@@ -108,8 +108,14 @@
 <script type="text/javascript">
 
   // create room button function
+  $("#create-room-form").keypress(function (e) {
+    if(e.keyCode === 13){
+      e.preventDefault();
+      $("#create-room").click();
+    }
+  });
   $("#create-room").click(function () {
-    let roomName = document.getElementById('room-name').value;
+    let roomName = $('#room-name').val();
     let data = {};
     data.type = "create";
     data.roomName = roomName;
