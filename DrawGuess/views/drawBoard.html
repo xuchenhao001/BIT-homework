@@ -51,7 +51,8 @@
         <li class="disabled"><a href="#">房间：<%= roomName %></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li id="logout"><a href="#">注销</a></li>
+        <li id="quit"><a href="#">退出房间</a></li>
+        <li id="logout"><a href="#">用户注销</a></li>
       </ul>
     </div>
   </div>
@@ -132,7 +133,12 @@
   let endTime = Number("<%= endTime %>");
 
   let socket = io("/" + roomID);
-  let drawingBoard, term;
+  // canvas default variable
+  let drawingBoard;
+  // question variable for every round
+  let term;
+  // round status maintain variable, 0 for unfinished, 1 for finished
+  let roundStatus = 0;
 
   // set Messenger options
   Messenger.options = {
@@ -143,13 +149,13 @@
   // post welcome when page loading
   let msgNotice = Messenger().post({
     message: "欢迎玩家" + nickName,
-    hideAfter: 3
+    hideAfter: 5
   });
 
   // send message button function
   $("#sendBtn").click(function () {
     let message = document.getElementById("messages");
-    socket.emit("message", message.value, email, nickName, roomLeader ,term);
+    socket.emit("message", message.value, email, nickName, roomLeader ,term, roundStatus);
     message.value = "";
   });
 
@@ -183,8 +189,9 @@
 
     // if someone got the right answer
     if (finishflag === "1") {
+      roundStatus = 1;
       //broadcast message
-      msgNotice.update("恭喜[" + userID + "]答对了: ***" + message + "***");
+      msgNotice.update("恭喜 " + userID + " 答对了: " + message);
 
       $("#answer").text(term.termCon);
       $('#clock1').countdown('pause');
@@ -194,7 +201,7 @@
 
     // or just chat
     else {
-      msgNotice.update("[" + userID + "]: " + message);
+      msgNotice.update(userID + " : " + message);
     }
   });
 
@@ -203,6 +210,7 @@
     // set Timer format
     $(this).html(event.strftime('%M:%S'));
   }).on('finish.countdown', function () {
+    roundStatus = 1;
     $("#answer").text(term.termCon);
     $('.roundfinish_frame').css('z-index', "999");
     $('#roundfinish').css('display', "block");
@@ -289,6 +297,11 @@
       }
     });
   });
+
+  // exit the room
+  $("#quit").click(function () {
+    window.location.href = "home";
+  })
 </script>
 
 </html>

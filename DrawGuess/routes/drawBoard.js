@@ -29,9 +29,6 @@ router.get("/", function (req, res, next) {
           }
         }
 
-        // reset round unfinished status
-        nsp.flags.roundFinish = 0;
-
         // generate a random term from MySQL
         let mysql = require("../db/MySQLConnection");
         let query = "SELECT * FROM term WHERE termID >= " +
@@ -42,7 +39,7 @@ router.get("/", function (req, res, next) {
         });
       });
 
-      // listen to drawing operation, and just relay coordinates
+      // listen to drawing operation, and just relay images
       // first remove all repeat server side listeners
       socket.removeAllListeners("drawing");
       socket.on("drawing", function (img) {
@@ -52,10 +49,10 @@ router.get("/", function (req, res, next) {
       // listen to the messages
       // first remove all repeat server side listeners
       socket.removeAllListeners("message");
-      socket.on("message", function (message, email, nickname, roomLeader, term) {
+      socket.on("message", function (message, email, nickname, roomLeader, term, roundStatus) {
 
         // correct answer, do not sent by room leader, and round didn't finished
-        if (message === term.termCon && roomLeader !== "1" && !nsp.flags.roundFinish) {
+        if (message === term.termCon && roomLeader !== "1" && !roundStatus) {
 
           // broadcast the succeed message to other player
           nsp.emit("message", nickname, message, "1");
@@ -66,12 +63,9 @@ router.get("/", function (req, res, next) {
           let updateWinner = "UPDATE userinfo SET points=points+10 where email='" + email + "';";
           mysql.executeQuery(updateWinner, function (status, result) {
           });
-
-          // set round finished status
-          nsp.flags.roundFinish = 1;
         }
 
-        // the answer is wrong
+        // the answer is wrong or submit by host
         else {
           nsp.emit("message", nickname, message, "0");
         }
