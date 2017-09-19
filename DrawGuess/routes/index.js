@@ -8,25 +8,21 @@ router.get('/', function (req, res, next) {
   // if login
   if (req.session.email) {
 
-    // namespaces garbage collection ----didn't finish!
-    // Object.keys(io.nsps).forEach(function (room) {
-    //   console.log("now room: " + room);
-    //
-    //   let namespaceToDel = io.of(room);
-    //   let connectedNamespaceSockets = Object.keys(namespaceToDel.connected);
-    //
-    //   console.log("connected: " + connectedNamespaceSockets);
-    //
-    //   if (connectedNamespaceSockets.length === 0) {
-    //     connectedNamespaceSockets.forEach(function (socketID) {
-    //       // Disconnect Each socket
-    //       namespaceToDel.connected[socketID].disconnect();
-    //     });
-    //     namespaceToDel.removeAllListeners();
-    //     delete io.nsps[room];
-    //   }
-    // });
+    // rooms garbage collection
+    Object.keys(io.nsps).forEach(function (room) {
+      if (room !== "/") {
+        let roomToDel = io.of(room);
+        let connectedSockets = Object.keys(roomToDel.connected);
 
+        // recycle the room if no one connected
+        if (connectedSockets.length < 1) {
+          roomToDel.removeAllListeners();
+          delete io.nsps[room];
+        }
+      }
+    });
+
+    // update rooms info
     let rooms = Object.keys(io.nsps).map(function (room) {
         return room.substr(1);
     });
