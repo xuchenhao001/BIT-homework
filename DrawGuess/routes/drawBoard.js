@@ -7,7 +7,7 @@ let nsp;
 router.get("/", function (req, res, next) {
 
   // if already logged in
-  if (req.session.username) {
+  if (req.session.email) {
 
     // set about the websocket
     nsp = io.of(req.session.roomName);
@@ -19,8 +19,8 @@ router.get("/", function (req, res, next) {
       socket.on("nextRound", function () {
         // select one room leader and broadcast
         let onlineSockets = Object.keys(nsp.sockets);
-        let index = Math.floor((Math.random()*onlineSockets.length));
-        for (let i=0; i<onlineSockets.length; i++) {
+        let index = Math.floor((Math.random() * onlineSockets.length));
+        for (let i = 0; i < onlineSockets.length; i++) {
           if (i === index) {
             // just send "1" to specified client as room leader
             nsp.to(onlineSockets[i]).emit("nextRound", "1");
@@ -39,7 +39,6 @@ router.get("/", function (req, res, next) {
           "+ (SELECT MIN(termID) FROM term)  LIMIT 1;";
         mysql.executeQuery(query, function (status, result) {
           nsp.flags.term = result.rows[0];
-          console.log(nsp.flags.term);
         });
       });
 
@@ -53,16 +52,28 @@ router.get("/", function (req, res, next) {
       // listen to the messages
       // first remove all repeat server side listeners
       socket.removeAllListeners("message");
-      socket.on("message", function (message, userID, roomLeader, term) {
+      socket.on("message", function (message, email, nickname, roomLeader, term) {
+
         // correct answer, do not sent by room leader, and round didn't finished
         if (message === term.termCon && roomLeader !== "1" && !nsp.flags.roundFinish) {
-          nsp.emit("message", userID + "答对了：" + message, "1");
+
+          // broadcast the succeed message to other player
+          nsp.emit("message", nickname, message, "1");
+
+          // update points
+          // add 10 points to winner
+          let mysql = require("../db/MySQLConnection");
+          let updateWinner = "UPDATE userinfo SET points=points+10 where email='" + email + "';";
+          mysql.executeQuery(updateWinner, function (status, result) {
+          });
+
           // set round finished status
           nsp.flags.roundFinish = 1;
         }
+
         // the answer is wrong
         else {
-          nsp.emit("message", message, "0");
+          nsp.emit("message", nickname, message, "0");
         }
       });
     });
@@ -75,13 +86,32 @@ router.get("/", function (req, res, next) {
       roomLeader = 0;
     }
 
-    // render new page
-    res.render("drawBoard", {
-      username: req.session.username,
-      roomName: req.session.roomName,
-      endTime: nsp.flags.endTime,
-      roomLeader: roomLeader
+    // update points
+    let points = null;
+    let mysql = require("../db/MySQLConnection");
+    let queryPoints = "SELECT points FROM userinfo WHERE email='" + req.session.email + "';";
+    mysql.executeQuery(queryPoints, function (status, result) {
+      if (status === "OK") {
+        points = result.rows[0].points;
+
+        // render new page
+        res.render("drawBoard", {
+          email: req.session.email,
+          nickname: req.session.nickname,
+          roomName: req.session.roomName,
+          points: points,
+          endTime: nsp.flags.endTime,
+          roomLeader: roomLeader
+        });
+      }
+
+      // if server is not ready to handle the request
+      else {
+        res.sendStatus(503);
+      }
     });
+
+
   }
 
   // if not login
@@ -90,7 +120,7 @@ router.get("/", function (req, res, next) {
   }
 });
 
-/* POST logout info. */
+/* POST info. */
 router.post("/", function (req, res) {
 
   // if next round, choose the room leader,
@@ -108,7 +138,7 @@ router.post("/", function (req, res) {
     // set first round start timestamp
     nsp.flags.startTime = (new Date()).valueOf();
     // set round interval(s)
-    nsp.flags.interval = 60 * 1000;
+    nsp.flags.interval = 80 * 1000;
     // set first round end timestamp
     nsp.flags.endTime = nsp.flags.startTime + nsp.flags.interval;
 
@@ -122,7 +152,7 @@ router.post("/", function (req, res) {
 
   // if logout
   else if (req.body.type === "logout") {
-    req.session.username = null;
+    req.session.email = null;
     res.send("OK");
   }
 

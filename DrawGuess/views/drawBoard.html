@@ -46,9 +46,9 @@
     </div>
     <div class="collapse navbar-collapse" id="navbar">
       <ul class="nav navbar-nav">
-        <li id="username" class="disabled"><a href="#"><%= username %></a></li>
-        <li class="disabled"><a href="#">积分：233</a></li>
-        <li id="roomName" class="disabled"><a href="#">房间：<%= roomName %></a></li>
+        <li class="disabled"><a href="#"><%= nickname %></a></li>
+        <li class="disabled"><a href="#">积分: <%= points %></a></li>
+        <li class="disabled"><a href="#">房间：<%= roomName %></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li id="logout"><a href="#">Log out</a></li>
@@ -125,7 +125,8 @@
 </body>
 
 <script type="text/javascript">
-  let userID = "<%= username %>";
+  let email = "<%= email%>";
+  let nickName = "<%= nickname %>";
   let roomID = "<%= roomName %>";
   let roomLeader = "<%= roomLeader %>";
   let endTime = Number("<%= endTime %>");
@@ -145,14 +146,14 @@
 
   // post welcome when page loading
   let msgNotice = Messenger().post({
-    message: "欢迎玩家" + userID,
+    message: "欢迎玩家" + nickName,
     hideAfter: 3
   });
 
   // send message button function
   sendMessageBtn.onclick = function () {
     let message = document.getElementById("messages");
-    socket.emit("message", message.value, userID, roomLeader ,term);
+    socket.emit("message", message.value, email, nickName, roomLeader ,term);
     message.value = "";
   };
 
@@ -182,14 +183,22 @@
   queryTerm();
 
   // listen on messages
-  socket.on("message", function (message, finishflag) {
-    msgNotice.update(message);
+  socket.on("message", function (userID, message, finishflag) {
+
     // if someone got the right answer
     if (finishflag === "1") {
+      //broadcast message
+      msgNotice.update("恭喜[" + userID + "]答对了: ***" + message + "***");
+
       answerShow.innerText = term.termCon;
       $('#clock1').countdown('pause');
       $('.roundfinish_frame').css('z-index', "999");
       $('#roundfinish').css('display', "block");
+    }
+
+    // or just chat
+    else {
+      msgNotice.update("[" + userID + "]: " + message);
     }
   });
 

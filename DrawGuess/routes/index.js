@@ -6,7 +6,7 @@ let session = require('express-session');
 router.get('/', function (req, res, next) {
 
   // if login
-  if (req.session.username) {
+  if (req.session.email) {
 
     // namespaces garbage collection ----didn't finish!
     // Object.keys(io.nsps).forEach(function (room) {
@@ -30,10 +30,28 @@ router.get('/', function (req, res, next) {
     let rooms = Object.keys(io.nsps).map(function (room) {
         return room.substr(1);
     });
-    res.render('index', {
-      username: req.session.username,
-      rooms: rooms
+
+    // update points
+    let points = null;
+    let mysql = require("../db/MySQLConnection");
+    let queryPoints = "SELECT points FROM userinfo WHERE email='" + req.session.email + "';";
+    mysql.executeQuery(queryPoints, function (status, result) {
+      if (status === "OK") {
+        points = result.rows[0].points;
+        
+        res.render('index', {
+          nickname: req.session.nickname,
+          points: points,
+          rooms: rooms
+        });
+      }
+
+      // if server is not ready to handle the request
+      else {
+        res.sendStatus(503);
+      }
     });
+
   }
 
   // please login first
@@ -65,7 +83,7 @@ router.post('/', function (req, res) {
 
   // logout
   else if (req.body.type === 'logout') {
-    req.session.username = null;
+    req.session.email = null;
     res.send('OK');
   }
 

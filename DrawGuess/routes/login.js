@@ -24,7 +24,9 @@ router.post('/', function (req, res) {
       }
       // if email exists & password is correct
       else if (result.rows[0].password === req.body.password) {
-        req.session.username = result.rows[0].nickname;
+        req.session.email = result.rows[0].email;
+        req.session.nickname = result.rows[0].nickname;
+        req.session.points = result.rows[0].points;
         res.send("OK");
       }
       // or password is wrong
