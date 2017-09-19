@@ -51,7 +51,7 @@
         <li class="disabled"><a href="#">房间：<%= roomName %></a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li id="logout"><a href="#">Log out</a></li>
+        <li id="logout"><a href="#">注销</a></li>
       </ul>
     </div>
   </div>
@@ -132,10 +132,6 @@
   let endTime = Number("<%= endTime %>");
 
   let socket = io("/" + roomID);
-  let sendMessageBtn = document.getElementById("sendBtn");
-  let logoutBtn = document.getElementById("logout");
-  let prompt = document.getElementById("prompt");
-  let answerShow = document.getElementById("answer");
   let drawingBoard, term;
 
   // set Messenger options
@@ -151,11 +147,11 @@
   });
 
   // send message button function
-  sendMessageBtn.onclick = function () {
+  $("#sendBtn").click(function () {
     let message = document.getElementById("messages");
     socket.emit("message", message.value, email, nickName, roomLeader ,term);
     message.value = "";
-  };
+  });
 
   // query term of this round
   queryTerm = function () {
@@ -171,9 +167,9 @@
         // if term exists, show the prompt
         if (term) {
           if (roomLeader === "1") {
-            prompt.innerText = term.termCon;
+            $("#prompt").text(term.termCon);
           } else if (roomLeader === "0") {
-            prompt.innerText = term.termLen + "个字, " + term.termType;
+            $("#prompt").text(term.termLen + "个字, " + term.termType);
           }
         }
       }
@@ -190,7 +186,7 @@
       //broadcast message
       msgNotice.update("恭喜[" + userID + "]答对了: ***" + message + "***");
 
-      answerShow.innerText = term.termCon;
+      $("#answer").text(term.termCon);
       $('#clock1').countdown('pause');
       $('.roundfinish_frame').css('z-index', "999");
       $('#roundfinish').css('display', "block");
@@ -207,7 +203,7 @@
     // set Timer format
     $(this).html(event.strftime('%M:%S'));
   }).on('finish.countdown', function () {
-    answerShow.innerText = term.termCon;
+    $("#answer").text(term.termCon);
     $('.roundfinish_frame').css('z-index', "999");
     $('#roundfinish').css('display', "block");
   });
@@ -278,7 +274,7 @@
   }
 
   // logout button function
-  logoutBtn.onclick = function () {
+  $('#logout').click(function () {
     let data = {};
     data.type = "logout";
     $.ajax({
@@ -292,7 +288,7 @@
         }
       }
     });
-  };
+  });
 </script>
 
 </html>

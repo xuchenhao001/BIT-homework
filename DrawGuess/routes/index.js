@@ -38,7 +38,7 @@ router.get('/', function (req, res, next) {
     mysql.executeQuery(queryPoints, function (status, result) {
       if (status === "OK") {
         points = result.rows[0].points;
-        
+
         res.render('index', {
           nickname: req.session.nickname,
           points: points,
