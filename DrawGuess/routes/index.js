@@ -33,7 +33,7 @@ router.get('/', function (req, res, next) {
     // update points
     let points = null;
     let mysql = require("../db/MySQLConnection");
-    let queryPoints = "SELECT points FROM userinfo WHERE email='" + req.session.email + "';";
+    let queryPoints = "SELECT points FROM userInfo WHERE email='" + req.session.email + "';";
     mysql.executeQuery(queryPoints, function (status, result) {
       if (status === "OK") {
         points = result.rows[0].points;

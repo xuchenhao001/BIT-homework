@@ -64,21 +64,6 @@
     window.location.href = "signUp"
   });
 
-  setCookie = function (email, password, expireDays) {
-    Cookies.set('email', email, {expires: expireDays});
-    Cookies.set('password', password, {expires: expireDays});
-    Cookies.set('password', password, {expires: expireDays});
-  };
-
-  getCookie = function (email) {
-    let arr, reg = new RegExp("(^| )" + email + "=([^;]*)(;|$)");
-    if (arr = document.cookie.match(reg))
-      return unescape(arr[2]);
-    else
-      return null;
-  };
-
-
   $(document).ready(function () {
 
     // Cookies check, auto fill in the form
