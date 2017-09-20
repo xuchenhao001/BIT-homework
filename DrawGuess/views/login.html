@@ -41,7 +41,7 @@
 
       <div class="form-group">
         <div class="main-checkbox">
-          <input id="checkbox" type="checkbox" value="None" name="check"/>
+          <input id="checkbox" type="checkbox" checked="checked" />
           <label for="checkbox"></label>
         </div>
         <span class="text">记住我</span>
@@ -65,21 +65,21 @@
   });
 
   setCookie = function (email, password, expireDays) {
-    Cookies.set('email', email, { expires: expireDays });
-    Cookies.set('password', password, { expires: expireDays });
-    Cookies.set('password', password, { expires: expireDays });
+    Cookies.set('email', email, {expires: expireDays});
+    Cookies.set('password', password, {expires: expireDays});
+    Cookies.set('password', password, {expires: expireDays});
   };
 
   getCookie = function (email) {
-    let arr,reg = new RegExp("(^| )" + email + "=([^;]*)(;|$)");
-    if(arr=document.cookie.match(reg))
+    let arr, reg = new RegExp("(^| )" + email + "=([^;]*)(;|$)");
+    if (arr = document.cookie.match(reg))
       return unescape(arr[2]);
     else
       return null;
   };
 
 
-  $(document).ready(function() {
+  $(document).ready(function () {
 
     // Cookies check, auto fill in the form
     if (Cookies.get('remember')) {
@@ -126,7 +126,7 @@
       // Prevent default form submission
       e.preventDefault();
 
-      let $form = $(e.target),                  // The form instance
+      let $form = $(e.target),               // The form instance
         fv = $form.data('formValidation');   // FormValidation instance
 
       // Send data to backend
@@ -157,9 +157,9 @@
           else if (data === "OK") {
             // if "save me" checkbox is checked
             if ($("#checkbox").prop("checked")) {
-              Cookies.set('email', $("#email").val(), { expires: 7 });
-              Cookies.set('password', $("#password").val(), { expires: 7 });
-              Cookies.set('remember', true, { expires: 7 });
+              Cookies.set('email', $("#email").val(), {expires: 7});
+              Cookies.set('password', $("#password").val(), {expires: 7});
+              Cookies.set('remember', true, {expires: 7});
             } else {
               Cookies.remove('email');
               Cookies.remove('password');

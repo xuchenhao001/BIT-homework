@@ -49,6 +49,9 @@
         <li class="disabled"><a href="#"><%= nickname %></a></li>
         <li class="disabled"><a href="#">积分: <%= points %></a></li>
         <li class="disabled"><a href="#">房间：<%= roomName %></a></li>
+        <li class="disabled"><a href="#">
+          <div id="playerNum"><%= playerNum %></div>
+        </a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li id="quit"><a href="#">退出房间</a></li>
@@ -80,8 +83,7 @@
       <div id="gamestart">
         <span style="font-size: 25px;">欢迎进入游戏</span>
         <br/>
-        <span style="font-size: 15px;">房间内人数:</span>
-        <span style="font-size: 15px;">n</span>
+        <span style="font-size: 15px;">在线人数: <%= playerNum %></span>
         <div><br/></div>
         <button type="button" class="btn btn-info" onclick="startNextRound()">开始游戏</button>
         <div><br/></div>
@@ -253,6 +255,11 @@
         }
       }
     });
+  });
+
+  // listen for online player number
+  socket.on("playerNum", function (number) {
+    $("#playerNum").text("当前在线人数: " + number);
   });
 
   // DrawBoard, if roomLeader===1, you can draw

@@ -24,11 +24,10 @@ router.get('/', function (req, res, next) {
 
     // update rooms info
     let rooms = Object.keys(io.nsps).map(function (room) {
-      let roomDetail = {
+      return {
         roomName: room.substr(1),
         roomPlayerNum: Object.keys(io.nsps[room].connected).length
       };
-      return roomDetail;
     });
 
     // update points

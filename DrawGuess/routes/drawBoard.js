@@ -11,6 +11,10 @@ router.get("/", function (req, res, next) {
 
     // set about the websocket
     nsp = io.of(req.session.roomName);
+    // first update end time of this round
+    console.log(nsp);
+    let endTime = nsp.endTime;
+
     nsp.on("connection", function (socket) {
 
       // first remove all repeat server side listeners
@@ -35,7 +39,7 @@ router.get("/", function (req, res, next) {
           "((SELECT MAX(termID) FROM term) - (SELECT MIN(termID) FROM term)) * RAND() " +
           "+ (SELECT MIN(termID) FROM term)  LIMIT 1;";
         mysql.executeQuery(query, function (status, result) {
-          nsp.flags.term = result.rows[0];
+          nsp.term = result.rows[0];
         });
       });
 
@@ -80,6 +84,11 @@ router.get("/", function (req, res, next) {
       roomLeader = 0;
     }
 
+    // periodically broadcast online player number
+    setInterval(function () {
+      nsp.emit("playerNum", Object.keys(nsp.connected).length);
+    }, 3000);
+
     // update points
     let points = null;
     let mysql = require("../db/MySQLConnection");
@@ -94,7 +103,8 @@ router.get("/", function (req, res, next) {
           nickname: req.session.nickname,
           roomName: req.session.roomName,
           points: points,
-          endTime: nsp.flags.endTime,
+          endTime: endTime,
+          playerNum: Object.keys(nsp.connected).length,
           roomLeader: roomLeader
         });
       }
@@ -104,8 +114,6 @@ router.get("/", function (req, res, next) {
         res.sendStatus(503);
       }
     });
-
-
   }
 
   // if not login
@@ -130,18 +138,18 @@ router.post("/", function (req, res) {
 
     // reset the timer
     // set first round start timestamp
-    nsp.flags.startTime = (new Date()).valueOf();
+    nsp.startTime = (new Date()).valueOf();
     // set round interval(s)
-    nsp.flags.interval = 80 * 1000;
+    nsp.interval = 80 * 1000;
     // set first round end timestamp
-    nsp.flags.endTime = nsp.flags.startTime + nsp.flags.interval;
+    nsp.endTime = nsp.startTime + nsp.interval;
 
     res.send("OK");
   }
 
   // if query the term
   else if (req.body.type === "queryTerm") {
-    res.send(nsp.flags.term);
+    res.send(nsp.term);
   }
 
   // if logout
