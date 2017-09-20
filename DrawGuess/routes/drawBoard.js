@@ -60,7 +60,7 @@ router.get("/", function (req, res, next) {
           // update points
           // add 10 points to winner
           let mysql = require("../db/MySQLConnection");
-          let updateWinner = "UPDATE userinfo SET points=points+10 where email='" + email + "';";
+          let updateWinner = "UPDATE userInfo SET points=points+10 where email='" + email + "';";
           mysql.executeQuery(updateWinner, function (status, result) {
           });
         }
@@ -88,7 +88,7 @@ router.get("/", function (req, res, next) {
     // update points
     let points = null;
     let mysql = require("../db/MySQLConnection");
-    let queryPoints = "SELECT points FROM userinfo WHERE email='" + req.session.email + "';";
+    let queryPoints = "SELECT points FROM userInfo WHERE email='" + req.session.email + "';";
     mysql.executeQuery(queryPoints, function (status, result) {
       if (status === "OK") {
         points = result.rows[0].points;
