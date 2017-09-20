@@ -16,8 +16,6 @@ router.post('/', function (req, res) {
   let query = "SELECT * FROM userInfo WHERE email = '" + req.body.email + "';";
   mysql.executeQuery(query, function (status, result) {
     if (status === "OK") {
-      console.log(req.body.email);
-      console.log(result.rows.length);
       // if email does not exist
       if (result.rows.length === 0) {
         res.send("EMAIL_NOT_EXIST");

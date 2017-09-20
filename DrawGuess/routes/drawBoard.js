@@ -11,10 +11,6 @@ router.get("/", function (req, res, next) {
 
     // set about the websocket
     nsp = io.of(req.session.roomName);
-    // first update end time of this round
-    console.log(nsp);
-    let endTime = nsp.endTime;
-
     nsp.on("connection", function (socket) {
 
       // first remove all repeat server side listeners
@@ -103,7 +99,7 @@ router.get("/", function (req, res, next) {
           nickname: req.session.nickname,
           roomName: req.session.roomName,
           points: points,
-          endTime: endTime,
+          endTime: nsp.endTime,
           playerNum: Object.keys(nsp.connected).length,
           roomLeader: roomLeader
         });
