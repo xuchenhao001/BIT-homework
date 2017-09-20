@@ -12,6 +12,12 @@
   <script src="javascripts/jquery.js"></script>
   <script src="javascripts/bootstrap.min.js"></script>
 
+  <!--FormValidation-->
+  <link rel="stylesheet" href="stylesheets/formValidation.min.css">
+  <script src="javascripts/formValidation.min.js"></script>
+  <script src="javascripts/framework/bootstrap.min.js"></script>
+  <script type="text/javascript" src="javascripts/language/zh_CN.js"></script>
+
   <!--Messenger-->
   <link rel="stylesheet" href="stylesheets/messenger.css">
   <link rel="stylesheet" href="stylesheets/messenger-theme-air.css">
@@ -52,9 +58,10 @@
 <div class="container">
   <form id="create-room-form" class="col-md-6 col-md-offset-3">
     <div class="input-group">
-      <input id="room-name" type="text" class="form-control" placeholder="房间号...">
+      <input id="room-name" type="text" class="form-control" placeholder="房间号..."
+             name="roomName">
       <span class="input-group-btn">
-        <button id="create-room" class="btn btn-info" type="submit">新建房间</button>
+        <button id="create-room" class="btn btn-info" type="submit">新建/加入房间</button>
       </span>
     </div>
   </form>
@@ -64,6 +71,7 @@
 
 <div class="container">
   <div id="room-list" class="row">
+
     <% rooms.forEach(function (roomDetail) { %>
     <% if (roomDetail.roomName.length > 0) { %>
     <div class="col-md-6 col-md-offset-3">
@@ -76,29 +84,6 @@
     <div class="col-md-6"><br></div>
     <% } %>
     <% }) %>
-    <div class="col-md-6 col-md-offset-3">
-      <button type="button" class="list-group-item list-group-item-info">
-        妈妈说房间名一定要长长长才会吸引同学们的注意力
-        <span class="badge">14</span>
-      </button>
-    </div>
-    <div class="col-md-6"><br></div>
-
-    <div class="col-md-6 col-md-offset-3">
-      <button type="button" class="list-group-item list-group-item-info">
-        房间2
-        <span class="badge">6</span>
-      </button>
-    </div>
-    <div class="col-md-6"><br></div>
-
-    <div class="col-md-6 col-md-offset-3">
-      <button type="button" class="list-group-item list-group-item-info">
-        房间3
-        <span class="badge">6</span>
-      </button>
-    </div>
-    <div class="col-md-6"><br></div>
 
   </div>
 </div>
@@ -107,34 +92,35 @@
 
 <script type="text/javascript">
 
-  // create room button function
-  $("#create-room-form").keypress(function (e) {
-    if(e.keyCode === 13){
-      e.preventDefault();
-      $("#create-room").click();
-    }
-  });
-  $("#create-room").click(function () {
-    let roomName = $('#room-name').val();
-    let data = {};
-    data.type = "create";
-    data.roomName = roomName;
-    $.ajax({
-      url: '/home',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(data),
-      success: function (data) {
-        // login to specified namespace(room)
-        window.location = data.redirect
+  $(document).ready(function () {
+    // Form validation for room name length checking
+    $('#create-room-form').formValidation({
+      framework: 'bootstrap',
+      locale: 'zh_CN',
+      fields: {
+        roomName: {
+          validators: {
+            notEmpty: {
+              message: '请输入房间名'
+            },
+            stringLength: {
+              min: 1,
+              max: 16
+            }
+          }
+        }
       }
-    });
+    }).on('success.form.fv', function (e) {
+      // Prevent default form submission
+      e.preventDefault();
+      select($("#room-name").val());
+    })
   });
 
   // room select function
   select = function (roomName) {
     let data = {};
-    data.type = "select";
+    data.type = "room";
     data.roomName = roomName;
     $.ajax({
       url: '/home',

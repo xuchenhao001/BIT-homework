@@ -62,20 +62,8 @@ router.get('/', function (req, res, next) {
 /* POST create/select room or logout info. */
 router.post('/', function (req, res) {
 
-  // create new room
-  if (req.body.type === 'create') {
-    let nsp = io.of(req.body.roomName);
-    nsp.on('connection', function (socket) {
-
-    });
-    req.session.roomName = req.body.roomName;
-
-    console.log("create: " + req.body.roomName);
-    res.send({redirect: '/drawBoard'});
-  }
-
-  // select a room
-  else if (req.body.type === 'select') {
+  // create or select a room
+  if (req.body.type === 'room') {
     req.session.roomName = req.body.roomName;
     res.send({redirect: '/drawBoard'});
   }
