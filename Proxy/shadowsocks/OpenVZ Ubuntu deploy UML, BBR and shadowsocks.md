@@ -205,4 +205,4 @@ $ ssserver -c /etc/shadowsocks.json -d start
 
 ## 本地Ubuntu Server连接`shadowsocks`代理服务器
 
-有关本地`Shell`或者其他应用走`shadowsocks`代理的问题，请参考[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/MyOwnStudy/pull%20videos%20from%20flickr.com/Local%20Ubuntu%20Server%20Connect%20to%20shadowsocks%20proxy.md)。
+有关本地`Shell`或者其他应用走`shadowsocks`代理的问题，请参考[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/shadowsocks/Local%20Ubuntu%20Server%20Connect%20to%20shadowsocks%20proxy.md)。
