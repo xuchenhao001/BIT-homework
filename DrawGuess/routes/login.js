@@ -27,7 +27,7 @@ router.post('/', function (req, res) {
         req.session.points = result.rows[0].points;
 
         // update sessionID record at database, for only one login per account check
-        let updateSession = "UPDATE userinfo SET sessionID='" + req.sessionID +
+        let updateSession = "UPDATE userInfo SET sessionID='" + req.sessionID +
           "' WHERE email='" + req.session.email + "';";
         mysql.executeQuery(updateSession, function (status, result) {
           // if update session successfully
