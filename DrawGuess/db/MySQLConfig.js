@@ -31,7 +31,8 @@ let config = {
    `email` char(50) NOT NULL,
    `nickname` varchar(22) NOT NULL,
    `password` varchar(22) NOT NULL,
-   `points` int DEFAULT NULL
+   `points` int DEFAULT NULL,
+   `sessionID` varchar(255)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
  ALTER TABLE `userInfo`

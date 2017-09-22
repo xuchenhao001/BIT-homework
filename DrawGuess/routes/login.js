@@ -25,7 +25,20 @@ router.post('/', function (req, res) {
         req.session.email = result.rows[0].email;
         req.session.nickname = result.rows[0].nickname;
         req.session.points = result.rows[0].points;
-        res.send("OK");
+
+        // update sessionID record at database, for only one login per account check
+        let updateSession = "UPDATE userinfo SET sessionID='" + req.sessionID +
+          "' WHERE email='" + req.session.email + "';";
+        mysql.executeQuery(updateSession, function (status, result) {
+          // if update session successfully
+          if (status === "OK") {
+            res.send("OK");
+          }
+          // or error from mysql
+          else {
+            res.send("ERR");
+          }
+        });
       }
       // or password is wrong
       else {

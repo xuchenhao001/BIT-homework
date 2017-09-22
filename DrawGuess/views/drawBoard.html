@@ -302,7 +302,7 @@
 
     // listen to drawing event, and send to server
     drawingBoard.ev.bind('board:stopDrawing', function (pointer) {
-      socket.emit("drawing", drawingBoard.history.stack.pop());
+      socket.emit("drawing", drawingBoard.history.stack[drawingBoard.history.stack.length - 1]);
     });
   }
   // or roomLeader===0, you can just watch
