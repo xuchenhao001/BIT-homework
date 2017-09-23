@@ -146,9 +146,30 @@ connect = [your.server.ip]:443
 
 具体配置说明同`Windwos`。
 
+配置开启`stunnel`：
+
+```bash
+$ vim /etc/default/stunnel4
+```
+
+将其中的`ENABLED=0`改为`ENABLED=1`即可。
+
+之后重启`stunnel`服务：
+
+```bash
+$ systemctl restart stunnel4.service
+```
+
 修改环境变量使`bash`通过`stunnel`代理上网：
 
-```
+```bash
 $ export http_proxy='127.0.0.1:8088'
 ```
 
+测试是否连接成功：
+
+```bash
+$ curl ip.sb
+```
+
+如果返回结果是`Squid`服务器的地址，证明代理成功。
