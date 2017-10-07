@@ -38,7 +38,7 @@ $ cd squid-3.5.27/
 编译前，需要安装两个负责加密的依赖包：
 
 ```bash
-$ apt install crypto libssl-dev
+$ apt install -y autoconf g++ make openssl libssl-dev libcurl4-openssl-dev
 ```
 
 编译，这里一定要加入`--with-openssl`选项，使得`squid`支持加密连接：
