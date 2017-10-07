@@ -1,6 +1,6 @@
 # `Squid`-`Stunnel`代理
 
-比`shadowsocks`更为简单的代理方案是`squid`+`stunnel`代理。其中服务端部署运行`squid`反向代理以缓冲访问的数据，比如Google。本地端部署`stunnel`用以加密与`squid`之间的通信，使得访问更加安全，且不会被墙掉。
+比`shadowsocks`更为简单的代理方案是`squid`+`stunnel`代理。其中服务端部署运行`squid`反向代理以缓冲访问的数据，比如`Google`。本地端部署`stunnel`用以加密与`squid`之间的通信，使得访问更加安全，且不会被墙掉。
 
 ## 服务端`Squid`安装
 

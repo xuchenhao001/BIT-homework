@@ -1,33 +1,14 @@
-# Pull videos from www.flickr.com
+# Shadowsocks
 
-帮老师从网站上下载视频，写了一个脚本利用wget来抓。
+`Shadowsocks`基于`Python`开发，配置`Shadowsocks`时需要同时部署服务端和客户端。
 
-## `pull_video.sh`
+由`Google`开源的`BBR`拥塞控制算法可以安装在`Shadowsocks`服务端，加速你的代理。但是`BBR`只支持`KVM`虚拟化技术，不支持`OpenVZ`，如果你有一个`OpenVZ`的虚拟主机，可以采用搭建`UML`的方式创建一个子虚拟机，使得其支持`BBR`技术。
 
-单线程循环调用`wget`进行下载。可以设置从某个暂停行继续进行下载。
+`OpenVZ`上部署`BBR`，见[OpenVZ-BBR](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/shadowsocks/OpenVZ-BBR.md)。
 
-后来感觉速度维持在700K-1M左右，花了一个月才下载了220GB，于是想要提速，继而学习了如果在OpenVZ上部署`Google`的`BBR`拥塞控制技术。可以参见[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/MyOwnStudy/pull%20videos%20from%20flickr.com/OpenVZ%20Ubuntu%20deploy%20UML%2C%20BBR%20and%20shadowsocks.md)
+部署服务端`Shadowsocks`，见[Shadowsocks-Server](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/shadowsocks/Shadowsocks-Server.md)。
 
-利用BBR提速效果明显，大概比原来快了1倍左右。
+部署客户端`Shadowsocks`，见[Shadowsocks-Client](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/shadowsocks/Shadowsocks-Client.md)。
 
-## `pull_video_v2`
+`Ubuntu`环境下本地应用代理的配置，见[Ubuntu-App-config](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/Linux-App-config.md)。
 
-花了一下午时间写的。
-
-考虑到`BBR`也只是加快了服务器端的上传速度，本地的下载速度受限主要也是因为10个视频里有9个都是`404 Not Found`，`wget`的单线程下载使得大部分时间都浪费在建立连接，文件不存在，断开连接，重新建立连接……
-
-于是我尝试了许多多线程下载工具，比如`axel`、`aria2`，`myget`等等，但是无一例外的，它们没办法下载这个网站的数据，有的显示连接错误，有的显示太多次重定向错误等等。
-
-既然如此，那么，我为何不尝试同时运行多个`wget`程序呢？我研究了`bash`下如何实现多线程。
-
-利用`wait`和`&`可以将进程调到后台执行，以实现进程间的并行运行。
-
-简单的想法，可以是建立2层循环，外循环一次读取10行，内循环一次开启10个`wget`，之后循环往复。但是问题来了，10个进程总要等待最慢的下载完成才可以继续下一轮下载，所以我们要监控各个子进程。
-
-经过研究，我们可以利用命令
-```
-kill -0 pid_number
-```
-监控后台进程状态。此命令并不对运行的进程发出任何信号，如果进程存在，返回`0`，不存在，返回`1`。
-
-通过这个命令，我们可以自己创建一个进程维护数组`PID`，里面存储后台`wget`进程的`ID`，通过轮询访问进行维护。如果某个进程不存在了，就读取新一行下载链接，创建新的`wget`命令，否则继续轮询下一个进程。从而控制`wget`同时存在的个数，也就控制了并发下载数量。

@@ -1,6 +1,6 @@
 # Configure of proxy through SSH
 
-If you do have a server host without `shadowsocks` environment, you still need a proxy for Google. So try SSH!
+If you do have a server host without `Shadowsocks` or `Squid` environment, you still need a proxy for Google. So try SSH proxy!
 
 ## Windows PuTTY
 

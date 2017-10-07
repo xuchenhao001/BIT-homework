@@ -1,7 +1,7 @@
-# OpenVZ Ubuntu下部署UML，启用BBR，加速shadowsocks
+# OpenVZ Ubuntu下利用UML部署BBR
 
-OpengVZ，基于Linux内核和作業系統的操作系统级虚拟化技术。部署UML（User-mode Linux）后，虚拟一个具有BBR加速的小型操作系统。之后在小型操作系统中运行shadowsocks server，在host中将所有请求都转发到小型操作系统，以使用BBR，达到加速shadowsocks的目的。
-摘自91yun.org，亲测可用。硬件需求：
+`OpenVZ`是一个操作系统级的虚拟化技术，本身并不支持`BBR`拥塞避免算法。但是部署`UML`（User-mode Linux）后，我们虚拟出一个具有`BBR`加速的子虚拟机。之后在子虚拟机中运行代理服务程序的服务端，再将原`OpenVZ`虚拟机中的所有代理请求都转发到`UML`子虚拟机中，以使用`BBR`算法加速代理。
+摘自`91yun.org`，亲测可用。硬件需求：
 
 * 主机支持TUN/TAP
 * CPU 1 核
@@ -96,7 +96,7 @@ $ tar xvJf uml.tar.xz
 $ resize2fs rootfs 5G
 ```
 
-## 打开user-mode linux
+## 打开user-mode linux子虚拟机
 
 前台运行子虚拟机：（一直不能关闭开启子虚拟机的ssh）
 
@@ -120,7 +120,7 @@ Virtual console 2 assigned device '/dev/pts/5'
 Virtual console 1 assigned device '/dev/pts/6'
 ```
 
-表明启动完成，其中`/dev/pts/x`就是子虚拟机放`virtual console`的地方，随便记住一个，另开一个`terminal`远程到主机上，用以下命令进入子虚拟机：
+表明启动完成，其中`/dev/pts/x`就是子虚拟机放`virtual console`的地方，随便记住一个，另开一个`SSH`远程到主机上，用以下命令进入子虚拟机：
 
 ```
 $ screen /dev/pts/1
@@ -149,60 +149,4 @@ net.ipv4.tcp_available_congestion_control = bbr reno cubic highspeed
 >
 > 重新连接你的screen：`screen -r`
 
-## 部署shadowsocks server
-
-首先更新一下数据源，升级一下软件包：
-
-```
-apt-get update
-apt-get upgrade
-```
-
-安装`python`和`pip`：
-
-```
-$ apt install python python-pip
-```
-
-安装`shadowsocks`：
-
-```
-$ pip install shadowsocks
-```
-或最新版
-```
-$ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
-```
-
-新建`/etc/shadowsocks.json`配置文件：
-
-```
-$ vi /etc/shadowsocks.json
-```
-
-填入配置内容，例如：
-
-```
-{
-    "server":"my_server_ip",
-    "server_port":10221,
-    "local_address": "127.0.0.1",
-    "local_port":1080,
-    "password":"mypassword",
-    "timeout":300,
-    "method":"aes-256-cfb",
-    "fast_open": false
-}
-```
-
-后台启动`shadowsocks`：
-
-```
-$ ssserver -c /etc/shadowsocks.json -d start
-```
-
-此时已经在子虚拟机中成功启动了`shadowsocks`，并且发送到OpenVZ主机的消息都会转发到子虚拟机中。
-
-## 本地Ubuntu Server连接`shadowsocks`代理服务器
-
-有关本地`Shell`或者其他应用走`shadowsocks`代理的问题，请参考[此文](https://github.com/xuchenhao001/BIT-homework/blob/master/Proxy/shadowsocks/Local%20Ubuntu%20Server%20Connect%20to%20shadowsocks%20proxy.md)。
+下面，如果你想要令代理程序享受`BBR`算法的加速，你应该让其运行在子虚拟机上。也就是说，将代理的服务端程序安装配置在子虚拟机中，而非原主机上。
