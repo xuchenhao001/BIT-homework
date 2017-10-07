@@ -163,7 +163,8 @@ $ systemctl restart stunnel4.service
 修改环境变量使`bash`通过`stunnel`代理上网：
 
 ```bash
-$ export http_proxy='127.0.0.1:8088'
+$ export http_proxy='http://localhost:8088'
+$ export https_proxy='https://localhost:8088'
 ```
 
 测试是否连接成功：
