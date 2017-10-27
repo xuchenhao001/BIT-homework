@@ -11,14 +11,9 @@
 ```bash
 $ mkdir -p /root/.squid
 $ cd /root/.squid
-$ openssl req -new > cert.csr
-$ openssl rsa -in privkey.pem -out cert.key
-$ openssl x509 -in cert.csr -out cert.crt -req -signkey cert.key -days 9999
+$ openssl req -nodes -newkey rsa:2048 -keyout /root/.squid/cert.key -out /root/.squid/cert.csr -subj "/C=/ST=/L=/O=/OU=/CN=squid"
+$ openssl x509 -req -sha256 -days 365 -in /root/.squid/cert.csr -signkey /root/.squid/cert.key -out /root/.squid/cert.crt
 ```
-
-> 在生成`cert.csr`时，会要求你输入密钥，这个密钥仅在后面生成`cert.key`时会使用，与你的`stunnel`连接无关。而生成证书所需的其他信息，例如`Country Name`，`Common Name`等等都可以不填写。
->
-> 最后生成证书`cert.crt`时，最后面的`9999`表明此证书的有效期为9999天，可以随便设置。
 
 ### 安装
 
