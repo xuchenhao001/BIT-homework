@@ -10,7 +10,6 @@
 
 ```bash
 $ mkdir -p /root/.squid
-$ cd /root/.squid
 $ openssl req -nodes -newkey rsa:2048 -keyout /root/.squid/cert.key -out /root/.squid/cert.csr -subj "/C=/ST=/L=/O=/OU=/CN=squid"
 $ openssl x509 -req -sha256 -days 365 -in /root/.squid/cert.csr -signkey /root/.squid/cert.key -out /root/.squid/cert.crt
 ```
