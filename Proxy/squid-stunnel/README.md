@@ -29,10 +29,13 @@ $ tar -zxf squid-3.5.27.tar.gz
 $ cd squid-3.5.27/
 ```
 
-编译前，需要安装两个负责加密的依赖包：
+编译前，需要安装一些依赖包：
 
 ```bash
+# for Ubuntu
 $ apt install -y autoconf g++ make openssl libssl-dev
+# for RHEL
+$ yum install autoconf gcc-c++ make openssl openssl-devel
 ```
 
 编译，这里一定要加入`--with-openssl`选项，使得`squid`支持加密连接：
@@ -126,12 +129,15 @@ $ apt install stunnel4
 修改配置文件为以下内容：
 
 ```bash
-$ vim /etc/stunnel/stunnel.conf
+$ cat <<EOF > /etc/stunnel/stunnel.conf
 [https]
 client = yes
 accept = 127.0.0.1:8088
-connect = [your.server.ip]:443
+connect = <your.server.ip>:443
+EOF
 ```
+
+> 注意：需要将`<your.server.ip>`替换成你的服务器IP地址。
 
 具体配置说明同`Windwos`。
 
