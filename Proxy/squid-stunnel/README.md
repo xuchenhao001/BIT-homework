@@ -44,14 +44,11 @@ $ make all
 
 > 稍等片刻，可以去喝杯茶了
 
-安装的时候有两种方式，一种是`make install`，但是我认为这样如果安装出错的话，安装文件不容易被清理掉，我们可以采用`checkinstall`工具安装，如果安装出问题的话，只需要使用`dpkg -r squid`即可清除安装。
+安装：
 
 ```bash
-$ apt install checkinstall
-$ checkinstall -D
+$ make install
 ```
-
-这时候会提示是否生成文档，输入名称之类的，我选择不生成文档，程序名称直接是`squid`，其它的都是默认选项即可。
 
 安装成功后，在`/usr/bin`下制作一个软连接以方便使用`squid`：
 
