@@ -3,7 +3,7 @@
 `OpenVZ`是一个操作系统级的虚拟化技术，本身并不支持`BBR`拥塞避免算法。但是部署`UML`（User-mode Linux）后，我们虚拟出一个具有`BBR`加速的子虚拟机。之后在子虚拟机中运行代理服务程序的服务端，再将原`OpenVZ`虚拟机中的所有代理请求都转发到`UML`子虚拟机中，以使用`BBR`算法加速代理。
 摘自`91yun.org`，亲测可用。硬件需求：
 
-* 主机支持TUN/TAP
+* 主机支持`TUN/TAP`
 * CPU 1 核
 * RAM 256M+
 * Disk 5GB
@@ -50,7 +50,7 @@ $ iptables -t nat -A PREROUTING -p tcp --dport 22 -j RETURN
 $ iptables -t nat -A PREROUTING -i venet0 -j DNAT --to-destination 10.0.0.2
 ```
 
-如果不想全部消息都转发子虚拟机，可以这样只将`10000`~`20000`端口的消息：
+如果不想全部消息都转发子虚拟机，可以这样只将`10000`~`20000`端口的消息转发到子虚拟机：
 ```
 $ iptables -t nat -A PREROUTING -i venet0 -p tcp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
 $ iptables -t nat -A PREROUTING -i venet0 -p udp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
@@ -98,18 +98,20 @@ $ resize2fs rootfs 5G
 
 ## 打开user-mode linux子虚拟机
 
-前台运行子虚拟机：（一直不能关闭开启子虚拟机的ssh）
+前台运行子虚拟机：（一直不能关闭开启子虚拟机的`ssh`）
 
 ```
 $ ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m
 ```
 
 > 要想在后台运行子虚拟机：
-> `$ nohup ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m &disown`
+> `$ nohup ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m >vmlinux.log 2>&1 &`
+>
+> 这样，log都会被重定向输出到`vmlinux.log`中
 
 其中，`mem=256m`表示分配给子虚拟机`256M`的RAM大小。
 
-等待子虚拟机成功启动，出现如下内容：
+等待子虚拟机成功启动，出现如下内容（如果是输出重定向到了`vmlinux.log`中，需要到`vmlinux.log`文件中查看）：
 
 ```
 Virtual console 3 assigned device '/dev/pts/1'
@@ -120,7 +122,7 @@ Virtual console 2 assigned device '/dev/pts/5'
 Virtual console 1 assigned device '/dev/pts/6'
 ```
 
-表明启动完成，其中`/dev/pts/x`就是子虚拟机放`virtual console`的地方，随便记住一个，另开一个`SSH`远程到主机上，用以下命令进入子虚拟机：
+表明启动完成，其中`/dev/pts/x`就是子虚拟机放`virtual console`的地方，随便记住一个，另开一个`ssh`远程到主机上，用以下命令进入子虚拟机：
 
 ```
 $ screen /dev/pts/1
