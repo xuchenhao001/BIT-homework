@@ -10,7 +10,7 @@
 
 ## 前置安装：
 
-```
+```bash
 $ apt-get install e2fsprogs uml-utilities screen
 ```
 
@@ -18,7 +18,7 @@ $ apt-get install e2fsprogs uml-utilities screen
 
 先设置一个tap虚拟网络设备`tap0`，设置子虚拟机的网络为`10.0.0.1`，启用`tap0`设备，添加`venet0`转发规则到`iptable`转发表的`POSTROUTING`链上：
 
-```
+```bash
 $ ip tuntap add tap0 mode tap
 $ ip addr add 10.0.0.1/24 dev tap0
 $ ip link set tap0 up
@@ -28,7 +28,7 @@ $ iptables -t nat -A POSTROUTING -o venet0 -j MASQUERADE
 
 检查`iptables`转发表的`POSTROUTING`链：
 
-```
+```bash
 $ iptables -t nat -vnL POSTROUTING --line-number
 ```
 可以看到如下规则被写入链中：
@@ -42,23 +42,30 @@ num   pkts bytes target     prot opt in     out     source               destina
 ## OpenVZ主机上转发规则设置
 
 预留`22`端口给`SSH`：
-```
+```bash
 $ iptables -t nat -A PREROUTING -p tcp --dport 22 -j RETURN
 ```
 全部消息转发子虚拟机（子虚拟机的网络地址为`10.0.0.2`）：
-```
+```bash
 $ iptables -t nat -A PREROUTING -i venet0 -j DNAT --to-destination 10.0.0.2
 ```
 
 如果不想全部消息都转发子虚拟机，可以这样只将`10000`~`20000`端口的消息转发到子虚拟机：
-```
+```bash
 $ iptables -t nat -A PREROUTING -i venet0 -p tcp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
 $ iptables -t nat -A PREROUTING -i venet0 -p udp --dport 10000:20000 -j DNAT --to-destination 10.0.0.2
 ```
 
+甚至，只转发`10221`端口的消息到子虚拟机：
+
+```bash
+$ iptables -t nat -A PREROUTING -i venet0 -p tcp --dport 10221 -j DNAT --to-destination 10.0.0.2
+$ iptables -t nat -A PREROUTING -i venet0 -p udp --dport 10221 -j DNAT --to-destination 10.0.0.2
+```
+
 检查`iptables`转发表的`PREROUTING`链：
 
-```
+```bash
 $ iptables -t nat -vnL PREROUTING --line-number
 ```
 
@@ -74,13 +81,13 @@ num   pkts bytes target     prot opt in     out     source               destina
 
 删除某条规则，比如第二条，可以使用：
 
-```
-iptables -t nat -D PREROUTING 2
+```bash
+$ iptables -t nat -D PREROUTING 2
 ```
 
 之后下载91yun.org为我们提供的uml内核（后续我可能会自己编译一个uml，如果有机会的话）：
 
-```
+```bash
 #32位系统下载该压缩包
 $ wget http://soft.91yun.org/uml/32/uml.tar.xz 
 #64位系统下载该压缩包
@@ -92,7 +99,7 @@ $ tar xvJf uml.tar.xz
 
 `rootfs`一开始只有`300M`，为了方便我们在里面安装程序，我们需要先扩大image的容量，这里我扩容到`5GB`：
 
-```
+```bash
 $ resize2fs rootfs 5G
 ```
 
@@ -100,7 +107,7 @@ $ resize2fs rootfs 5G
 
 前台运行子虚拟机：（一直不能关闭开启子虚拟机的`ssh`）
 
-```
+```bash
 $ ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m
 ```
 
@@ -124,7 +131,7 @@ Virtual console 1 assigned device '/dev/pts/6'
 
 表明启动完成，其中`/dev/pts/x`就是子虚拟机放`virtual console`的地方，随便记住一个，另开一个`ssh`远程到主机上，用以下命令进入子虚拟机：
 
-```
+```bash
 $ screen /dev/pts/1
 ```
 
@@ -135,7 +142,7 @@ $ screen /dev/pts/1
 
 进入系统后，可以运行一下如下指令：
 
-```
+```bash
 $ sysctl net.ipv4.tcp_available_congestion_control
 ```
 
