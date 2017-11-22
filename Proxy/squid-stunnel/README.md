@@ -62,9 +62,8 @@ $ ln -s /usr/local/squid/sbin/squid /usr/bin/squid
 配置`squid.conf`：
 
 ```bash
-$ sed -i "1,/cache_dir ufs/d" /usr/local/squid/etc/squid.conf
-$ sed -i "1i\https_port 443 cert=\/root\/.squid\/cert.crt key=\/root\/.squid\/cert.key" /usr/local/squid/etc/squid.conf
-$ sed -i "1i\http_access allow all" /usr/local/squid/etc/squid.conf
+$ sed -i "s/http_port 3128/https_port 443 cert=\/root\/.squid\/cert.crt key=\/root\/.squid\/cert.key/" /usr/local/squid/etc/squid.conf
+$ sed -i "s/http_access deny all/http_access allow all/" /usr/local/squid/etc/squid.conf
 ```
 
 更改`log`文件夹的权限，允许`squid`程序写入：
