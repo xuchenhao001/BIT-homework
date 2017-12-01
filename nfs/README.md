@@ -9,6 +9,7 @@ $ apt-get install nfs-kernel-server
 config server share directory (assume is `/nfsserver` ):
 ```bash
 $ echo "/nfsserver *(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+$ systemctl restart nfs-kernel-server.service
 ```
 
 ### client
