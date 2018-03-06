@@ -159,3 +159,20 @@ net.ipv4.tcp_available_congestion_control = bbr reno cubic highspeed
 > 重新连接你的screen：`screen -r`
 
 下面，如果你想要令代理程序享受`BBR`算法的加速，你应该让其运行在子虚拟机上。也就是说，将代理的服务端程序安装配置在子虚拟机中，而非原主机上。
+
+> Tips: 如果想要删除所有`iptables`规则，创建一个空的iptables备份文件`clear-all-rules`: 
+>
+> ```bash
+> # File clear-all-rules
+> # Empty the entire filter table
+> *filter
+> :INPUT ACCEPT [0:0]
+> :FORWARD ACCEPT [0:0]
+> :OUTPUT ACCEPT [0:0]
+> COMMIT
+> ```
+>
+> ```Bash
+> $ iptables-restore < clear-all-rules
+> ```
+
