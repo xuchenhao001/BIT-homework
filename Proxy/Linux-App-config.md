@@ -59,6 +59,6 @@ $ systemctl restart docker
 配置npm代理，就不需要每次都安装淘宝的`cnpm`了，这里仍以`privoxy`的`8118`端口为例：
 
 ```shell
-$ npm config set proxy http://localhost:8118
-$ npm config set https-proxy http://localhost:8118
+$ npm config set proxy localhost:8118
+$ npm config set https-proxy localhost:8118
 ```
