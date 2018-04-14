@@ -87,3 +87,24 @@ Restart `ocserv`:
 $ systemctl restart ocserv
 ```
 
+## Client - ubuntu
+
+1. First run command below to active the `TUN` module:
+
+   ```bash
+   $ /sbin/modprobe tun
+   ```
+
+2. Install OpenConnect:
+
+   ```bash
+   $ apt install openconnect
+   ```
+
+3. Connect to VPN, run:
+
+   ```bash
+   $ openconnect <your-vpn-ip-or-domain>
+   ```
+
+   ​
