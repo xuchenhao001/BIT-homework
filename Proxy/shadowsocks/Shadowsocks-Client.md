@@ -23,38 +23,33 @@ $ sslocal -c /etc/shadowsocks.json -d start
 
 ## 本地`Shell`环境变量设置连接`Shadowsocks`
 
-仅仅在后台启动`Shadowsocks`并不能起到什么作用，要想在当前`Shell`中，或者是令本地应用可以通过代理服务器访问外网资源，需要在本地安装配置一个`privoxy`，将`HTTP`请求转成`Socks5`请求，再发送至`shadowsocks`。大部分`Server`上的应用都是支持使用`HTTP`代理的，但是麻烦的地方在于不同的软件，我们需要不同的配置方式。
+仅仅在后台启动`Shadowsocks`并不能起到什么作用，要想在当前`Shell`中，或者是令本地应用可以通过代理服务器访问外网资源，需要在本地安装配置一个`proxychains`，将`HTTP`请求转成`Socks5`请求，再发送至`shadowsocks`。
 
-本地安装`privoxy`将`HTTP`消息代理为`Socks5`：
+本地安装`proxychains`:
 
 ```shell
-$ apt install privoxy
-$ vim /etc/privoxy/config
+$ apt install proxychains
+$ vim /etc/proxychains.conf
 ```
 
-去掉这一行的注释：
+仅需要修改最后一行为你的shadowsocks代理地址:
 
 ```shell
-forward-socks5t   /               127.0.0.1:1080 .
+socks5 	127.0.0.1 1080
 ```
 
-开启`privoxy`代理：
+可以查看一下是否成功连接了`Shadowsocks` server:
 
 ```shell
-$ service privoxy start 
-```
-
-现在，如果你想在`Shell`里走`socks5`代理：（其中`8118`就是本地`privoxy`的默认代理端口，本地`shadowsocks`的默认代理端口是`1080`）
-
-```shell
-$ export http_proxy='http://localhost:8118'
-$ export https_proxy='https://localhost:8118'
-```
-
-可以查看一下是否成功连接了`Shadowsocks` server：
-
-```shell
-$ curl ip.sb
+$ proxychains curl ip.sb
 ```
 
 如果返回的不是你当前机器的IP地址，而是代理服务器的IP，恭喜你，代理成功。
+
+之后在想要走代理的程序前加入前缀命令 proxychains 即可，例如:
+
+```bash
+$ proxychains bash mytest.sh
+$ proxychains docker pull ubuntu:16.04
+```
+
