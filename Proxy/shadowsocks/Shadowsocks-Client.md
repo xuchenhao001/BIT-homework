@@ -53,3 +53,24 @@ $ proxychains bash mytest.sh
 $ proxychains docker pull ubuntu:16.04
 ```
 
+## Ubuntu桌面版pac配置
+
+本地安装`genpac`:
+
+```bash
+$ pip install genpac
+```
+
+自动生成pac文件:
+
+```bash
+$ genpac --proxy="SOCKS5 127.0.0.1:1080" --gfwlist-proxy="SOCKS5 127.0.0.1:1080" -o /etc/autoproxy.pac --gfwlist-url="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
+```
+
+进入`System Setting`->`Network`->`Network proxy`, `Method`选择`Automatic`, `Configuration URL`填写刚才生成的pac文件地址:
+
+```bash
+file:///etc/autoproxy.pac
+```
+
+选择`Apply system wide`, 设置生效
