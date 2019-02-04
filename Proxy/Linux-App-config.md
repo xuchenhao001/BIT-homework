@@ -8,7 +8,7 @@
 
 ```bash
 $ export http_proxy='http://localhost:8118'
-$ export https_proxy='https://localhost:8118'
+$ export https_proxy='http://localhost:8118'
 ```
 
 可以查看一下是否成功连接了`Shadowsocks` server：
