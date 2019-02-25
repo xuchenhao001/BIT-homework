@@ -62,3 +62,16 @@ $ systemctl restart docker
 $ npm config set proxy localhost:8118
 $ npm config set https-proxy localhost:8118
 ```
+
+## gradle
+
+配置gradle代理，这里仍以`privoxy`的`8118`端口为例：
+
+```shell
+$ cat .gradle/gradle.properties 
+systemProp.http.proxyHost=127.0.0.1
+systemProp.http.proxyPort=8118
+
+systemProp.https.proxyHost=127.0.0.1
+systemProp.https.proxyPort=8118
+```
