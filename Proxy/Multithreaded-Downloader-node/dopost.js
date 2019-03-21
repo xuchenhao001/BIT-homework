@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 let url = "http://edu.ethro.net:9566/precedent/ElasticsearchController/search";
 const codeTsMax = 9710;
 const dirName = '../output/';
-let codeTsStart = 414;
+let codeTsStart = 416;
 
 async function doPost(codeTS, pageNum, fileName, callback) {
   let payload = {
@@ -69,7 +69,6 @@ async function processData() {
 
     // synchronized download rest files
     while (pageNum <= totalPageNum + 1) {
-      console.log('current thread number: ' + Number(currentThreadsNum + 1));
       if (currentThreadsNum < multiThreadsNum) {
 
         // if this codeTs is full, jump out loop
@@ -78,6 +77,7 @@ async function processData() {
         }
         pageNum++;
         currentThreadsNum++;
+        console.log('current thread number: ' + currentThreadsNum);
 
         fileName = dirName + codeTsString + '-' + paddy(pageNum, 12);
         let fileIsExist = fs.existsSync(fileName);
