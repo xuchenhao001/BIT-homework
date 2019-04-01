@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 let url = "http://edu.ethro.net:9566/precedent/ElasticsearchController/search";
 const codeTsMax = 9710;
 const dirName = '../output/';
-let codeTsStart = 416;
+let codeTsStart = 1340;
 
 async function doPost(codeTS, pageNum, fileName, callback) {
   let payload = {
@@ -30,10 +30,13 @@ async function doPost(codeTS, pageNum, fileName, callback) {
       callback();
     }
     fs.outputFileSync(fileName, JSON.stringify(response));
-    console.log("file successfully dumped: " + fileName);
+    logger("File successfully dumped: " + fileName);
     return response;
   } catch (error) {
-    console.log("Error: ", error);
+    logger("Error: ", error);
+    if (callback) {
+      callback();
+    }
     return error;
   }
 }
@@ -47,7 +50,7 @@ async function processData() {
     let totalPageNum = 1;
 
     // multi thread download
-    let multiThreadsNum = 10;
+    let multiThreadsNum = 5;
     let currentThreadsNum = 0;
     let currentThreadsDD = function () {
       currentThreadsNum--;
@@ -59,10 +62,10 @@ async function processData() {
     if (res.status === 200) {
       total = res.data.total;
       totalPageNum = total / 500;
-      console.log('Total page number: ' + totalPageNum)
+      logger("Total page number: " + totalPageNum)
     } else {
-      console.log('Error at codeTs: ' + codeTsString);
-      console.log(res);
+      logger("Error at codeTs: " + codeTsString);
+      logger(res);
       codeTs--;
       continue;
     }
@@ -77,12 +80,12 @@ async function processData() {
         }
         pageNum++;
         currentThreadsNum++;
-        console.log('current thread number: ' + currentThreadsNum);
+        logger("Current thread number: " + currentThreadsNum);
 
         fileName = dirName + codeTsString + '-' + paddy(pageNum, 12);
         let fileIsExist = fs.existsSync(fileName);
         if (fileIsExist && pageNum !== 1) {
-          console.log("file exists, ignore: " + fileName);
+          logger("File exists, ignore: " + fileName);
           currentThreadsNum--;
           continue;
         }
@@ -95,7 +98,7 @@ async function processData() {
 
     // wait until this codeTs finished
     while (currentThreadsNum > 0) {
-      console.log('Wait for codeTs [' + codeTsString + '] finish...');
+      logger("Wait for codeTs [" + codeTsString + "] finish...");
       await sleep(3000);
     }
 
@@ -108,11 +111,14 @@ let sleep = async function (ms) {
   })
 };
 
-
 function paddy(num, padlen, padchar) {
   let pad_char = typeof padchar !== 'undefined' ? padchar : '0';
   let pad = new Array(1 + padlen).join(pad_char);
   return (pad + num).slice(-pad.length);
+}
+
+function logger(logcontent) {
+  console.log("[" + (new Date()).toLocaleString() + "] " + logcontent);
 }
 
 processData();
