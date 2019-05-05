@@ -15,14 +15,19 @@ let multiThreadsNum = 5;
 ```
 
 > `url`: The address you want to fetch data from
+>
 > `codeTsMax`: The final element's codeTs you want to fetch. Default 9710
+>
 > `dirName`: The output directory to save data
+>
 > `codeTsStart`: From where to continue this fetch job. Notice that this will ignore the files already exists in your output dirctory. For example, if you set this as 0 and there are 0001-0005 codeTs files exist in your output directory, it will automatically detect all these files through (since this will cost several minutes), and then start from 0006.
+>
 > `multiThreadsNum`: the thread number of multi-thread data fetch, default is 5.
 
 ## Start job
 
 ```bash
+npm install
 ./start.sh
 ```
 
