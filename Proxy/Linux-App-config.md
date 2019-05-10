@@ -40,8 +40,10 @@ $ vi /etc/systemd/system/docker.service.d/http-proxy.conf
 
 ```shell
 [Service]
-Environment="HTTP_PROXY=http://localhost:8118/" "HTTPS_PROXY=http://localhost:8118/"
+Environment="HTTP_PROXY=http://proxy.example.com:80/"
 ```
+
+> refer: https://docs.docker.com/v17.09/engine/admin/systemd/#httphttps-proxy
 
 注意，`localhost`不能用`127.0.0.1`替代。
 
