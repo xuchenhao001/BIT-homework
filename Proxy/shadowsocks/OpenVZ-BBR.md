@@ -112,7 +112,7 @@ $ ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m
 ```
 
 > 要想在后台运行子虚拟机：
-> `$ nohup ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m >vmlinux.log 2>&1 &`
+> `$ nohup ./vmlinux ubda=rootfs eth0=tuntap,tap0 mem=256m >vm.log 2>&1 &`
 >
 > 这样，log都会被重定向输出到`vmlinux.log`中
 
@@ -157,6 +157,8 @@ net.ipv4.tcp_available_congestion_control = bbr reno cubic highspeed
 > 从screen中分离（从虚拟机中脱离）：`Ctrl-a`+`d`
 >
 > 重新连接你的screen：`screen -r`
+>
+> 杀死当前screen: `Ctrl-a`+`k`
 
 下面，如果你想要令代理程序享受`BBR`算法的加速，你应该让其运行在子虚拟机上。也就是说，将代理的服务端程序安装配置在子虚拟机中，而非原主机上。
 
