@@ -10,7 +10,7 @@ apt-get upgrade
 安装`python`和`pip`：
 
 ```
-$ apt install python python-pip git
+$ apt install python python-pip python-setuptools git
 ```
 
 安装`shadowsocks`：
